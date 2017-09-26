@@ -1,0 +1,12 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+
+    <h1>{{ post.title }}</h1>
+    <p>{{ post.timestamp }}</p>
+    <hr />
+    <p>{{ post.content|linebreaks }}</p>
+    <br />
+    <a href="/upload/index/">Back</a>
+
+{% endblock %}

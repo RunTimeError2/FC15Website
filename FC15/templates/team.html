@@ -1,0 +1,26 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+
+<h1>welcome {{ username }} !</h1>
+<p>You can choose or create a team</p>
+<hr />
+
+<h2>My team:</h2>
+<h3>{{ myteam.teamname }}</h3>
+<p>Introduction:</p>
+<p>{{ myteam.introduction|linebreaks }}</p>
+
+<h2><a href="/createteam/">Create a team</a></h2>
+<hr />
+
+{% for team in teams %}
+    <h3>{{ team.teamname }}</h3>
+    <p>Captain: {{ team.captain }}</p>
+    <p>Introduction:</p>
+    <p>{{ team.introduction|linebreaks }}</p>
+    <p><a href="">Join this team</a></p>
+    <hr />
+{% endfor %}
+
+{% endblock %}

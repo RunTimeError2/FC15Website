@@ -1,0 +1,29 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <h4>Please log in with your own account.</h4>
+    <hr />
+
+    <div class="form-group">
+        <label for="id_username" class="col-md-2 control-label">User name</label>
+        {{ form.username }}
+    </div>
+    <br />
+    <div class="form-group">
+        <label for="id_password" class="col-md-2 control-label">Password</label>
+        {{ form.password }}
+    </div>
+    <br />
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Log in" class="btn btn-default" />
+        </div>
+    </div>
+
+    <hr />
+</form>
+
+{% endblock %}

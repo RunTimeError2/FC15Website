@@ -1,0 +1,31 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <h4>Welcome to blog page!</h4>
+    <br />
+    <p>You can edit and post your blog here</p>
+    <hr />
+
+    <div class="form-group">
+        <label for="id_title" class="col-md-2 control-label">Title</label>
+        {{ form.title }}
+    </div>
+    <br />
+    <div class="form-group">
+        <label for="id_content" class="col-md-2 control-label">Content</label>
+        {{ form.content|linebreaks }}
+    </div>
+    <br />
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="submit" class="btn btn-default" />
+        </div>
+    </div>
+
+    <hr />
+</form>
+
+{% endblock %}

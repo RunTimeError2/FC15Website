@@ -1,0 +1,44 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <h4>Enter your information to create a new account.</h4>
+    <hr />
+
+    <div class="form-group">
+        <label for="id_username" class="col-md-2 control-label">Username</label>
+        {{ form.username }}
+    </div>
+    <br />
+    <div class="form-group">
+        <label for="id_email" class="col-md-2 control-label">Email</label>
+        {{ form.email }}
+    </div>
+    <br />
+    <div class="form-group">
+        <label for="id_email" class="col-md-2 control-label">Student ID</label>
+        {{ form.stu_number }}
+    </div>
+    <br />
+    <div class="form-group">
+        <label for="id_password" class="col-md-2 control-label">Password</label>
+        {{ form.password }}
+    </div>
+    <br />
+    <div class="form-group">
+        <label for="id_passwordconfirm" class="col-md-2 control-label">Confirm password</label>
+        {{ form.password_confirm }}
+    </div>
+    <br />
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Register" class="btn btn-default" />
+        </div>
+    </div>
+
+    <hr />
+</form>
+
+{% endblock %}
