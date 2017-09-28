@@ -19,8 +19,8 @@
     <p>Captain: {{ team.captain }}</p>
     <p>Introduction:</p>
     <p>{{ team.introduction|linebreaks }}</p>
-    <p><a href="">Join this team</a></p>
+    <p><a href="{% url 'jointeam' pk=team.pk %}">Join this team</a></p>
     <hr />
 {% endfor %}
-
+ 
 {% endblock %}

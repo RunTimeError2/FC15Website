@@ -242,7 +242,7 @@ def team(request):
     username = request.COOKIES.get('username', '')
     if username == '':
         return HttpResponseRedirect('/login/')
-    myteam = TeamInfo.objects.filter(captain__exact = username)
+    myteam = TeamInfo.objects.get(captain = username)
     teams = TeamInfo.objects.all()
     return render(request, 'team.html', {'myteam': myteam, 'teams': teams})
 
