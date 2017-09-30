@@ -7,6 +7,7 @@ from FC15.forms import BlogPostForm, UserLoginForm, UserRegistForm, FileUploadFo
 from FC15.sendmail import mail_activate
 import time, os, random
 
+
 # All of the views
 
 # Home page
@@ -33,7 +34,8 @@ def login(request):
                 else:
                     return HttpResponse('This user account has not been activated!')
             else:
-                return HttpResponseRedirect('/login/')
+                #return HttpResponseRedirect('/login/')
+                return HttpResponse('Incorrect username or password, please retry.')
     else:
         userform = UserLoginForm()
     return render(request, 'login.html', {'form': userform})
@@ -58,6 +60,9 @@ def regist(request):
             password_confirm = userform.cleaned_data['password_confirm']
 
             if password == password_confirm:
+                existing_user = UserInfo.objects.get(username = username)
+                if existing_user:
+                    return HttpResponse('Error! The username already exists')
                 UserInfo.objects.create(username = username, password = password, email = email, stu_number = stu_number, activated = False)
                 mail_activate(email, username)
                 return HttpResponse('Regist success! Please check your email.')
@@ -66,13 +71,6 @@ def regist(request):
     else:
         userform = UserRegistForm()
     return render(request, 'regist.html', {'form': userform})
-
-
-# Send a mail only for a text ==================================
-def sendtestmail(request):
-    from django.core.mail import send_mail
-    send_mail('subject', 'this is a mail to test', '1548039150@qq.com', ['1761345180@qq.com'], fail_silently = False)
-    return HttpResponse('mail sent!')
 
 
 # Activate account with email
@@ -84,6 +82,7 @@ def activate(request, activate_code):
         if user:
             user.activated = True
             user.save()
+            activate_record.delete() # ???????????????????????
             return HttpResponse('You have successfully activated the account!')
         else:
             return HttpResponse('Invalid activating code!')
@@ -91,7 +90,11 @@ def activate(request, activate_code):
         return HttpResponse('Invalid activating url!')
 
 
-# Pw@FC152333*
+# Reset the password
+def resetpassword(request, reset_code):
+
+
+
 # To index page
 def index(request):
     username = request.COOKIES.get('username', '')

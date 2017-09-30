@@ -77,7 +77,7 @@ class BlogPostAdmin(admin.ModelAdmin):
     list_display = ('title', 'username', 'timestamp')
 
 
-# Stores the information for activating with email
+# Stores codes for activating with email
 class EmailActivate(models.Model):
     username = models.CharField(max_length = 100)
     activate_string = models.CharField(max_length = 100)
@@ -88,9 +88,22 @@ class EmailActivateAdmin(admin.ModelAdmin):
     list_display = ('username', 'activate_string')
 
 
+# Stores codes for reseting password with email
+class PasswordReset(models.Model):
+    username = models.CharField(max_length = 100)
+    reset_string = models.CharField(max_length = 100)
+    new_password = models.CharField(max_length = 10)
+
+
+# Determines how to display class PasswordReset in table for admin
+class PasswordResetAdmin(admin.ModelAdmin):
+    list_display = ('username', 'reset_string')
+
+
 # Register all the models to admin
 admin.site.register(UserInfo, UserInfoAdmin)
 admin.site.register(TeamInfo, TeamInfoAdmin)
 admin.site.register(FileInfo, FileInfoAdmin)
 admin.site.register(BlogPost, BlogPostAdmin)
 admin.site.register(EmailActivate, EmailActivateAdmin)
+admin.site.register(PasswordReset, PasswordResetAdmin)

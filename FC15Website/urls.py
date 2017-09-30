@@ -26,8 +26,6 @@ urlpatterns = [
     url(r'^team/$', FC15.views.team, name = 'team'),
     url(r'^createteam/$', FC15.views.createteam, name = 'createteam'),
 
-    url(r'^mail/$', FC15.views.sendtestmail, name = 'sendtestmail'),
-
     url(r'^blogdetail/(?P<pk>[0-9]+)/$', FC15.views.blogdetail, name = 'blogdetail'),
     url(r'^blogedit/(?P<pk>[0-9]+)/$', FC15.views.blogedit, name = 'blogedit'),
     url(r'^blogdelete/(?P<pk>[0-9]+)/$', FC15.views.blogdelete, name = 'blogdelete'),
@@ -36,6 +34,7 @@ urlpatterns = [
     url(r'^filedownload/(?P<pk>[0-9]+)/$', FC15.views.filedownload, name = 'filedownload'),
     url(r'^jointeam/(?P<pk>[0-9]+)/$', FC15.views.jointeam, name = 'jointeam'),
     url(r'^mailactivate/(?P<activate_code>.*)/$', FC15.views.activate, name = 'activate'),
+    url(r'^resetpassword/(?P<reset_code>.*)/$', FC15.views.resetpassword, name = 'resetpassword'),
 
     url(r'^admin/', include(admin.site.urls)),
 ]
