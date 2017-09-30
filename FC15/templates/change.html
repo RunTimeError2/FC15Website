@@ -1,0 +1,39 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <h4>Welcome {{ username }}! You can change your account information here.</h4>
+    <hr />
+
+    <div class="form-group">
+        <label for="id_email" class="col-md-2 control-label">Email</label>
+        {{ form.email }}
+    </div>
+    <br />
+    <div class="form-group">
+        <label for="id_old_password" class="col-md-2 control-label">Old Password</label>
+        {{ form.old_password }}
+    </div>
+    <br />
+    <div class="form-group">
+        <label for="id_new_password" class="col-md-2 control-label">New password</label>
+        {{ form.new_password }}
+    </div>
+    <br />
+    <div class="form-group">
+        <label for="id_confirm_password" class="col-md-2 control-label">Confirm password</label>
+        {{ form.confirm_password }}
+    </div>
+    <br />
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Submit" class="btn btn-default" />
+        </div>
+    </div>
+
+    <hr />
+</form>
+
+{% endblock %}

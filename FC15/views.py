@@ -2,9 +2,9 @@ from django.shortcuts import render, get_object_or_404, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect, StreamingHttpResponse
 from django.template import RequestContext
 
-from FC15.models import UserInfo, TeamInfo, FileInfo, BlogPost, EmailActivate
-from FC15.forms import BlogPostForm, UserLoginForm, UserRegistForm, FileUploadForm, CreateTeamForm
-from FC15.sendmail import mail_activate
+from FC15.models import UserInfo, TeamInfo, FileInfo, BlogPost, EmailActivate, PasswordReset
+from FC15.forms import BlogPostForm, UserLoginForm, UserRegistForm, FileUploadForm, CreateTeamForm, ResetPasswordForm, ChangeForm
+from FC15.sendmail import mail_activate, password_reset
 import time, os, random
 
 
@@ -60,7 +60,7 @@ def regist(request):
             password_confirm = userform.cleaned_data['password_confirm']
 
             if password == password_confirm:
-                existing_user = UserInfo.objects.get(username = username)
+                existing_user = UserInfo.objects.filter(username__exact = username)
                 if existing_user:
                     return HttpResponse('Error! The username already exists')
                 UserInfo.objects.create(username = username, password = password, email = email, stu_number = stu_number, activated = False)
@@ -90,9 +90,62 @@ def activate(request, activate_code):
         return HttpResponse('Invalid activating url!')
 
 
+# Fill in the request to reset password
+def resetrequest(request):
+    if request.method == 'POST':
+        userform = ResetPasswordForm(request.POST)
+        if userform.is_valid():
+            username = userform.cleaned_data['username']
+            email = userform.cleaned_data['email']
+            user = UserInfo.objects.filter(username__exact = username, email__exact = email)
+            if user:
+                password_reset(email, username)
+                return HttpResponse('Success! Please check your email.')
+            else:
+                return HttpResponse('Error! Incorrect user information!')
+    else:
+        userform = ResetPasswordForm()
+    return render(request, 'resetrequest.html', {'form': userform})
+
+
 # Reset the password
 def resetpassword(request, reset_code):
+    reset_record = PasswordReset.objects.get(reset_string = reset_code)
+    if reset_record:
+        user = UserInfo.objects.get(username = reset_record.username)
+        user.password = reset_record.new_password
+        user.save()
+        reset_record.delete()
+        return HttpResponse('Your password has been successfully reset!\nPlease change your password after you login.')
+    else:
+        return HttpResponse('Error! Invalid reset code!')
 
+
+# Change the password or email
+def change(request):
+    username = request.COOKIES.get('username', '')
+    if username == '':
+        return HttpResponseRedirect('/login/')
+    user = UserInfo.objects.get(username = username)
+    if request.method == 'POST':
+        userform = ChangeForm(request.POST)
+        if userform.is_valid():
+            old_password = userform.cleaned_data['old_password']
+            new_password = userform.cleaned_data['new_password']
+            confirm_password = userform.cleaned_data['confirm_password']
+            if old_password != user.password:
+                return HttpResponse('Error! Incorrect old password')
+            if new_password != confirm_password:
+                return HttpResponse('Error! Please enter the same password')
+            user.password = new_password
+            user.email = userform.cleaned_data['email']
+            user.save()
+            response = HttpResponse('You have successfully changed your account. Please login.')
+            response.delete_cookie('username')
+            return response
+    else:
+        userform = ChangeForm(data = {'email': user.email})
+    return render(request, 'change.html', {'username': username, 'form': userform})
 
 
 # To index page
@@ -120,7 +173,7 @@ def upload(request):
 
             username = request.COOKIES.get('username', '')
             if username == '':
-                return HttpResponseRedirect('/upload/login/')
+                return HttpResponseRedirect('/login/')
             else:
                 user = UserInfo.objects.get(username = username)
                 fileupload = FileInfo()
@@ -136,7 +189,7 @@ def upload(request):
         userform = FileUploadForm()
         username = request.COOKIES.get('username', '')
         if username == '':
-            return HttpResponseRedirect('/upload/login/')
+            return HttpResponseRedirect('/login/')
     return render(request, 'upload.html', {'username': username, 'form': userform})
 
 

@@ -13,7 +13,7 @@ class UserLoginForm(forms.Form):
 class UserRegistForm(forms.Form):
     username = forms.CharField(max_length = 100)
     email = forms.EmailField()
-    stu_number = forms.CharField(max_length = 100)
+    stu_number = forms.CharField(max_length = 10)
     password = forms.CharField(max_length = 100, widget = forms.PasswordInput)
     password_confirm = forms.CharField(max_length = 100, widget = forms.PasswordInput)
 
@@ -35,3 +35,17 @@ class BlogPostForm(forms.Form):
 class CreateTeamForm(forms.Form):
     teamname = forms.CharField(max_length = 100)
     introduction = forms.CharField(max_length = 500, widget = forms.Textarea)
+
+
+# For users to reset password
+class ResetPasswordForm(forms.Form):
+    username = forms.CharField(max_length = 100)
+    email = forms.EmailField()
+
+
+# For users to change password
+class ChangeForm(forms.Form):
+    email = forms.EmailField()
+    old_password = forms.CharField(max_length = 100, widget = forms.PasswordInput)
+    new_password = forms.CharField(max_length = 100, widget = forms.PasswordInput)
+    confirm_password = forms.CharField(max_length = 100, widget = forms.PasswordInput)

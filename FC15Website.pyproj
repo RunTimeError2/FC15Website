@@ -77,12 +77,13 @@
     <Content Include="FC15\templates\base.html" />
     <Content Include="FC15\templates\blogdetail.html" />
     <Content Include="FC15\templates\blogpost.html" />
+    <Content Include="FC15\templates\change.html" />
     <Content Include="FC15\templates\createteam.html" />
     <Content Include="FC15\templates\home.html" />
     <Content Include="FC15\templates\index.html" />
     <Content Include="FC15\templates\login.html" />
     <Content Include="FC15\templates\regist.html" />
-    <Content Include="FC15\templates\resetpassword.html" />
+    <Content Include="FC15\templates\resetrequest.html" />
     <Content Include="FC15\templates\team.html" />
     <Content Include="FC15\templates\upload.html" />
     <Content Include="requirements.txt" />
