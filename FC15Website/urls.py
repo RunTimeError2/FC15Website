@@ -26,6 +26,8 @@ urlpatterns = [
     url(r'^team/$', FC15.views.team, name = 'team'),
     url(r'^createteam/$', FC15.views.createteam, name = 'createteam'),
 
+    url(r'^mail/$', FC15.views.sendtestmail, name = 'sendtestmail'),
+
     url(r'^blogdetail/(?P<pk>[0-9]+)/$', FC15.views.blogdetail, name = 'blogdetail'),
     url(r'^blogedit/(?P<pk>[0-9]+)/$', FC15.views.blogedit, name = 'blogedit'),
     url(r'^blogdelete/(?P<pk>[0-9]+)/$', FC15.views.blogdelete, name = 'blogdelete'),

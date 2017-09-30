@@ -1,6 +1,6 @@
 from FC15.models import EmailActivate
 from django.core.mail import send_mail
-from FC15Website.settings import EMAIL_FROM
+from FC15Website.settings import DEFAULT_EMAIL_FROM
 from random import Random
 
 # Generate a random string
@@ -15,7 +15,7 @@ def random_string(str_length = 50):
 
 
 # Add a record and send a mail to activate accounts
-def mail_activate(email, username):
+def mail_activate(email_address, username):
     email_activate = EmailActivate()
     email_activate.username = username
     email_activate.activate_string = random_string()
@@ -24,4 +24,6 @@ def mail_activate(email, username):
     email_title = 'Please activate your account for FC15'
     email_body = 'Please click the link to activate your account for FC15:\nhttp://' # should add the address of the server
     email_body += email_activate.activate_string
-    return send_mail(email_title, email_body, EMAIL_FROM, [email])
+    success = send_mail(email_title, email_body, DEFAULT_EMAIL_FROM, [email_address])
+    if success:
+        pass

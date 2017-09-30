@@ -128,9 +128,11 @@ STATIC_URL = '/static/'
 STATIC_ROOT = posixpath.join(*(BASE_DIR.split(os.path.sep) + ['static']))
 
 # QQ邮箱授权码bxalpxogazkyhhdi
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.qq.com'
-EMAIL_PORT = 25 # Default
+EMAIL_PORT = 25
 EMAIL_HOST_USER = '1548039150@qq.com'
-EMAIL_HOST_PASSWORD = ''
-EMAIL_USE_TLS = False # Default
-EMAIL_FROM = '1548039150@qq.com'
+EMAIL_HOST_PASSWORD = 'bxalpxogazkyhhdi'
+EMAIL_SUBJECT_PREFIX = '[FC15]'
+EMAIL_USE_TLS = True
+DEFAULT_EMAIL_FROM = '1548039150@qq.com'

@@ -4,6 +4,7 @@ from django.template import RequestContext
 
 from FC15.models import UserInfo, TeamInfo, FileInfo, BlogPost, EmailActivate
 from FC15.forms import BlogPostForm, UserLoginForm, UserRegistForm, FileUploadForm, CreateTeamForm
+from FC15.sendmail import mail_activate
 import time, os, random
 
 # All of the views
@@ -21,7 +22,7 @@ def login(request):
             username = userform.cleaned_data['username']
             password = userform.cleaned_data['password']
 
-            user = UserInfo.objects.filter(username__exact = username, password__exact = password)
+            user = UserInfo.objects.get(username = username, password = password)
 
             if user:
                 if user.activated:
@@ -47,7 +48,6 @@ def logout(request):
 
 # Register
 def regist(request):
-    source_str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrsuvwxyz0123456789'
     if request.method == 'POST':
         userform = UserRegistForm(request.POST)
         if userform.is_valid():
@@ -59,8 +59,8 @@ def regist(request):
 
             if password == password_confirm:
                 UserInfo.objects.create(username = username, password = password, email = email, stu_number = stu_number, activated = False)
-                EmailActivate.objects.create()
-                return HttpResponse('Regist success!')
+                mail_activate(email, username)
+                return HttpResponse('Regist success! Please check your email.')
             else:
                 return HttpResponseRedirect('/regist/')
     else:
@@ -68,12 +68,19 @@ def regist(request):
     return render(request, 'regist.html', {'form': userform})
 
 
+# Send a mail only for a text ==================================
+def sendtestmail(request):
+    from django.core.mail import send_mail
+    send_mail('subject', 'this is a mail to test', '1548039150@qq.com', ['1761345180@qq.com'], fail_silently = False)
+    return HttpResponse('mail sent!')
+
+
 # Activate account with email
 def activate(request, activate_code):
     activate_record = EmailActivate.objects.get(activate_string = activate_code)
     if activate_record:
         username = activate_record.username
-        user = UserInfo.objects.get(username = user)
+        user = UserInfo.objects.get(username = username)
         if user:
             user.activated = True
             user.save()

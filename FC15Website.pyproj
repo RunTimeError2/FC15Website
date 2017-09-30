@@ -43,6 +43,9 @@
     </Compile>
     <Compile Include="FC15\migrations\__init__.py" />
     <Compile Include="FC15\models.py" />
+    <Compile Include="FC15\sendmail.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="FC15\tests.py" />
     <Compile Include="FC15\urls.py">
       <SubType>Code</SubType>
