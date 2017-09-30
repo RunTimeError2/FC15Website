@@ -126,3 +126,11 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATIC_ROOT = posixpath.join(*(BASE_DIR.split(os.path.sep) + ['static']))
+
+# QQ邮箱授权码bxalpxogazkyhhdi
+EMAIL_HOST = 'smtp.qq.com'
+EMAIL_PORT = 25 # Default
+EMAIL_HOST_USER = '1548039150@qq.com'
+EMAIL_HOST_PASSWORD = ''
+EMAIL_USE_TLS = False # Default
+EMAIL_FROM = '1548039150@qq.com'

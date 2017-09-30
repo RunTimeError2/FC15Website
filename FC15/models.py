@@ -10,6 +10,7 @@ class UserInfo(models.Model):
     stu_number = models.CharField(max_length = 20)
     email = models.EmailField()
     team = models.CharField(max_length = 100, default = '')
+    activated = models.BooleanField(default = False)
 
     def __unicode__(self):
         return self.username
@@ -76,8 +77,20 @@ class BlogPostAdmin(admin.ModelAdmin):
     list_display = ('title', 'username', 'timestamp')
 
 
+# Stores the information for activating with email
+class EmailActivate(models.Model):
+    username = models.CharField(max_length = 100)
+    activate_string = models.CharField(max_length = 100)
+
+
+# Determines how to display class EmailActivate in table for admin
+class EmailActivateAdmin(admin.ModelAdmin):
+    list_display = ('username', 'activate_string')
+
+
 # Register all the models to admin
 admin.site.register(UserInfo, UserInfoAdmin)
 admin.site.register(TeamInfo, TeamInfoAdmin)
 admin.site.register(FileInfo, FileInfoAdmin)
 admin.site.register(BlogPost, BlogPostAdmin)
+admin.site.register(EmailActivate, EmailActivateAdmin)

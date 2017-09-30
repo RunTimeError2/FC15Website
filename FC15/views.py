@@ -2,9 +2,9 @@ from django.shortcuts import render, get_object_or_404, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect, StreamingHttpResponse
 from django.template import RequestContext
 
-from FC15.models import UserInfo, TeamInfo, FileInfo, BlogPost
+from FC15.models import UserInfo, TeamInfo, FileInfo, BlogPost, EmailActivate
 from FC15.forms import BlogPostForm, UserLoginForm, UserRegistForm, FileUploadForm, CreateTeamForm
-import time, os
+import time, os, random
 
 # All of the views
 
@@ -24,10 +24,13 @@ def login(request):
             user = UserInfo.objects.filter(username__exact = username, password__exact = password)
 
             if user:
-                response = HttpResponseRedirect('/index/')
-                # User will automatically login within 1 hour
-                response.set_cookie('username', username, 3600)
-                return response
+                if user.activated:
+                    response = HttpResponseRedirect('/index/')
+                    # User will automatically login within 1 hour
+                    response.set_cookie('username', username, 3600)
+                    return response
+                else:
+                    return HttpResponse('This user account has not been activated!')
             else:
                 return HttpResponseRedirect('/login/')
     else:
@@ -44,6 +47,7 @@ def logout(request):
 
 # Register
 def regist(request):
+    source_str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrsuvwxyz0123456789'
     if request.method == 'POST':
         userform = UserRegistForm(request.POST)
         if userform.is_valid():
@@ -54,7 +58,8 @@ def regist(request):
             password_confirm = userform.cleaned_data['password_confirm']
 
             if password == password_confirm:
-                UserInfo.objects.create(username = username, password = password, email = email, stu_number = stu_number)
+                UserInfo.objects.create(username = username, password = password, email = email, stu_number = stu_number, activated = False)
+                EmailActivate.objects.create()
                 return HttpResponse('Regist success!')
             else:
                 return HttpResponseRedirect('/regist/')
@@ -63,6 +68,23 @@ def regist(request):
     return render(request, 'regist.html', {'form': userform})
 
 
+# Activate account with email
+def activate(request, activate_code):
+    activate_record = EmailActivate.objects.get(activate_string = activate_code)
+    if activate_record:
+        username = activate_record.username
+        user = UserInfo.objects.get(username = user)
+        if user:
+            user.activated = True
+            user.save()
+            return HttpResponse('You have successfully activated the account!')
+        else:
+            return HttpResponse('Invalid activating code!')
+    else:
+        return HttpResponse('Invalid activating url!')
+
+
+# Pw@FC152333*
 # To index page
 def index(request):
     username = request.COOKIES.get('username', '')
