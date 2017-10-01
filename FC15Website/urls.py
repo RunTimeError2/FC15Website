@@ -17,6 +17,7 @@ admin.autodiscover()
 
 urlpatterns = [
     url(r'^$', FC15.views.home, name = 'home'),
+    url(r'^home/$', FC15.views.home, name = 'home'),
     url(r'^index/$', FC15.views.index, name = 'index'),
     url(r'^login/$', FC15.views.login, name = 'login'),
     url(r'^logout/$', FC15.views.logout, name = 'logout'),
@@ -27,6 +28,8 @@ urlpatterns = [
     url(r'^createteam/$', FC15.views.createteam, name = 'createteam'),
     url(r'^resetrequest/$', FC15.views.resetrequest, name = 'resetrequest'),
     url(r'^change/$', FC15.views.change, name = 'change'),
+    url(r'^teamdetail/$', FC15.views.teamdetail, name = 'teamdetail'),
+    url(r'^teamrequet/$', FC15.views.jointeamrequest, name = 'jointeamrequest'),
 
     url(r'^blogdetail/(?P<pk>[0-9]+)/$', FC15.views.blogdetail, name = 'blogdetail'),
     url(r'^blogedit/(?P<pk>[0-9]+)/$', FC15.views.blogedit, name = 'blogedit'),
@@ -37,6 +40,8 @@ urlpatterns = [
     url(r'^jointeam/(?P<pk>[0-9]+)/$', FC15.views.jointeam, name = 'jointeam'),
     url(r'^mailactivate/(?P<activate_code>.*)/$', FC15.views.activate, name = 'activate'),
     url(r'^resetpassword/(?P<reset_code>.*)/$', FC15.views.resetpassword, name = 'resetpassword'),
+    url(r'^acceptrequest/(?P<pk>[0-9]+)/$', FC15.views.acceptrequest, name = 'acceptrequest'),
+    url(r'^rejectrequest/(?P<pk>[0-9]+)/$', FC15.views.rejectrequest, name = 'rejectrequest'),
 
     url(r'^admin/', include(admin.site.urls)),
 ]

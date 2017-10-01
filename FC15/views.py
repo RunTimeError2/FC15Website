@@ -2,8 +2,8 @@ from django.shortcuts import render, get_object_or_404, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect, StreamingHttpResponse
 from django.template import RequestContext
 
-from FC15.models import UserInfo, TeamInfo, FileInfo, BlogPost, EmailActivate, PasswordReset
-from FC15.forms import BlogPostForm, UserLoginForm, UserRegistForm, FileUploadForm, CreateTeamForm, ResetPasswordForm, ChangeForm
+from FC15.models import UserInfo, TeamInfo, FileInfo, BlogPost, EmailActivate, PasswordReset, TeamRequest
+from FC15.forms import BlogPostForm, UserLoginForm, UserRegistForm, FileUploadForm, CreateTeamForm, ResetPasswordForm, ChangeForm, TeamRequestForm
 from FC15.sendmail import mail_activate, password_reset
 import time, os, random
 
@@ -23,10 +23,11 @@ def login(request):
             username = userform.cleaned_data['username']
             password = userform.cleaned_data['password']
 
-            user = UserInfo.objects.get(username = username, password = password)
+            user = UserInfo.objects.filter(username__exact = username, password__exact = password)
 
             if user:
-                if user.activated:
+                user_exact = UserInfo.objects.get(username = username, password = password)
+                if user_exact.activated:
                     response = HttpResponseRedirect('/index/')
                     # User will automatically login within 1 hour
                     response.set_cookie('username', username, 3600)
@@ -54,6 +55,7 @@ def regist(request):
         userform = UserRegistForm(request.POST)
         if userform.is_valid():
             username = userform.cleaned_data['username']
+            realname = userform.cleaned_data['realname']
             password = userform.cleaned_data['password']
             email = userform.cleaned_data['email']
             stu_number = userform.cleaned_data['stu_number']
@@ -63,7 +65,10 @@ def regist(request):
                 existing_user = UserInfo.objects.filter(username__exact = username)
                 if existing_user:
                     return HttpResponse('Error! The username already exists')
-                UserInfo.objects.create(username = username, password = password, email = email, stu_number = stu_number, activated = False)
+                existing_email = UserInfo.objects.filter(email__exact = email)
+                if existing_email:
+                    return HttpResponse('Error! The email has already been used!')
+                UserInfo.objects.create(username = username, realname = realname, password = password, email = email, stu_number = stu_number, activated = False)
                 mail_activate(email, username)
                 return HttpResponse('Regist success! Please check your email.')
             else:
@@ -82,7 +87,7 @@ def activate(request, activate_code):
         if user:
             user.activated = True
             user.save()
-            activate_record.delete() # ???????????????????????
+            activate_record.delete()
             return HttpResponse('You have successfully activated the account!')
         else:
             return HttpResponse('Invalid activating code!')
@@ -195,7 +200,7 @@ def upload(request):
 
 # Edit a file
 def fileedit(request, pk):
-    file = get_object_or_404(FileInfo, pk = pk) # Process 404 ?????????????????????????????????????????
+    file = get_object_or_404(FileInfo, pk = pk)
     username = request.COOKIES.get('username', '')
     if username == '':
         return HttpResponseRedirect('/login/')
@@ -327,9 +332,18 @@ def team(request):
     username = request.COOKIES.get('username', '')
     if username == '':
         return HttpResponseRedirect('/login/')
-    myteam = TeamInfo.objects.get(captain = username)
+    me = UserInfo.objects.get(username = username)
+    myteams = TeamInfo.objects.filter(captain__exact = username)
+    if myteams:
+        myteam = TeamInfo.objects.get(captain = username)
+    else:
+        myteam = None
+    if TeamInfo.objects.filter(teamname__exact = me.team):
+        joinedteam = TeamInfo.objects.get(teamname = me.team)
+    else:
+        joinedteam = None
     teams = TeamInfo.objects.all()
-    return render(request, 'team.html', {'myteam': myteam, 'teams': teams})
+    return render(request, 'team.html', {'myteam': myteam,'joinedteam': joinedteam, 'teams': teams})
 
 
 # Create a team
@@ -350,6 +364,7 @@ def createteam(request):
             newteam.teamname = userform.cleaned_data['teamname']
             newteam.introduction = userform.cleaned_data['introduction']
             newteam.captain = username
+            newteam.members = 1
             newteam.save()
             me = UserInfo.objects.get(username = username)
             me.team = newteam.teamname
@@ -367,7 +382,75 @@ def jointeam(request, pk):
     me = get_object_or_404(UserInfo, username = username)
     if me.team != '':
         return HttpResponse('You have already joined a team!')
-    team = get_obejct_or_404(TeamInfo, pk = pk)
-    me.team = team.teamname
-    me.save()
-    return HttpResponse('You have successfully joined this team.')
+    team = get_object_or_404(TeamInfo, pk = pk)
+    userform = TeamRequestForm(data = {'destin_team': team.teamname})
+    return render(request, 'teamrequest.html', {'username': username, 'form': userform})
+
+
+# Send a request to join the team
+def jointeamrequest(request):
+    username = request.COOKIES.get('username', '')
+    if username == '':
+        return HttpResponseRedirect('/login/')
+    if request.method == 'POST':
+        team_request_form = TeamRequestForm(request.POST)
+        if team_request_form.is_valid():
+            team_request = TeamRequest()
+            team_request.username = username
+            team_request.destin_team = team_request_form.cleaned_data['destin_team']
+            team_request.message = team_request_form.cleaned_data['message']
+            team_request.status = False
+            team_request.save()
+            return HttpResponse('Request has been sent! Please wait for the captain to reply.')
+    else:
+        userform = TeamRequestForm()
+    return render(request, 'teamrequest.html', {'username': username, 'form': userform})
+
+
+# Accept a request to join a team
+def acceptrequest(request, pk):
+    username = request.COOKIES.get('username', '')
+    if username == '':
+        return HttpResponseRedirect('/login/')
+    me = get_object_or_404(UserInfo, username = username) # Me, namely the captain
+    team_request = get_object_or_404(TeamRequest, pk = pk)
+    destin_team = team_request.destin_team
+    team = get_object_or_404(TeamInfo, teamname = destin_team)
+    apply_user = get_object_or_404(UserInfo, username = team_request.username) # The one who sent the request
+    if team.captain == me.username:
+        if team.members >= 4:
+            return HttpResponse('A team at most has 4 members')
+        apply_user.team = destin_team
+        apply_user.save()
+        team.members = team.members + 1
+        team.save()
+        team_request.delete()
+        return HttpResponse('You have successfully accepted the requet.')
+    else:
+        return HttpResponse('You can only accept requests to join your own team.')
+
+
+# Reject a request to join a team
+def rejectrequest(request, pk):
+    username = request.COOKIES.get('username', '')
+    if username == '':
+        return HttpResponseRedirect('/login/')
+    me = get_object_or_404(UserInfo, username = username) # Me, namely the captain
+    team_request = get_object_or_404(TeamRequest, pk = pk)
+    destin_team = team_request.destin_team
+    team = get_object_or_404(TeamInfo, teamname = destin_team)
+    if team.captain == me.username:
+        team_request.delete()
+    else:
+        return HttpResponse('You can only reject requests to join your own team.')
+
+
+# Show the detail of a team to the captain
+def teamdetail(request):
+    username = request.COOKIES.get('username', '')
+    if username == '':
+        return HttpResponseRedirect('/login/')
+    my_team = get_object_or_404(TeamInfo, captain = username)
+    members = UserInfo.objects.filter(team__exact = my_team.teamname)
+    requests = TeamRequest.objects.filter(destin_team = my_team.teamname)
+    return render(request, 'teamdetail.html', {'username': username, 'team': my_team, 'members': members, 'requests': requests})

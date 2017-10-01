@@ -6,6 +6,7 @@ import time, random
 # Model which stores information of users
 class UserInfo(models.Model):
     username = models.CharField(max_length = 100)
+    realname = models.CharField(max_length = 100, default = '')
     password = models.CharField(max_length = 100)
     stu_number = models.CharField(max_length = 20)
     email = models.EmailField()
@@ -26,11 +27,12 @@ class TeamInfo(models.Model):
     teamname = models.CharField(max_length = 100)
     captain = models.CharField(max_length = 100)
     introduction = models.CharField(max_length = 500)
+    members = models.IntegerField(default = 0)
 
 
 # Determines how to display class TeamInfo in tables for admin
 class TeamInfoAdmin(admin.ModelAdmin):
-    list_display = ('teamname', 'captain', 'introduction')
+    list_display = ('teamname', 'captain', 'members', 'introduction')
 
 
 # Model for file uploaded
@@ -100,6 +102,19 @@ class PasswordResetAdmin(admin.ModelAdmin):
     list_display = ('username', 'reset_string')
 
 
+# Requests to join or quit teams
+class TeamRequest(models.Model):
+    username = models.CharField(max_length = 100)
+    destin_team = models.CharField(max_length = 100)
+    message = models.CharField(max_length = 500)
+    status = models.BooleanField(default = False) # False means the captain has not dealt with this request
+
+
+# Determines how to display class TeamRequest in table for admin
+class TeamRequestAdmin(admin.ModelAdmin):
+    list_display = ('username', 'destin_team', 'status')
+
+
 # Register all the models to admin
 admin.site.register(UserInfo, UserInfoAdmin)
 admin.site.register(TeamInfo, TeamInfoAdmin)
@@ -107,3 +122,4 @@ admin.site.register(FileInfo, FileInfoAdmin)
 admin.site.register(BlogPost, BlogPostAdmin)
 admin.site.register(EmailActivate, EmailActivateAdmin)
 admin.site.register(PasswordReset, PasswordResetAdmin)
+admin.site.register(TeamRequest, TeamRequestAdmin)

@@ -12,6 +12,7 @@ class UserLoginForm(forms.Form):
 # For users to register
 class UserRegistForm(forms.Form):
     username = forms.CharField(max_length = 100)
+    realname = forms.CharField(max_length = 100)
     email = forms.EmailField()
     stu_number = forms.CharField(max_length = 10)
     password = forms.CharField(max_length = 100, widget = forms.PasswordInput)
@@ -49,3 +50,9 @@ class ChangeForm(forms.Form):
     old_password = forms.CharField(max_length = 100, widget = forms.PasswordInput)
     new_password = forms.CharField(max_length = 100, widget = forms.PasswordInput)
     confirm_password = forms.CharField(max_length = 100, widget = forms.PasswordInput)
+
+
+# For users to send requests to join the team
+class TeamRequestForm(forms.Form):
+    destin_team = forms.CharField(max_length = 100)
+    message = forms.CharField(max_length = 500, widget = forms.Textarea)

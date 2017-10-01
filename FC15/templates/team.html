@@ -6,12 +6,19 @@
 <p>You can choose or create a team</p>
 <hr />
 
-<h2>My team:</h2>
+<h2>The team whose captain is you:</h2>
 <h3>{{ myteam.teamname }}</h3>
 <p>Introduction:</p>
 <p>{{ myteam.introduction|linebreaks }}</p>
+<h4><a href="/teamdetail/">Show Detail</a></h4>
 
 <h2><a href="/createteam/">Create a team</a></h2>
+<hr />
+
+<h2>The team you have already joined</h2>
+<h3>{{ joinedteam.teamname }}</h3>
+<p>Introduction:</p>
+<p>{{ joinedteam.introduction|linebreaks }}</p>
 <hr />
 
 {% for team in teams %}

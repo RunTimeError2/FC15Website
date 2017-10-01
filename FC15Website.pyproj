@@ -85,7 +85,9 @@
     <Content Include="FC15\templates\regist.html" />
     <Content Include="FC15\templates\resetrequest.html" />
     <Content Include="FC15\templates\team.html" />
+    <Content Include="FC15\templates\teamdetail.html" />
     <Content Include="FC15\templates\upload.html" />
+    <Content Include="FC15\templates\teamrequest.html" />
     <Content Include="requirements.txt" />
     <Content Include="db.sqlite3" />
     <Content Include="app\static\app\content\bootstrap.css" />
