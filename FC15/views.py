@@ -12,7 +12,8 @@ import time, os, random
 
 # Home page
 def home(request):
-    return render(request, 'home.html')
+    posts = BlogPost.objects.all()
+    return render(request, 'home.html', {'posts': posts})
 
 
 # Login
@@ -158,7 +159,14 @@ def index(request):
     username = request.COOKIES.get('username', '')
     posts = BlogPost.objects.filter(username__exact = username)
     files = FileInfo.objects.filter(username__exact = username)
-    return render(request, 'index.html', {'username': username, 'posts': posts, 'files': files})
+    me = get_object_or_404(UserInfo, username = username)
+    if me.team == '':
+        warning = 'You have not joined a team yet'
+        return render(request, 'index.html', {'username': username, 'posts': posts, 'files': files, 'warning': warning})
+    else:
+        warning = ''
+        codes = FileInfo.objects.filter(teamname__exact = me.team)
+        return render(request, 'index.html', {'username': username, 'posts': posts, 'files': files, 'warning': '', 'codes': codes})
 
 
 # Uplaod file
@@ -180,7 +188,9 @@ def upload(request):
             if username == '':
                 return HttpResponseRedirect('/login/')
             else:
-                user = UserInfo.objects.get(username = username)
+                user = get_object_or_404(UserInfo, username = username)
+                if user.team == '':
+                    return HttpResponse('You must join a team before uploading your code')
                 fileupload = FileInfo()
                 fileupload.filename = userform.cleaned_data['filename']
                 fileupload.username = username
@@ -353,9 +363,12 @@ def createteam(request):
         return HttpResponseRedirect('/login/')
     myteam = TeamInfo.objects.filter(captain__exact = username)
 
-    # Creating more than one team is not allowed
+    # Creating or joining more than one team is not allowed
     if myteam:
         return HttpResponse('You have already created a team!')
+    me = get_object_or_404(UserInfo, username = username)
+    if me.team != '':
+        return HttpResponse('You have already joined a team!')
 
     if request.method == 'POST':
         userform = CreateTeamForm(request.POST)
@@ -388,22 +401,30 @@ def jointeam(request, pk):
 
 
 # Send a request to join the team
-def jointeamrequest(request):
+def jointeamrequest(request, pk):
     username = request.COOKIES.get('username', '')
     if username == '':
         return HttpResponseRedirect('/login/')
+    me = get_object_or_404(UserInfo, username = username)
+    if me.team != '':
+        return HttpResponse('You have already joined a team!')
+    team = get_object_or_404(TeamInfo, pk = pk)
     if request.method == 'POST':
-        team_request_form = TeamRequestForm(request.POST)
-        if team_request_form.is_valid():
+        userform = TeamRequestForm(request.POST)
+        if userform.is_valid():
             team_request = TeamRequest()
             team_request.username = username
-            team_request.destin_team = team_request_form.cleaned_data['destin_team']
-            team_request.message = team_request_form.cleaned_data['message']
+            team_request.destin_team = userform.cleaned_data['destin_team']
+            team_request.message = userform.cleaned_data['message']
             team_request.status = False
+            existing_request = TeamRequest.objects.filter(username__exact = username, destin_team__exact = team_request.destin_team)
+            if existing_request:
+                return HttpResponse('Error! You have already sent a request to join this team!')
             team_request.save()
             return HttpResponse('Request has been sent! Please wait for the captain to reply.')
     else:
-        userform = TeamRequestForm()
+        msg = 'I am ' + username + ', ' + me.realname
+        userform = TeamRequestForm(data = {'destin_team': team.teamname, 'message': msg})
     return render(request, 'teamrequest.html', {'username': username, 'form': userform})
 
 
@@ -441,6 +462,7 @@ def rejectrequest(request, pk):
     team = get_object_or_404(TeamInfo, teamname = destin_team)
     if team.captain == me.username:
         team_request.delete()
+        return HttpResponse('You have successfully rejected the request')
     else:
         return HttpResponse('You can only reject requests to join your own team.')
 

@@ -6,4 +6,12 @@
 <p>This is the home page</p>
 <hr />
 
+<h3>Blogs</h3>
+<hr />
+{% for post in posts %}
+    <h4><a href="{% url 'blogdetail' pk=post.pk %}">{{ post.title }}</a></h4>
+    <p>Posted at {{ post.timestamp }}</p>
+    <br />
+{% endfor %}
+
 {% endblock %}

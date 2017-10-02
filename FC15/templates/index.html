@@ -6,7 +6,6 @@
 <hr />
 
 {% for post in posts %}
-    <!--<h2>{{ post.title }}</h2>-->
     <h2><a href="{% url 'blogdetail' pk=post.pk %}">{{ post.title }}</a></h2>
     <p><a href="{% url 'blogedit' pk=post.pk %}">Edit</a>  <a href="{% url 'blogdelete' pk=post.pk %}">Delete</a></p>
     <p>Posted at {{ post.timestamp }}</p>
@@ -21,8 +20,17 @@
         <a href="{% url 'filedelete' pk=file.pk %}">Delete</a>  
         <a href="{% url 'filedownload' pk=file.pk %}">Download</a>
     </p>
-    <p>{{ file.description }}</p>
+    <p>{{ file.description|linebreaks }}</p>
     <hr />
+{% endfor %}
+
+<h2>Code of my teammates</h2>
+<h3>{{ warning }}</h3>
+{% for code in codes %}
+    <h4>{{ code.filename }}</h4>
+    <p><a href="{% url 'filedownload' pk=code.pk %}">Download</a></p>
+    <p>{{ code.description|linebreaks }}</p>
+    <br />
 {% endfor %}
 
 {% endblock %}
