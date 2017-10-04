@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect, StreamingHttpResponse
 from django.template import RequestContext
+from django.contrib import messages
 
 from FC15.models import UserInfo, TeamInfo, FileInfo, BlogPost, EmailActivate, PasswordReset, TeamRequest
 from FC15.forms import BlogPostForm, UserLoginForm, UserRegistForm, FileUploadForm, CreateTeamForm, ResetPasswordForm, ChangeForm, TeamRequestForm
@@ -157,15 +158,18 @@ def change(request):
 # To index page
 def index(request):
     username = request.COOKIES.get('username', '')
+    if username == '':
+        return HttpResponseRedirect('/login/')
     posts = BlogPost.objects.filter(username__exact = username)
     files = FileInfo.objects.filter(username__exact = username)
     me = get_object_or_404(UserInfo, username = username)
+    messages.success(request, 'success! only for a test.') #  ========================================================================================
     if me.team == '':
         warning = 'You have not joined a team yet'
         return render(request, 'index.html', {'username': username, 'posts': posts, 'files': files, 'warning': warning})
     else:
         warning = ''
-        codes = FileInfo.objects.filter(teamname__exact = me.team)
+        codes = FileInfo.objects.filter(teamname__exact = me.team).exclude(username = username)
         return render(request, 'index.html', {'username': username, 'posts': posts, 'files': files, 'warning': '', 'codes': codes})
 
 

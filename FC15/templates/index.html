@@ -28,6 +28,7 @@
 <h3>{{ warning }}</h3>
 {% for code in codes %}
     <h4>{{ code.filename }}</h4>
+    <p>{{ code.username }}</p>
     <p><a href="{% url 'filedownload' pk=code.pk %}">Download</a></p>
     <p>{{ code.description|linebreaks }}</p>
     <br />
