@@ -13,6 +13,12 @@
 {% for member in members %}
     <p>{{ member.username }} ({{ member.realname }})</p>
 {% endfor %}
+<br />
+
+<p>
+    <a href="/quitteam/" onclick="return confirm('Are you sure to quit the team?')">Quit the team</a>  
+    <a href="/dismissteam/" onclick="return ocnfirm('Are you sure to dismiss your team?')">Dismiss the team</a>  
+</p>
 
 <hr />
 <h3>Requests to join the team:</h3>

@@ -14,8 +14,9 @@ import time, os, random
 
 # Home page
 def home(request):
+    username = request.COOKIES.get('username', '')
     posts = BlogPost.objects.all()
-    return render(request, 'home.html', {'posts': posts})
+    return render(request, 'home.html', {'posts': posts, 'username': username})
 
 
 # Login
@@ -49,7 +50,8 @@ def login(request):
 
 # Logout
 def logout(request):
-    response = HttpResponse('Logout successfully')
+    response = HttpResponseRedirect('/home/')
+    flash(request, 'Success', 'Logout successfully', 'success')
     response.delete_cookie('username')
     return response
 
@@ -69,14 +71,21 @@ def regist(request):
             if password == password_confirm:
                 existing_user = UserInfo.objects.filter(username__exact = username)
                 if existing_user:
-                    return HttpResponse('Error! The username already exists')
+                    flash(request, 'Error', 'The username already exists!', 'error')
+                    return render(request, 'regist.html', {'form': userform})
+                    #return HttpResponse('Error! The username already exists')
                 existing_email = UserInfo.objects.filter(email__exact = email)
                 if existing_email:
-                    return HttpResponse('Error! The email has already been used!')
+                    flash(request, 'Error', 'The email address has already been used!', 'error')
+                    return render(request, 'regist.html', {'form': userform})
+                    #return HttpResponse('Error! The email address has already been used!')
                 UserInfo.objects.create(username = username, realname = realname, password = password, email = email, stu_number = stu_number, activated = False)
                 mail_activate(email, username)
-                return HttpResponse('Regist success! Please check your email.')
+                flash(request, 'Success', 'The confirmation email has been successfully sent. Please check you email!')
+                return HttpResponseRedirect('/home/')
+                #return HttpResponse('Regist success! Please check your email.')
             else:
+                flash(request, 'Error', 'You should enter the same password!')
                 return HttpResponseRedirect('/regist/')
     else:
         userform = UserRegistForm()
@@ -93,9 +102,13 @@ def activate(request, activate_code):
             user.activated = True
             user.save()
             activate_record.delete()
-            return HttpResponse('You have successfully activated the account!')
+            flash(request, 'Success', 'You have successfully activated the account!')
+            return HttpResponseRedirect('/login/')
+            #return HttpResponse('You have successfully activated the account!')
         else:
-            return HttpResponse('Invalid activating code!')
+            flash(request, 'Error', 'Invalid activating code!')
+            return HttpResponseRedirect('/home/')
+            #return HttpResponse('Invalid activating code!')
     else:
         return HttpResponse('Invalid activating url!')
 
@@ -110,9 +123,13 @@ def resetrequest(request):
             user = UserInfo.objects.filter(username__exact = username, email__exact = email)
             if user:
                 password_reset(email, username)
-                return HttpResponse('Success! Please check your email.')
+                flash(request, 'Success', 'The email has been send, please check you email!')
+                return HttpResponseRedirect('/home/')
+                #return HttpResponse('Success! Please check your email.')
             else:
-                return HttpResponse('Error! Incorrect user information!')
+                flash(request, 'Error', 'Incorrect user information!')
+                return HttpResponseRedirect('/resetrequest/')
+                #return HttpResponse('Error! Incorrect user information!')
     else:
         userform = ResetPasswordForm()
     return render(request, 'resetrequest.html', {'form': userform})
@@ -139,6 +156,7 @@ def resetpassword(request, reset_code):
 def change(request):
     username = request.COOKIES.get('username', '')
     if username == '':
+        flash(request, 'Error', 'Please login first', 'error')
         return HttpResponseRedirect('/login/')
     user = UserInfo.objects.get(username = username)
     if request.method == 'POST':
@@ -171,6 +189,7 @@ def change(request):
 def index(request):
     username = request.COOKIES.get('username', '')
     if username == '':
+        flash(request, 'Error', 'Please login first', 'error')
         return HttpResponseRedirect('/login/')
     posts = BlogPost.objects.filter(username__exact = username)
     files = FileInfo.objects.filter(username__exact = username)
@@ -207,6 +226,7 @@ def upload(request):
 
             username = request.COOKIES.get('username', '')
             if username == '':
+                flash(request, 'Error', 'Please login first', 'error')
                 return HttpResponseRedirect('/login/')
             else:
                 user = get_object_or_404(UserInfo, username = username)
@@ -234,6 +254,7 @@ def fileedit(request, pk):
     file = get_object_or_404(FileInfo, pk = pk)
     username = request.COOKIES.get('username', '')
     if username == '':
+        flash(request, 'Error', 'Please login first', 'error')
         return HttpResponseRedirect('/login/')
     if username != file.username:
         flash(request, 'Error', 'You can only edit your own file.', 'error')
@@ -279,9 +300,11 @@ def filedelete(request, pk):
     file = get_object_or_404(FileInfo, pk = pk)
     username = request.COOKIES.get('username', '')
     if username == '':
+        flash(request, 'Error', 'Please login first', 'error')
         return HttpResponseRedirect('/login/')
     if username != file.username:
         flash(request, 'Error', 'You can only delete your own file.', 'error')
+        return HttpResponseRedirect('/index/')
         #return HttpResponse('Error! You can only delete your own file.')
     os.remove(file.path)
     file.delete()
@@ -303,9 +326,12 @@ def filedownload(request ,pk):
     file = get_object_or_404(FileInfo, pk = pk)
     username = request.COOKIES.get('username', '')
     if username == '':
+        flash(request, 'Error', 'Please login first', 'error')
         return HttpResponseRedirect('/login/')
     if username != file.username:
-        return HttpResponse('Error! You can only download your own file.')
+        flash(request, 'Error', 'You can only download you own file!')
+        return HttpResponseRedirect('/index/')
+        #return HttpResponse('Error! You can only download your own file.')
     response = StreamingHttpResponse(file_iterator(file.path))  
     response['Content-Type'] = 'application/octet-stream'  
     response['Content-Disposition'] = 'attachment;filename="{0}"'.format(file.origin_name)
@@ -319,6 +345,7 @@ def postblog(request):
         if userform.is_valid():
             username = request.COOKIES.get('username', '')
             if username == '':
+                flash(request, 'Error', 'Please login first', 'error')
                 return HttpResponseRedirect('/login/')
             else:
                 blogpost = BlogPost()
@@ -327,11 +354,14 @@ def postblog(request):
                 blogpost.username = username
                 blogpost.timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
                 blogpost.save()
-                return HttpResponse('Blog posted successfully')
+                flash(request, 'Success', 'The blog has been successfully posted.')
+                return HttpResponseRedirect('/index/')
+                #return HttpResponse('Blog posted successfully')
     else:
         userform = BlogPostForm()
         username = request.COOKIES.get('username', '')
         if username == '':
+            flash(request, 'Error', 'Please login first', 'error')
             return HttpResponseRedirect('/login/')
     return render(request, 'blogpost.html', {'username': username, 'form': userform})
 
@@ -347,9 +377,12 @@ def blogedit(request, pk):
     post = get_object_or_404(BlogPost, pk = pk)
     username = request.COOKIES.get('username', '')
     if username == '':
+        flash(request, 'Error', 'Please login first', 'error')
         return HttpResponseRedirect('/login/')
     if username != post.username:
-        return HttpResponse('Error! You can only edit your own blog.')
+        flash(request, 'Error', 'You can only edit you own blog!')
+        return HttpResponseRedirect('/index/')
+        #return HttpResponse('Error! You can only edit your own blog.')
     if request.method == 'POST':
         userform = BlogPostForm(request.POST)
         if userform.is_valid():
@@ -374,6 +407,7 @@ def blogdelete(request, pk):
 def team(request):
     username = request.COOKIES.get('username', '')
     if username == '':
+        flash(request, 'Error', 'Please login first', 'error')
         return HttpResponseRedirect('/login/')
     me = UserInfo.objects.get(username = username)
     myteams = TeamInfo.objects.filter(captain__exact = username)
@@ -393,15 +427,20 @@ def team(request):
 def createteam(request):
     username = request.COOKIES.get('username', '')
     if username == '':
+        flash(request, 'Error', 'Please login first', 'error')
         return HttpResponseRedirect('/login/')
     myteam = TeamInfo.objects.filter(captain__exact = username)
 
     # Creating or joining more than one team is not allowed
     if myteam:
-        return HttpResponse('You have already created a team!')
+        flash(request, 'Error', 'You have already created a team', 'error')
+        return HttpResponseRedirect('/team/')
+        #return HttpResponse('You have already created a team!')
     me = get_object_or_404(UserInfo, username = username)
     if me.team != '':
-        return HttpResponse('You have already joined a team!')
+        flash(request, 'Error', 'You have already joined a team', 'error')
+        return HttpResponseRedirect('/team/')
+        #return HttpResponse('You have already joined a team!')
 
     if request.method == 'POST':
         userform = CreateTeamForm(request.POST)
@@ -414,7 +453,9 @@ def createteam(request):
             newteam.save()
             me = UserInfo.objects.get(username = username)
             me.team = newteam.teamname
-            return HttpResponse('Team created successfully')
+            flash(request, 'Success', 'Team created successfully', 'success')
+            return HttpResponseRedirect('/team/')
+            #return HttpResponse('Team created successfully')
     else:
         userform = CreateTeamForm()
     return render(request, 'createteam.html', {'form': userform})
@@ -424,10 +465,13 @@ def createteam(request):
 def jointeam(request, pk):
     username = request.COOKIES.get('username', '')
     if username == '':
+        flash(request, 'Error', 'Please login first', 'error')
         return HttpResponseRedirect('/login/')
     me = get_object_or_404(UserInfo, username = username)
     if me.team != '':
-        return HttpResponse('You have already joined a team!')
+        flash(request, 'Error', 'You have already joined a tem', 'error')
+        return HttpResponseRedirect('/team/')
+        #return HttpResponse('You have already joined a team!')
     team = get_object_or_404(TeamInfo, pk = pk)
     userform = TeamRequestForm(data = {'destin_team': team.teamname})
     return render(request, 'teamrequest.html', {'username': username, 'form': userform})
@@ -437,10 +481,13 @@ def jointeam(request, pk):
 def jointeamrequest(request, pk):
     username = request.COOKIES.get('username', '')
     if username == '':
+        flash(request, 'Error', 'Please login first', 'error')
         return HttpResponseRedirect('/login/')
     me = get_object_or_404(UserInfo, username = username)
     if me.team != '':
-        return HttpResponse('You have already joined a team!')
+        flash(request, 'Error', 'You have already joined a team!', 'error')
+        return HttpResponseRedirect('/team/')
+        #return HttpResponse('You have already joined a team!')
     team = get_object_or_404(TeamInfo, pk = pk)
     if request.method == 'POST':
         userform = TeamRequestForm(request.POST)
@@ -452,9 +499,11 @@ def jointeamrequest(request, pk):
             team_request.status = False
             existing_request = TeamRequest.objects.filter(username__exact = username, destin_team__exact = team_request.destin_team)
             if existing_request:
-                return HttpResponse('Error! You have already sent a request to join this team!')
+                flash(request, 'Error', 'Error! You have already sent a request to join this team!', 'error')
+                return HttpResponseRedirect('/team/')
             team_request.save()
-            return HttpResponse('Request has been sent! Please wait for the captain to reply.')
+            flash(request, 'Success', 'Request has been sent! Please wait for the captain to reply.', 'success')
+            return HttpResponseRedirect('/team/')
     else:
         msg = 'I am ' + username + ', ' + me.realname
         userform = TeamRequestForm(data = {'destin_team': team.teamname, 'message': msg})
@@ -465,6 +514,7 @@ def jointeamrequest(request, pk):
 def acceptrequest(request, pk):
     username = request.COOKIES.get('username', '')
     if username == '':
+        flash(request, 'Error', 'Please login first', 'error')
         return HttpResponseRedirect('/login/')
     me = get_object_or_404(UserInfo, username = username) # Me, namely the captain
     team_request = get_object_or_404(TeamRequest, pk = pk)
@@ -473,21 +523,28 @@ def acceptrequest(request, pk):
     apply_user = get_object_or_404(UserInfo, username = team_request.username) # The one who sent the request
     if team.captain == me.username:
         if team.members >= 4:
-            return HttpResponse('A team at most has 4 members')
+            flash(request, 'Error', 'A team at most has 4 members')
+            return HttpResponseRedirect('/team/')
+            #return HttpResponse('A team at most has 4 members')
         apply_user.team = destin_team
         apply_user.save()
         team.members = team.members + 1
         team.save()
         team_request.delete()
-        return HttpResponse('You have successfully accepted the requet.')
+        flash(request, 'Success', 'You have successfully accepted the request')
+        return HttpResponseRedirect('/team/')
+        #return HttpResponse('You have successfully accepted the requet.')
     else:
-        return HttpResponse('You can only accept requests to join your own team.')
+        flash(request, 'Error', 'You can only accept requests to join your own team.')
+        return HttpResponseRedirect('/team/')
+        #return HttpResponse('You can only accept requests to join your own team.')
 
 
 # Reject a request to join a team
 def rejectrequest(request, pk):
     username = request.COOKIES.get('username', '')
     if username == '':
+        flash(request, 'Error', 'Please login first', 'error')
         return HttpResponseRedirect('/login/')
     me = get_object_or_404(UserInfo, username = username) # Me, namely the captain
     team_request = get_object_or_404(TeamRequest, pk = pk)
@@ -495,17 +552,92 @@ def rejectrequest(request, pk):
     team = get_object_or_404(TeamInfo, teamname = destin_team)
     if team.captain == me.username:
         team_request.delete()
-        return HttpResponse('You have successfully rejected the request')
+        flash(request, 'Success', 'You have successfully rejected the request', 'succes')
+        return HttpResponseRedirect('/team/')
+        #return HttpResponse('You have successfully rejected the request')
     else:
-        return HttpResponse('You can only reject requests to join your own team.')
+        flash(request, 'Error', 'You can only reject requests to join your own team.')
+        return HttpResponseRedirect('/team')
+        #return HttpResponse('You can only reject requests to join your own team.')
 
 
 # Show the detail of a team to the captain
 def teamdetail(request):
     username = request.COOKIES.get('username', '')
     if username == '':
+        flash(request, 'Error', 'Please login first', 'error')
         return HttpResponseRedirect('/login/')
-    my_team = get_object_or_404(TeamInfo, captain = username)
+    #my_team = get_object_or_404(TeamInfo, captain = username)
+    me = get_object_or_404(UserInfo, username = username)
+    my_team = get_object_or_404(TeamInfo, teamname = me.team)
     members = UserInfo.objects.filter(team__exact = my_team.teamname)
     requests = TeamRequest.objects.filter(destin_team = my_team.teamname)
     return render(request, 'teamdetail.html', {'username': username, 'team': my_team, 'members': members, 'requests': requests})
+
+
+# Quit the team
+def quitteam(request):
+    username = request.COOKIES.get('username', '')
+    if username == '':
+        flash(request, 'Error', 'Please login first', 'error')
+        return HttpResponseRedirect('/login/')
+    me = get_object_or_404(UserInfo, username = username)
+    if me:
+        my_team = me.team
+        if my_team == '':
+            flash(request, 'Error', 'You have not joined a team yet!', 'error')
+            return HttpResponseRedirect('/team/')
+        team = get_object_or_404(TeamInfo, teamname = my_team)
+        if team:
+            captain = team.captain
+            if captain == username:
+                flash(request, 'Error', 'You are the captain so you cannot simply quit the team!')
+                return HttpResponseRedirect('/team/')
+            else:
+                me.team = ''
+                me.save()
+                team.members = team.members - 1
+                team.save()
+                flash(request, 'Success', 'You have successfully quitted the team.')
+                return HttpResponseRedirect('/team/')
+        else:
+            flash(request, 'Error', 'Team does not exist', 'error')
+            return HttpResponseRedirect('/team/')
+    else:
+        flash(request, 'Error', 'User does not exist!', 'error')
+        return HttpResponseRedirect('/login/')
+
+
+# Dismiss the team
+def dismissteam(request):
+    username = request.COOKIES.get('username', '')
+    if username == '':
+        flash(request, 'Error', 'Please login first', 'error')
+        return HttpResponseRedirect('/login/')
+    me = get_object_or_404(UserInfo, username = username)
+    if me:
+        my_team = me.team
+        if my_team == '':
+            flash(request, 'Error', 'You have not joined a team yet!', 'error')
+            return HttpResponseRedirect('/team/')
+        team = get_object_or_404(TeamInfo, teamname = my_team)
+        if team:
+            captain = team.captain
+            if captain != username:
+                flash(request, 'Error', 'You are not the captain so you cannot dismiss the team!', 'error')
+                return HttpResponseRedirect('/team/')
+            else:
+                members = UserInfo.objects.filter(team__exact = my_team)
+                if members:
+                    for member in members:
+                        member.team = ''
+                        member.save()
+                team.delete()
+                flash(request, 'Success', 'You have successfully dismissed the team', 'success')
+                return HttpResponseRedirect('/team/')
+        else:
+            flash(request, 'Error', 'Team does not exist!', 'error')
+            return HttpResponse('/team/')
+    else:
+        flash(request, 'Error', 'User does not exist', 'error')
+        return HttpResponseRedirect('/login/')

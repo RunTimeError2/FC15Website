@@ -30,6 +30,8 @@ urlpatterns = [
     url(r'^change/$', FC15.views.change, name = 'change'),
     url(r'^teamdetail/$', FC15.views.teamdetail, name = 'teamdetail'),
     url(r'^teamrequet/$', FC15.views.jointeamrequest, name = 'jointeamrequest'),
+    url(r'^quitteam/$', FC15.views.quitteam, name = 'quitteam'),
+    url(r'^dismissteam/$', FC15.views.dismissteam, name = 'dismissteam'),
 
     url(r'^blogdetail/(?P<pk>[0-9]+)/$', FC15.views.blogdetail, name = 'blogdetail'),
     url(r'^blogedit/(?P<pk>[0-9]+)/$', FC15.views.blogedit, name = 'blogedit'),
