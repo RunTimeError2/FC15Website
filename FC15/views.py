@@ -6,6 +6,7 @@ from django.contrib import messages
 from FC15.models import UserInfo, TeamInfo, FileInfo, BlogPost, EmailActivate, PasswordReset, TeamRequest
 from FC15.forms import BlogPostForm, UserLoginForm, UserRegistForm, FileUploadForm, CreateTeamForm, ResetPasswordForm, ChangeForm, TeamRequestForm
 from FC15.sendmail import mail_activate, password_reset
+from FC15.forms import flash
 import time, os, random
 
 
@@ -35,10 +36,12 @@ def login(request):
                     response.set_cookie('username', username, 3600)
                     return response
                 else:
-                    return HttpResponse('This user account has not been activated!')
+                    flash(request, 'Error', 'This user account has not been activated!', 'error')
+                #    return HttpResponse('This user account has not been activated!')
             else:
+                flash(request, 'Error', 'Incorrect username or password, please retry.', 'error')
                 #return HttpResponseRedirect('/login/')
-                return HttpResponse('Incorrect username or password, please retry.')
+                #return HttpResponse('Incorrect username or password, please retry.')
     else:
         userform = UserLoginForm()
     return render(request, 'login.html', {'form': userform})
@@ -123,9 +126,13 @@ def resetpassword(request, reset_code):
         user.password = reset_record.new_password
         user.save()
         reset_record.delete()
-        return HttpResponse('Your password has been successfully reset!\nPlease change your password after you login.')
+        flash(request, 'Success', 'Your password has been successfully reset!\nPlease change your password after you login.', 'success')
+        return HttpResponseRedirect('/login/')
+        #return HttpResponse('Your password has been successfully reset!\nPlease change your password after you login.')
     else:
-        return HttpResponse('Error! Invalid reset code!')
+        flash(request, 'Error', 'Invalid reset code!', 'error')
+        return HttpResponseRedirect('/home/')
+        #return HttpResponse('Error! Invalid reset code!')
 
 
 # Change the password or email
@@ -141,13 +148,18 @@ def change(request):
             new_password = userform.cleaned_data['new_password']
             confirm_password = userform.cleaned_data['confirm_password']
             if old_password != user.password:
-                return HttpResponse('Error! Incorrect old password')
+                flash(request, 'Error', 'Incorrect old password!', 'error')
+                return render(request, 'change.html', {'username': username, 'form': userform})
+                #return HttpResponse('Error! Incorrect old password')
             if new_password != confirm_password:
-                return HttpResponse('Error! Please enter the same password')
+                flash(request, 'Error', 'Please enter the same password!', 'error')
+                return render(request, 'change.html', {'username': username, 'form': userform})
+                #return HttpResponse('Error! Please enter the same password')
             user.password = new_password
             user.email = userform.cleaned_data['email']
             user.save()
-            response = HttpResponse('You have successfully changed your account. Please login.')
+            flash(request, 'Success', 'You have successfully changed your account. Please login.', 'success')
+            response = HttpResponseRedirect('/login/')
             response.delete_cookie('username')
             return response
     else:
@@ -163,7 +175,6 @@ def index(request):
     posts = BlogPost.objects.filter(username__exact = username)
     files = FileInfo.objects.filter(username__exact = username)
     me = get_object_or_404(UserInfo, username = username)
-    messages.success(request, 'success! only for a test.') #  ========================================================================================
     if me.team == '':
         warning = 'You have not joined a team yet'
         return render(request, 'index.html', {'username': username, 'posts': posts, 'files': files, 'warning': warning})
@@ -182,19 +193,23 @@ def upload(request):
             myfile = request.FILES.get('file', None)
             if myfile:
                 if myfile.size >= 1048576:
-                    return HttpResponse('Error! File should not be larger than 1 MiB')
+                    flash(request, 'Error', 'File should not be larger than 1 MiB.', 'error')
+                    return render(request, 'upload.html', {'username': username, 'form': userform})
+                    #return HttpResponse('Error! File should not be larger than 1 MiB')
                 if myfile.name.endswith('.cpp') == False:
-                    return HttpResponse('Error! Only .cpp file is accepted.')
+                    flash(request, 'Error', 'Only .cpp file is accepted.', 'error')
+                    return render(request, 'upload.html', {'username': username, 'form': userform})
+                    #return HttpResponse('Error! Only .cpp file is accepted.')
             else:
-                return HttpResponse('Error! File does not exist.')
+                flash(request, 'Error', 'File does not exist.', 'error')
+                return render(request, 'upload.html', {'username': username, 'form': userform})
+                #return HttpResponse('Error! File does not exist.')
 
             username = request.COOKIES.get('username', '')
             if username == '':
                 return HttpResponseRedirect('/login/')
             else:
                 user = get_object_or_404(UserInfo, username = username)
-                if user.team == '':
-                    return HttpResponse('You must join a team before uploading your code')
                 fileupload = FileInfo()
                 fileupload.filename = userform.cleaned_data['filename']
                 fileupload.username = username
@@ -203,7 +218,9 @@ def upload(request):
                 fileupload.file = userform.cleaned_data['file']
                 fileupload.timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
                 fileupload.save()
-                return HttpResponse('Upload success!')
+                flash(request, 'Success', 'You have successfully uploaded the code.', 'success')
+                return HttpResponseRedirect('/index/')
+                #return HttpResponse('Upload success!')
     else:
         userform = FileUploadForm()
         username = request.COOKIES.get('username', '')
@@ -219,7 +236,9 @@ def fileedit(request, pk):
     if username == '':
         return HttpResponseRedirect('/login/')
     if username != file.username:
-        return HttpResponse('Error! You can only edit your own file.')
+        flash(request, 'Error', 'You can only edit your own file.', 'error')
+        return HttpResponseRedirect('/index/')
+        #return HttpResponse('Error! You can only edit your own file.')
     if request.method == 'POST':
         userform = FileUploadForm(request.POST, request.FILES)
 
@@ -227,11 +246,17 @@ def fileedit(request, pk):
         myfile = reqeust.FILES.get('file', None)
         if myfile:
             if myfile.size >= 1048576:
-                return HttpResponse('Error! File should not be larger than 1 MiB')
+                flash(request, 'Error', 'File should not be larger than 1 MiB', 'error')
+                return render(request, 'upload.html', {'username': username, 'form': userform})
+                #return HttpResponse('Error! File should not be larger than 1 MiB')
             if myfile.name.endswith('.cpp') == False:
-                return HttpResponse('Error! Only .cpp file is accepted.')
+                flash(request, 'Error', 'Only .cpp file is accepted.', 'error')
+                return render(request, 'upload.html', {'username': username, 'form': userform})
+                #return HttpResponse('Error! Only .cpp file is accepted.')
         else:
-            return HttpResponse('Error! File does not exist.')
+            flash(request, 'Error', 'File does not exist.', 'error')
+            return render(request, 'upload.html', {'username': username, 'form': userform})
+            #return HttpResponse('Error! File does not exist.')
 
         if userform.is_valid():
             # delete old file
@@ -241,7 +266,9 @@ def fileedit(request, pk):
             file.timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
             file.file = userform.cleaned_data['file']
             file.save()
-            return HttpResponse('File edited successfully')
+            flash(request, 'Success', 'You have successfully edited the file', 'success')
+            return HttpResponseRedirect('/index/')
+            #return HttpResponse('File edited successfully')
     else:
         userform = FileUploadForm(data = {'filename': file.filename, 'description': file.description, 'file': file.file})
     return render(request, 'upload.html', {'username': username, 'form': userform})
@@ -254,9 +281,11 @@ def filedelete(request, pk):
     if username == '':
         return HttpResponseRedirect('/login/')
     if username != file.username:
-        return HttpResponse('Error! You can only delete your own file.')
+        flash(request, 'Error', 'You can only delete your own file.', 'error')
+        #return HttpResponse('Error! You can only delete your own file.')
     os.remove(file.path)
     file.delete()
+    flash(request, 'Success', 'You have successfully deleted the file.', 'success')
     return HttpResponseRedirect('/index/')
 
 

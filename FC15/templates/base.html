@@ -46,6 +46,14 @@
 
         <div class="container body-content">
 
+            {% if messages %}
+                <script language="javascript">
+                    {% for msg in messages %}
+                        alert('{{ msg.message }}');
+                    {% endfor %}
+                </script>
+            {% endif %}
+
             {% block content %}{% endblock %}
 
             <hr/>

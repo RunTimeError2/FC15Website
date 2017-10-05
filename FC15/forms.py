@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib import messages
 from FC15.models import UserInfo, FileInfo, BlogPost, TeamInfo
 
 # All forms for this website
@@ -56,3 +57,17 @@ class ChangeForm(forms.Form):
 class TeamRequestForm(forms.Form):
     destin_team = forms.CharField(max_length = 100)
     message = forms.CharField(max_length = 500, widget = forms.Textarea)
+
+
+# Add a message and show it
+def flash(request, title, text, level = 'info'):
+    level_map = {
+        'info': messages.INFO,
+        'debug': messages.DEBUG,
+        'success': messages.SUCCESS,
+        'warning': messages.WARNING,
+        'error': messages.ERROR
+    }
+    level = level_map[level]
+    messages.add_message(request, level, text, extra_tags = title)
+    return 'ok'
