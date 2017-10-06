@@ -8,3 +8,4 @@
 - Upload, edit and delete files(.cpp files only, and should be no more than 1 MiB)
 - Team up(create and join teams), view and download codes from teammates
 - Quit or dismiss teams freely :)
+- Automatically compile after uploading file (but still slow)
