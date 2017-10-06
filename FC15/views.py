@@ -10,6 +10,8 @@ from FC15.forms import flash
 from FC15.oj import run
 import time, os, random
 
+AUTO_COMPILE = False
+
 
 # All of the views
 
@@ -242,7 +244,9 @@ def upload(request):
             fileupload.compile_result = ''
             fileupload.save()
             flash(request, 'Success', 'You have successfully uploaded the code.', 'success')
-            run() #=========================================================================================
+            global AUTO_COMPILE
+            if AUTO_COMPILE:
+                run() #=========================================================================================
             return HttpResponseRedirect('/index/')
             #return HttpResponse('Upload success!')
     else:
@@ -296,7 +300,9 @@ def fileedit(request, pk):
             file.compile_result = ''
             file.save()
             flash(request, 'Success', 'You have successfully edited the file', 'success')
-            run() #=====================================================================================
+            global AUTO_COMPILE
+            if AUTO_COMPILE:
+                run() #=====================================================================================
             return HttpResponseRedirect('/index/')
             #return HttpResponse('File edited successfully')
     else:

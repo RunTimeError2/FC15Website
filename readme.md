@@ -1,11 +1,17 @@
 # This is the website for FC15
 > created by RunTimeError2, 2017-9-26 21:30
+latest update: 2017-10-6 18:00
 
-## Current functions
-- Register(needs confirmation with email), Login, Logout
-- Change account, Reset password(needs confirmation with email)
-- Post, edit and delete blogs, show blogs on home pages
-- Upload, edit and delete files(.cpp files only, and should be no more than 1 MiB)
-- Team up(create and join teams), view and download codes from teammates
-- Quit or dismiss teams freely :)
-- Automatically compile after uploading file (but still slow)
+## 当前功能
+- 注册（需要邮件验证），登录，登出
+- 修改账号，重置密码（需要邮件验证）
+- 发布/编辑/删除博客，在主页显示博客
+- 上传/编辑/删除代码文件（只能提交1M以内的cpp）
+- 组队（创建/加入队伍，加入队伍需要队长确认），退出/解散队伍，查看/下载队友的代码文件
+- 在上传文件后自动编译
+
+## 关于自动编译
+- 在views.py开头有自动编译开关AUTO_COMPILE，将其设为True即可开启自动编译功能
+- 目前的自动编译使用的编译器是VS2017，需要设置环境变量（devenv.exe即vs主程序的路径）方可正常使用
+- 目前仅有自动编译功能，并不能自动运行
+- 由于多线程做的还并不完善，如果开启自动编译，提交文件成功后会卡一段时间（其实是在编译）再跳转
