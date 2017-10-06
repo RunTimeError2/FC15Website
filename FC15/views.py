@@ -7,6 +7,7 @@ from FC15.models import UserInfo, TeamInfo, FileInfo, BlogPost, EmailActivate, P
 from FC15.forms import BlogPostForm, UserLoginForm, UserRegistForm, FileUploadForm, CreateTeamForm, ResetPasswordForm, ChangeForm, TeamRequestForm
 from FC15.sendmail import mail_activate, password_reset
 from FC15.forms import flash
+from FC15.oj import run
 import time, os, random
 
 
@@ -205,6 +206,10 @@ def index(request):
 
 # Uplaod file
 def upload(request):
+    username = request.COOKIES.get('username', '')
+    if username == '':
+        flash(request, 'Error', 'Please login first', 'error')
+        return HttpResponseRedirect('/login/')
     if request.method == 'POST':
         userform = FileUploadForm(request.POST, request.FILES)
         if userform.is_valid():
@@ -224,23 +229,22 @@ def upload(request):
                 return render(request, 'upload.html', {'username': username, 'form': userform})
                 #return HttpResponse('Error! File does not exist.')
 
-            username = request.COOKIES.get('username', '')
-            if username == '':
-                flash(request, 'Error', 'Please login first', 'error')
-                return HttpResponseRedirect('/login/')
-            else:
-                user = get_object_or_404(UserInfo, username = username)
-                fileupload = FileInfo()
-                fileupload.filename = userform.cleaned_data['filename']
-                fileupload.username = username
-                fileupload.teamname = user.team
-                fileupload.description = userform.cleaned_data['description']
-                fileupload.file = userform.cleaned_data['file']
-                fileupload.timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
-                fileupload.save()
-                flash(request, 'Success', 'You have successfully uploaded the code.', 'success')
-                return HttpResponseRedirect('/index/')
-                #return HttpResponse('Upload success!')
+            user = get_object_or_404(UserInfo, username = username)
+            fileupload = FileInfo()
+            fileupload.filename = userform.cleaned_data['filename']
+            fileupload.username = username
+            fileupload.teamname = user.team
+            fileupload.description = userform.cleaned_data['description']
+            fileupload.file = userform.cleaned_data['file']
+            fileupload.timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+            fileupload.is_compiled = '未编译'
+            fileupload.is_compile_success = ''
+            fileupload.compile_result = ''
+            fileupload.save()
+            flash(request, 'Success', 'You have successfully uploaded the code.', 'success')
+            run() #=========================================================================================
+            return HttpResponseRedirect('/index/')
+            #return HttpResponse('Upload success!')
     else:
         userform = FileUploadForm()
         username = request.COOKIES.get('username', '')
@@ -282,12 +286,17 @@ def fileedit(request, pk):
         if userform.is_valid():
             # delete old file
             os.remove(file.path)
+            os.remove(file.path[:-4] + '.exe')
             file.filename = userform.cleaned_data['filename']
             file.description = userform.cleaned_data['description']
             file.timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
             file.file = userform.cleaned_data['file']
+            file.is_compiled = '未编译'
+            file.is_compile_success = ''
+            file.compile_result = ''
             file.save()
             flash(request, 'Success', 'You have successfully edited the file', 'success')
+            run() #=====================================================================================
             return HttpResponseRedirect('/index/')
             #return HttpResponse('File edited successfully')
     else:
@@ -307,6 +316,7 @@ def filedelete(request, pk):
         return HttpResponseRedirect('/index/')
         #return HttpResponse('Error! You can only delete your own file.')
     os.remove(file.path)
+    os.remove(file.path[:-4] + '.exe')
     file.delete()
     flash(request, 'Success', 'You have successfully deleted the file.', 'success')
     return HttpResponseRedirect('/index/')
@@ -641,3 +651,9 @@ def dismissteam(request):
     else:
         flash(request, 'Error', 'User does not exist', 'error')
         return HttpResponseRedirect('/login/')
+
+
+# compile all file ==============================================
+def compileall(request):
+    run()
+    return HttpResponse('done!')

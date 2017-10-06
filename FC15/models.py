@@ -40,9 +40,11 @@ class FileInfo(models.Model):
     # Determines where the file will be saved
     def user_dirpath(instance, filename):
         now = time.strftime('%Y%m%d%H%M%S')
-        _path = 'fileupload/{0}/{1}_{2}__{3}'.format(instance.username, now, random.randint(0, 1000), filename)
+        exact_name = '{0}_{1}__{2}'.format(now, random.randint(0, 1000), filename)
+        _path = 'fileupload/{0}/{1}'.format(instance.username, exact_name)
         instance.path = _path
         instance.origin_name = filename
+        instance.exact_name = exact_name
         return './' + _path
 
     filename = models.CharField(max_length = 255)
@@ -52,7 +54,12 @@ class FileInfo(models.Model):
     file = models.FileField(upload_to = user_dirpath)
     path = models.CharField(max_length = 500)
     origin_name = models.CharField(max_length = 255, default = filename)
+    exact_name = models.CharField(max_length = 255, default = origin_name)
     timestamp = models.DateTimeField()
+
+    is_compiled = models.CharField(max_length = 50, default = '未编译')
+    is_compile_success = models.CharField(max_length = 50, default = '')
+    compile_result = models.CharField(max_length = 4096, default = '')
 
     def __unicode__(self):
         return self.filename

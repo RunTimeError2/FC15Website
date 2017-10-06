@@ -33,6 +33,8 @@ urlpatterns = [
     url(r'^quitteam/$', FC15.views.quitteam, name = 'quitteam'),
     url(r'^dismissteam/$', FC15.views.dismissteam, name = 'dismissteam'),
 
+    url(r'^compileall/$', FC15.views.compileall, name = 'compileall'), # test =============================
+
     url(r'^blogdetail/(?P<pk>[0-9]+)/$', FC15.views.blogdetail, name = 'blogdetail'),
     url(r'^blogedit/(?P<pk>[0-9]+)/$', FC15.views.blogedit, name = 'blogedit'),
     url(r'^blogdelete/(?P<pk>[0-9]+)/$', FC15.views.blogdelete, name = 'blogdelete'),
