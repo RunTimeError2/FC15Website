@@ -127,7 +127,7 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = posixpath.join(*(BASE_DIR.split(os.path.sep) + ['static']))
 
-# QQ邮箱授权码bxalpxogazkyhhdi
+# Authorization code for mail.qq.com bxalpxogazkyhhdi
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.qq.com'
 EMAIL_PORT = 25

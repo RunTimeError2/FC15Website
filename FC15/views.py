@@ -239,7 +239,7 @@ def upload(request):
             fileupload.description = userform.cleaned_data['description']
             fileupload.file = userform.cleaned_data['file']
             fileupload.timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
-            fileupload.is_compiled = '未编译'
+            fileupload.is_compiled = 'Not compiled'
             fileupload.is_compile_success = ''
             fileupload.compile_result = ''
             fileupload.save()
@@ -295,7 +295,7 @@ def fileedit(request, pk):
             file.description = userform.cleaned_data['description']
             file.timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
             file.file = userform.cleaned_data['file']
-            file.is_compiled = '未编译'
+            file.is_compiled = 'Not compiled'
             file.is_compile_success = ''
             file.compile_result = ''
             file.save()

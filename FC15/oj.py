@@ -48,17 +48,17 @@ class compile_thread(threading.Thread):
             is_done = False
             all_file = FileInfo.objects.all()
             for file in all_file:
-                if file.is_compiled == '未编译':
+                if file.is_compiled == 'Not compiled':
                     is_done = True
                     copy_result = copy_file(file.username, file.exact_name)
                     if copy_result:
                         # use visual studio to compile the project
                         compile_result = os.system('devenv cpp_proj/cpp_proj.sln /rebuild > result.txt')
-                        file.is_compiled = '已编译'
+                        file.is_compiled = 'Compiled'
                     if compile_result == 0:
-                        file.is_compile_success = '编译成功'
+                        file.is_compile_success = 'Successfully compiled'
                         copy_exe(file.username, file.exact_name)
                     else:
-                        file.is_compile_success = '编译失败'
+                        file.is_compile_success = 'Compile Error'
                     file.save()
         IS_RUNNING = 0

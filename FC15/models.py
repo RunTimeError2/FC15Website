@@ -57,7 +57,7 @@ class FileInfo(models.Model):
     exact_name = models.CharField(max_length = 255, default = origin_name)
     timestamp = models.DateTimeField()
 
-    is_compiled = models.CharField(max_length = 50, default = '未编译')
+    is_compiled = models.CharField(max_length = 50, default = 'Not compiled')
     is_compile_success = models.CharField(max_length = 50, default = '')
     compile_result = models.CharField(max_length = 4096, default = '')
 
