@@ -10,16 +10,12 @@
         <label for="id_title" class="col-md-2 control-label">Team name</label>
         {{ form.teamname }}
     </div>
-    <br />
     <div class="form-group">
         <label for="id_content" class="col-md-2 control-label">Introduction</label>
         {{ form.introduction|linebreaks }}
     </div>
-    <br />
     <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="submit" class="btn btn-default" onclick="return confirm('Are you sure to create the team?')" />
-        </div>
+            <input type="submit" value="submit" class="button" onclick="return confirm('Are you sure to create the team?')" />
     </div>
 
     <hr />

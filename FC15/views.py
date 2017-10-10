@@ -546,6 +546,11 @@ def acceptrequest(request, pk):
             #return HttpResponse('A team at most has 4 members')
         apply_user.team = destin_team
         apply_user.save()
+        user_codes = FileInfo.objects.filter(username__exact = apply_user.username)
+        if user_codes:
+            for code in user_codes:
+                code.teamname = destin_team
+                code.save()
         team.members = team.members + 1
         team.save()
         team_request.delete()

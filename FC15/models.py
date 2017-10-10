@@ -10,7 +10,7 @@ class UserInfo(models.Model):
     password = models.CharField(max_length = 100)
     stu_number = models.CharField(max_length = 20)
     email = models.EmailField()
-    team = models.CharField(max_length = 100, default = '')
+    team = models.CharField(max_length = 100, default = '', null = True)
     activated = models.BooleanField(default = False)
 
     def __unicode__(self):
