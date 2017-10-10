@@ -2,48 +2,39 @@
 
 {% block content %}
 
+<div class="smart-green">
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    <h4>Enter your information to create a new account.</h4>
-    <hr />
-
+    <h1>Enter your information to create a new account.</h1>
+    <br />
     <div class="form-group">
         <label for="id_username" class="col-md-2 control-label">Username</label>
         {{ form.username }}
     </div>
-    <br />
     <div class="form-group">
         <label for="id_realname" class="col-md-2 control-label">Realname</label>
         {{ form.realname }}
     </div>
-    <br />
     <div class="form-group">
         <label for="id_email" class="col-md-2 control-label">Email</label>
         {{ form.email }}
     </div>
-    <br />
     <div class="form-group">
         <label for="id_email" class="col-md-2 control-label">Student ID</label>
         {{ form.stu_number }}
     </div>
-    <br />
     <div class="form-group">
         <label for="id_password" class="col-md-2 control-label">Password</label>
         {{ form.password }}
     </div>
-    <br />
     <div class="form-group">
         <label for="id_passwordconfirm" class="col-md-2 control-label">Confirm password</label>
         {{ form.password_confirm }}
     </div>
-    <br />
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Register" class="btn btn-default" />
-        </div>
+    <div class="smart-green">
+        <input type="submit" value="Register" class="button" />
     </div>
-
-    <hr />
 </form>
+</div>
 
 {% endblock %}

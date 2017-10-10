@@ -2,6 +2,7 @@
 
 {% block content %}
 
+<div class="smart-green">
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <h4>Welcome {{ username }} !</h4>
@@ -31,5 +32,6 @@
 
     <hr />
 </form>
+</div>
 
 {% endblock %}
