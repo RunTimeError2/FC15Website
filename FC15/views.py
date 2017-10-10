@@ -10,7 +10,7 @@ from FC15.forms import flash
 from FC15.oj import run
 import time, os, random
 
-AUTO_COMPILE = False
+AUTO_COMPILE = True
 
 
 # All of the views
@@ -290,7 +290,8 @@ def fileedit(request, pk):
         if userform.is_valid():
             # delete old file
             os.remove(file.path)
-            os.remove(file.path[:-4] + '.exe')
+            if os.path.exists(file.path[:-4] + '.exe'):
+                os.remove(file.path[:-4] + '.exe')
             file.filename = userform.cleaned_data['filename']
             file.description = userform.cleaned_data['description']
             file.timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
@@ -322,7 +323,8 @@ def filedelete(request, pk):
         return HttpResponseRedirect('/index/')
         #return HttpResponse('Error! You can only delete your own file.')
     os.remove(file.path)
-    os.remove(file.path[:-4] + '.exe')
+    if os.path.exists(file.path[:-4] + '.exe'):
+        os.remove(file.path[:-4] + '.exe')
     file.delete()
     flash(request, 'Success', 'You have successfully deleted the file.', 'success')
     return HttpResponseRedirect('/index/')
