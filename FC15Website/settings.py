@@ -136,3 +136,6 @@ EMAIL_HOST_PASSWORD = 'bxalpxogazkyhhdi'
 EMAIL_SUBJECT_PREFIX = '[FC15]'
 EMAIL_USE_TLS = True
 DEFAULT_EMAIL_FROM = '1548039150@qq.com'
+
+
+#from FC15.models import FileInfo

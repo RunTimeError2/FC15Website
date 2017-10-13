@@ -2,6 +2,7 @@ from FC15.models import EmailActivate, PasswordReset, UserInfo
 from django.core.mail import send_mail
 from FC15Website.settings import DEFAULT_EMAIL_FROM
 from random import Random
+import threading
 
 SERVER_URL = '[Server IP]' # should be changed when the website is deployed
 
@@ -32,9 +33,9 @@ def mail_activate(email_address, username):
     email_title = 'Please activate your account for FC15'
     email_body = 'Please click the link to activate your account for FC15:\nhttp://' + SERVER_URL + '/'
     email_body += 'mailactivate/' + email_activate.activate_string
-    success = send_mail(email_title, email_body, DEFAULT_EMAIL_FROM, [email_address])
-    if success:
-        pass
+    #success = send_mail(email_title, email_body, DEFAULT_EMAIL_FROM, [email_address])
+    t = threading.Thread(target = send_mail, args = (email_title, email_body, DEFAULT_EMAIL_FROM, [email_address],))
+    t.start()
 
 
 # Add a record and send a mail to reset the password
@@ -57,6 +58,6 @@ def password_reset(email_address, username):
     email_body += '\n\nPlease change your password after you login.'
     email_body += '\n\nIf this is not your operation or you do not want to change your password now,\n'
     email_body += 'please do not click the link and ignore this e-mail.'
-    success = send_mail(email_title, email_body, DEFAULT_EMAIL_FROM, [email_address])
-    if success:
-        pass
+    #success = send_mail(email_title, email_body, DEFAULT_EMAIL_FROM, [email_address])
+    t = threading.Thread(target = send_mail, args = (email_title, email_body, DEFAULT_EMAIL_FROM, [email_address],))
+    t.start()

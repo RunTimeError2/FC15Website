@@ -246,7 +246,7 @@ def upload(request):
             flash(request, 'Success', 'You have successfully uploaded the code.', 'success')
             global AUTO_COMPILE
             if AUTO_COMPILE:
-                run() #=========================================================================================
+                run()
             return HttpResponseRedirect('/index/')
             #return HttpResponse('Upload success!')
     else:
@@ -303,7 +303,7 @@ def fileedit(request, pk):
             flash(request, 'Success', 'You have successfully edited the file', 'success')
             global AUTO_COMPILE
             if AUTO_COMPILE:
-                run() #=====================================================================================
+                run()
             return HttpResponseRedirect('/index/')
             #return HttpResponse('File edited successfully')
     else:
