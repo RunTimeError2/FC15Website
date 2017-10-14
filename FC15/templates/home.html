@@ -8,10 +8,15 @@
 
 <h3>Blogs</h3>
 <hr />
+
+<table border="0">
 {% for post in posts %}
-    <h4><a href="{% url 'blogdetail' pk=post.pk %}">{{ post.title }}</a></h4>
-    <p>Posted at {{ post.timestamp }}</p>
-    <br />
+    <tr>
+        <th><a href="{% url 'blogdetail' pk=post.pk %}">{{ post.title }}</a></th>
+        <th>{{ post.username }}</th>
+        <th>Posted at {{ post.timestamp }}</th>
+    </tr>
 {% endfor %}
+</table>
 
 {% endblock %}

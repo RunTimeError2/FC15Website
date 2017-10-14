@@ -4,9 +4,10 @@
 
     <h1>{{ post.title }}</h1>
     <p>{{ post.timestamp }}</p>
+    <p>Posted by {{ post.username }}</p>
     <hr />
     <p>{{ post.content|linebreaks }}</p>
-    <br />
+    <hr />
     <a href="/index/">Back</a>
 
 {% endblock %}

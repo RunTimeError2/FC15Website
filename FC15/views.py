@@ -438,7 +438,7 @@ def team(request):
     else:
         joinedteam = None
     teams = TeamInfo.objects.all()
-    return render(request, 'team.html', {'myteam': myteam,'joinedteam': joinedteam, 'teams': teams})
+    return render(request, 'team.html', {'username': username, 'myteam': myteam,'joinedteam': joinedteam, 'teams': teams})
 
 
 # Create a team
@@ -456,8 +456,14 @@ def createteam(request):
         #return HttpResponse('You have already created a team!')
     me = get_object_or_404(UserInfo, username = username)
     if me.team != '':
-        flash(request, 'Error', 'You have already joined a team', 'error')
-        return HttpResponseRedirect('/team/')
+        my_current_team = TeamInfo.objects.filter(teamname__exact = me.team)
+        if my_current_team:
+            flash(request, 'Error', 'You have already joined a team', 'error')
+            return HttpResponseRedirect('/team/')
+        else:
+            flash(request, 'Error', 'Your current team does not exist, now you do not belong to any team lol.')
+            me.team = ''
+            me.save()
         #return HttpResponse('You have already joined a team!')
 
     if request.method == 'POST':
@@ -487,8 +493,14 @@ def jointeam(request, pk):
         return HttpResponseRedirect('/login/')
     me = get_object_or_404(UserInfo, username = username)
     if me.team != '':
-        flash(request, 'Error', 'You have already joined a tem', 'error')
-        return HttpResponseRedirect('/team/')
+        my_current_team = TeamInfo.objects.filter(teamname__exact = me.team)
+        if my_current_team:
+            flash(request, 'Error', 'You have already joined a tem', 'error')
+            return HttpResponseRedirect('/team/')
+        else:
+            flash(request, 'Error', 'Your current team does not exist, now you do not belong to any team lol.')
+            me.team = ''
+            me.save()
         #return HttpResponse('You have already joined a team!')
     team = get_object_or_404(TeamInfo, pk = pk)
     userform = TeamRequestForm(data = {'destin_team': team.teamname})
@@ -503,8 +515,14 @@ def jointeamrequest(request, pk):
         return HttpResponseRedirect('/login/')
     me = get_object_or_404(UserInfo, username = username)
     if me.team != '':
-        flash(request, 'Error', 'You have already joined a team!', 'error')
-        return HttpResponseRedirect('/team/')
+        my_current_team = TeamInfo.objects.filter(teamname__exact = me.team)
+        if my_current_team:
+            flash(request, 'Error', 'You have already joined a team!', 'error')
+            return HttpResponseRedirect('/team/')
+        else:
+            flash(request, 'Error', 'Your current team does not exist, now you do not belong to any team lol.')
+            me.team = ''
+            me.save()
         #return HttpResponse('You have already joined a team!')
     team = get_object_or_404(TeamInfo, pk = pk)
     if request.method == 'POST':
@@ -592,10 +610,15 @@ def teamdetail(request):
         return HttpResponseRedirect('/login/')
     #my_team = get_object_or_404(TeamInfo, captain = username)
     me = get_object_or_404(UserInfo, username = username)
-    my_team = get_object_or_404(TeamInfo, teamname = me.team)
-    members = UserInfo.objects.filter(team__exact = my_team.teamname)
-    requests = TeamRequest.objects.filter(destin_team = my_team.teamname)
-    return render(request, 'teamdetail.html', {'username': username, 'team': my_team, 'members': members, 'requests': requests})
+    my_team_exists = TeamInfo.objects.filter(username__exact = username)
+    if my_team:
+        my_team = get_object_or_404(TeamInfo, teamname = me.team)
+        members = UserInfo.objects.filter(team__exact = my_team.teamname)
+        requests = TeamRequest.objects.filter(destin_team = my_team.teamname)
+        return render(request, 'teamdetail.html', {'username': username, 'team': my_team, 'members': members, 'requests': requests})
+    else:
+        flash(request, 'Error', 'Please join a team first!', 'error')
+        return HttpResponseRedirect('/team/')
 
 
 # Quit the team

@@ -5,28 +5,30 @@
 <h1>welcome {{ username }} !</h1>
 <hr />
 
+<h2>My Blogs</h2>
 {% for post in posts %}
-    <h2><a href="{% url 'blogdetail' pk=post.pk %}">{{ post.title }}</a></h2>
     <p>
-        <a href="{% url 'blogedit' pk=post.pk %}">Edit</a>  
-        <a href="{% url 'blogdelete' pk=post.pk %}" onclick="return confirm('Are you sure to delete the blog?')">Delete</a>  
+        <a href="{% url 'blogdetail' pk=post.pk %}">{{ post.title }}</a>
+        <a href="{% url 'blogedit' pk=post.pk %}">Edit</a>
+        <a href="{% url 'blogdelete' pk=post.pk %}" onclick="return confirm('Are you sure to delete the blog?')">Delete</a>
     </p>
-    <p>Posted at {{ post.timestamp }}</p>
-    <p>{{ post.content|linebreaks }}</p>
-    <hr />
+    Posted at {{ post.timestamp }}</th>
+    {{ post.content|linebreaks }}</th>
 {% endfor %}
+<hr />
 
+<h2>My Code</h2>
 {% for file in files %}
-    <h2>{{ file.filename }}</h2>
-    <p>{{ file.is_compiled }}    {{ file.is_compile_success }}</p>
-    <p>
-        <a href="{% url 'fileedit' pk=file.pk %}">Edit</a>  
-        <a href="{% url 'filedelete' pk=file.pk %}" onclick="return confirm('Are you sure to delete the file?')">Delete</a>  
-        <a href="{% url 'filedownload' pk=file.pk %}">Download</a>
-    </p>
-    <p>{{ file.description|linebreaks }}</p>
-    <hr />
+        <h3>{{ file.filename }}</h3>
+        <p>{{ file.is_compiled }}     {{ file.is_compile_success }}</p>
+        <p>
+            <a href="{% url 'fileedit' pk=file.pk %}">Edit</a>
+            <a href="{% url 'filedelete' pk=file.pk %}" onclick="return confirm('Are you sure to delete the file?')">Delete</a>
+            <a href="{% url 'filedownload' pk=file.pk %}">Download</a>
+        </p>
+        <p>{{ file.description|linebreaks }}</p>
 {% endfor %}
+<hr />
 
 <h2>Code of my teammates</h2>
 <h3>{{ warning }}</h3>
