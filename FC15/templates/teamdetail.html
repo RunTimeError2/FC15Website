@@ -15,20 +15,44 @@
 {% endfor %}
 <br />
 
-<p>
-    <a href="/quitteam/" onclick="return confirm('Are you sure to quit the team?')">Quit the team</a>  
+{% if is_captain %}
     <a href="/dismissteam/" onclick="return ocnfirm('Are you sure to dismiss your team?')">Dismiss the team</a>  
-</p>
+{% else %}
+    <a href="/quitteam/" onclick="return confirm('Are you sure to quit the team?')">Quit the team</a> 
+{% endif %}
 
-<hr />
-<h3>Requests to join the team:</h3>
-{% for request in requests %}
-    <p>
-        {{ request.username }} , 
-        {{ request.message }} , 
-        <a href="{% url 'acceptrequest' pk=request.pk %}">Accept</a>   
-        <a href="{% url 'rejectrequest' pk=request.pk %}">Reject</a>   
-    </p>
-{% endfor %}
+{% if is_captain %}
+    <hr />
+    <h3>Requests to join the team:</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Message</th>
+                <th>Command</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for request in requests %}
+                <tr>
+                    <td>{{ request.username }}</td>
+                    <td>{{ request.message }}</td>
+                    <td><a href="{% url 'acceptrequest' pk=request.pk %}">Accept</a> | <a href="{% url 'rejectrequest' pk=request.pk %}">Reject</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+<!--
+    {% for request in requests %}
+        <p>
+            {{ request.username }} , 
+            {{ request.message }} , 
+            <a href="{% url 'acceptrequest' pk=request.pk %}">Accept</a> 
+            <br />
+            <a href="{% url 'rejectrequest' pk=request.pk %}">Reject</a>   
+        </p>
+    {% endfor %}
+    -->
+{% endif %}
 
 {% endblock %}

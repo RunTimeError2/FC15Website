@@ -62,7 +62,6 @@
     <Compile Include="FC15Website\wsgi.py" />
     <Compile Include="OJ\admin.py" />
     <Compile Include="OJ\apps.py" />
-    <Compile Include="OJ\migrations\__init__.py" />
     <Compile Include="OJ\models.py" />
     <Compile Include="OJ\start.py">
       <SubType>Code</SubType>
@@ -86,7 +85,6 @@
     <Folder Include="FC15\migrations\" />
     <Folder Include="FC15\templates\" />
     <Folder Include="OJ\" />
-    <Folder Include="OJ\migrations\" />
     <Folder Include="OJ\templates\" />
   </ItemGroup>
   <ItemGroup>

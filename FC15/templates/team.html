@@ -3,24 +3,55 @@
 {% block content %}
 
 <h1>welcome {{ username }} !</h1>
-<p>You can choose or create a team</p>
+<p>You can join or create a team</p>
 <hr />
 
-<h2>The team whose captain is you:</h2>
-<h3>{{ myteam.teamname }}</h3>
-<p>Introduction:</p>
-<p>{{ myteam.introduction|linebreaks }}</p>
-
-<h2><a href="/createteam/">Create a team</a></h2>
+{% if myteam %}
+    <h2>The team whose captain is you:</h2>
+    <h3>{{ myteam.teamname }}</h3>
+    <p>Introduction:</p>
+    <p>{{ myteam.introduction|linebreaks }}</p>
+{% else %}
+    {% if joinedteam %}
+        <h3>The team you have already joined</h3>
+        <h4>{{ joinedteam.teamname }}</h4>
+        <p>Introduction:</p>
+        <p>{{ joinedteam.introduction|linebreaks }}</p>
+        <h4><a href="/teamdetail/">Show Detail</a></h4>
+    {% else %}
+        <h3><a href="/createteam/">Create a team</a></h3>
+    {% endif %}
+{% endif %}
 <hr />
 
-<h2>The team you have already joined</h2>
-<h3>{{ joinedteam.teamname }}</h3>
-<p>Introduction:</p>
-<p>{{ joinedteam.introduction|linebreaks }}</p>
-<h4><a href="/teamdetail/">Show Detail</a></h4>
-<hr />
-
+<h3>All teams available:</h3>
+<div class="table-responsive">
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Index</th>
+                <th>Teamname</th>
+                <th>Captain</th>
+                <th>Introduction</th>
+                <th>Member Number</th>
+                <th>Command</th>
+            </tr>
+         </thead>
+        <tbody>
+            {% for team in teams %}
+            <tr>
+                <td>{{ team.pk }}</td>
+                <td>{{ team.teamname }}</td>
+                <td>{{ team.captain }}</td>
+                <td>{{ team.introduction }}</td>
+                <td>{{ team.members }}</td>
+                <td><a href="{% url 'jointeamrequest' pk=team.pk %}">Join this team</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<!--
 {% for team in teams %}
     <h3>{{ team.teamname }}</h3>
     <p>Captain: {{ team.captain }}</p>
@@ -29,5 +60,6 @@
     <p><a href="{% url 'jointeamrequest' pk=team.pk %}">Join this team</a></p>
     <hr />
 {% endfor %}
+    -->
  
 {% endblock %}

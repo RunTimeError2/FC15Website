@@ -5,7 +5,32 @@
 <h1>welcome {{ username }} !</h1>
 <hr />
 
-<h2>My Blogs</h2>
+<h3>My Blogs</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Time</th>
+            <th>Command</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for post in posts %}
+            <tr>
+                <td><a href="{% url 'blogdetail' pk=post.pk %}">{{ post.title }}</a></td>
+                <td>{{ post.timestamp }}</td>
+                <td>
+                    <p>
+                        <a href="{% url 'blogedit' pk=post.pk %}">Edit</a>  
+                        <a href="{% url 'blogdelete' pk=post.pk %}" onclick="return confirm('Are you sure to delete the blog?')">Delete</a>
+                    </p>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!--
 {% for post in posts %}
     <p>
         <a href="{% url 'blogdetail' pk=post.pk %}">{{ post.title }}</a>
@@ -15,9 +40,40 @@
     Posted at {{ post.timestamp }}</th>
     {{ post.content|linebreaks }}</th>
 {% endfor %}
+    -->
+
 <hr />
 
-<h2>My Code</h2>
+<h3>My Code</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Filename</th>
+            <th>State</th>
+            <th>Description</th>
+            <th>Command</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for file in files %}
+            <tr>
+                <td>{{ file.filename }}</td>
+                <td>{{ file.is_compiled }} | {{ file.is_compile_success }}</td>
+                <td>{{ file.description }}</td>
+                <td>
+                    <p>
+                        <a href="{% url 'fileedit' pk=file.pk %}">Edit</a>
+                        <a href="{% url 'filedelete' pk=file.pk %}" onclick="return confirm('Are you sure to delete the file?')">Delete</a>
+                        <a href="{% url 'filedownload' pk=file.pk %}">Download</a>
+                    </p>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<hr />
+
+<!--
 {% for file in files %}
         <h3>{{ file.filename }}</h3>
         <p>{{ file.is_compiled }}     {{ file.is_compile_success }}</p>
@@ -29,8 +85,35 @@
         <p>{{ file.description|linebreaks }}</p>
 {% endfor %}
 <hr />
+    -->
 
-<h2>Code of my teammates</h2>
+{% if warning %}
+    <h3>{{ warning }}</h3>
+{% else %}
+    <h3>Code of my teammates</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Filename</th>
+                <th>Author</th>
+                <th>Description</th>
+                <th>Command</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for code in codes %}
+                <tr>
+                    <td>{{ code.filename }}</td>
+                    <td>{{ code.username }}</td>
+                    <td>{{ code.description }}</td>
+                    <td><a href="{% url 'filedownload' pk=code.pk %}">Download</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+<!--
 <h3>{{ warning }}</h3>
 {% for code in codes %}
     <h4>{{ code.filename }}</h4>
@@ -39,5 +122,6 @@
     <p>{{ code.description|linebreaks }}</p>
     <br />
 {% endfor %}
+    -->
 
 {% endblock %}

@@ -1,6 +1,8 @@
 """
 Definition of urls for FC15Website.
 """
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.contrib import staticfiles
 
 from datetime import datetime
 from django.conf.urls import url
@@ -50,3 +52,5 @@ urlpatterns = [
 
     url(r'^admin/', include(admin.site.urls)),
 ]
+
+#urlpatterns += staticfiles_urlpatterns()

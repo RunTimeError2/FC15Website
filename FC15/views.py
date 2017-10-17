@@ -24,6 +24,10 @@ def home(request):
 
 # Login
 def login(request):
+    current_username = request.COOKIES.get('username', '')
+    if current_username != '':
+        flash(request, 'Error', 'You have already login! Please logout first.')
+        return HttpResponseRedirect('/index/')
     if request.method == 'POST':
         userform = UserLoginForm(request.POST)
         if userform.is_valid():
@@ -610,12 +614,17 @@ def teamdetail(request):
         return HttpResponseRedirect('/login/')
     #my_team = get_object_or_404(TeamInfo, captain = username)
     me = get_object_or_404(UserInfo, username = username)
-    my_team_exists = TeamInfo.objects.filter(username__exact = username)
+    #my_team_exists = TeamInfo.objects.filter(username__exact = username)
+    my_team = me.team
     if my_team:
         my_team = get_object_or_404(TeamInfo, teamname = me.team)
+        if my_team.captain == username:
+            is_captain = True
+        else:
+            is_captain = False
         members = UserInfo.objects.filter(team__exact = my_team.teamname)
         requests = TeamRequest.objects.filter(destin_team = my_team.teamname)
-        return render(request, 'teamdetail.html', {'username': username, 'team': my_team, 'members': members, 'requests': requests})
+        return render(request, 'teamdetail.html', {'username': username, 'team': my_team, 'members': members, 'requests': requests, 'is_captain': is_captain})
     else:
         flash(request, 'Error', 'Please join a team first!', 'error')
         return HttpResponseRedirect('/team/')
@@ -638,7 +647,7 @@ def quitteam(request):
             captain = team.captain
             if captain == username:
                 flash(request, 'Error', 'You are the captain so you cannot simply quit the team!')
-                return HttpResponseRedirect('/team/')
+                return HttpResponseRedirect('/teamdetail/')
             else:
                 me.team = ''
                 me.save()
@@ -671,7 +680,7 @@ def dismissteam(request):
             captain = team.captain
             if captain != username:
                 flash(request, 'Error', 'You are not the captain so you cannot dismiss the team!', 'error')
-                return HttpResponseRedirect('/team/')
+                return HttpResponseRedirect('/teamdetail/')
             else:
                 members = UserInfo.objects.filter(team__exact = my_team)
                 if members:

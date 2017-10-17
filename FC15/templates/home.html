@@ -7,9 +7,24 @@
 <hr />
 
 <h3>Blogs</h3>
-<hr />
-
-<table border="0">
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Time</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for post in posts %}
+            <tr>
+                <th><a href="{% url 'blogdetail' pk=post.pk %}">{{ post.title }}</a></th>
+                <th>{{ post.username }}</th>
+                <th>{{ post.timestamp }}</th>
+            </tr>
+        {% endfor %}
+    </tbody>
+    <!--
 {% for post in posts %}
     <tr>
         <th><a href="{% url 'blogdetail' pk=post.pk %}">{{ post.title }}</a></th>
@@ -17,6 +32,23 @@
         <th>Posted at {{ post.timestamp }}</th>
     </tr>
 {% endfor %}
+        -->
+</table>
+<hr />
+
+<h3>Competition rank</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Author</th>
+            <th>AI name</th>
+            <th>AI Description</th>
+        </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
 </table>
 
 {% endblock %}
