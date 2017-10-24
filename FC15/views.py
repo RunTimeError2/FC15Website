@@ -99,6 +99,11 @@ def regist(request):
     return render(request, 'regist.html', {'form': userform})
 
 
+# About page
+def about(request):
+    return render(request, 'about.html')
+
+
 # Activate account with email
 def activate(request, activate_code):
     activate_record = EmailActivate.objects.get(activate_string = activate_code)
@@ -122,6 +127,7 @@ def activate(request, activate_code):
 
 # Fill in the request to reset password
 def resetrequest(request):
+    username = request.COOKIES.get('username', '')
     if request.method == 'POST':
         userform = ResetPasswordForm(request.POST)
         if userform.is_valid():
@@ -139,7 +145,7 @@ def resetrequest(request):
                 #return HttpResponse('Error! Incorrect user information!')
     else:
         userform = ResetPasswordForm()
-    return render(request, 'resetrequest.html', {'form': userform})
+    return render(request, 'resetrequest.html', {'username': username, 'form': userform})
 
 
 # Reset the password
@@ -194,6 +200,8 @@ def change(request):
 
 # To index page
 def index(request):
+    #return render(request, 'index2.html') #================================================
+    #return render(request, 'index.html')
     username = request.COOKIES.get('username', '')
     if username == '':
         flash(request, 'Error', 'Please login first', 'error')
@@ -203,11 +211,16 @@ def index(request):
     me = get_object_or_404(UserInfo, username = username)
     if me.team == '':
         warning = 'You have not joined a team yet'
-        return render(request, 'index.html', {'username': username, 'posts': posts, 'files': files, 'warning': warning})
+        return render(request, 'userindex.html', {'username': username, 'posts': posts, 'files': files, 'warning': warning})
     else:
         warning = ''
         codes = FileInfo.objects.filter(teamname__exact = me.team).exclude(username = username)
-        return render(request, 'index.html', {'username': username, 'posts': posts, 'files': files, 'warning': '', 'codes': codes})
+        return render(request, 'userindex.html', {'username': username, 'posts': posts, 'files': files, 'warning': '', 'codes': codes})
+
+
+# index 2 test =====================================================
+def index2(request):
+    return render(request, 'userindex.html')
 
 
 # Uplaod file

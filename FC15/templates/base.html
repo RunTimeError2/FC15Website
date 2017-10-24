@@ -6,77 +6,81 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>FC 15 Website</title>
         {% load staticfiles %}
-        <link rel="stylesheet" type="text/css" href="{% static 'app/content/bootstrap.min.css' %}" />
-        <link rel="stylesheet" type="text/css" href="{% static 'app/content/site.css' %}" />
-        <link rel="stylesheet" type="text/css" href="{% static 'app/content/forms.css' %}" />
+        <link rel="stylesheet" type="text/css" href="{% static 'app/assets/css/main.css' %}" />
         <!--link rel="stylesheet" type="text/css" href="forms.css" /-->
-        <script type="text/javascript" src="{% static 'app/scripts/modernizr-2.6.2.js' %}"></script>
-        <script type="text/javascript" src="{% static 'app/scripts/jquery-1.10.2.js' %}"></script>
-        <script type="text/javascript" src="{% static 'app/scripts/bootstrap.min.js' %}"></script>
+        <!-- Scripts -->
+		<script src="{% static 'app/assets/js/skel.min.js' %}"></script>
+		<script src="{% static 'app/assets/js/jquery.min.js' %}"></script>
+		<script src="{% static 'app/assets/js/jquery.scrollex.min.js' %}"></script>
+		<script src="{% static 'app/assets/js/util.js' %}"></script>
+		<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
+		<script src="{% static 'app/assets/js/main.js' %}"></script>
     </head>
 
-    <body>
-        <!--iv class="navbar navbar-inverse navbar-fixed-top" style="height: 70px; margin: 0px; background-color: #5C6878; color: #FFFFFF;"-->
-        <div class="navbar navbar-inverse navbar-fixed-top">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="sr-only">Switch</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <!--img src="{% static 'img/logo.png' %}" /-->
-                    <a href="" class="navbar-brand">FC15 Website</a>
-                </div>
-                <div class="navbar-collapse collapse">
-                    <ul class="nav navbar-nav">
-                        <li><a href="/home/"><span class="glyphicon glyphicon-home"></span> Home</a></li>
-                        <li><a href="/index/"><span class="glyphicon glyphicon-th-list"></span> Index</a></li>
-                        <li><a href=""><span class="glyphicon glyphicon-info-sign"></span> About</a></li>
-                        <li><a href="/team/"><span class="glyphicon glyphicon-bullhorn"></span> Team</a></li>
-                        <li><a href="/upload/"><span class="glyphicon glyphicon-cloud-upload"></span> Upload</a></li>
-                        <li><a href="/postblog/"><span class="glyphicon glyphicon-comment"></span> Blog</a></li>
-                    </ul>
+	<body>
 
-                    <ul class="nav navbar-nav navbar-right dropdown">
-                        {% if username %}
-                            <li><a href="">Hello {{ username }}!</a></li>
-                        {% else %}
-                            <li><a href="/login/">Please login</a></li>
-                        {% endif %}
+		<!-- Page Wrapper -->
+			<div id="page-wrapper">
 
-                        {% if username %}
-                            <li><a href="/logout/" onclick="return confirm('Are you sure to logout?')"><span class="glyphicon glyphicon-circle-arrow-left"></span> Logout</a></li>
-                            <li><a href="/change/"><span class="glyphicon glyphicon-pencil"></span> Change</a></li>
-                            <li><a href="/resetrequest/"><span class="glyphicon glyphicon-repeat"></span> Reset</a></li>
-                        {% else %}
-                            <li><a href="/login/"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-                            <li><a href="/regist/"><span class="glyphicon glyphicon-user"></span> Register</a></li>
-                        <li><a href="/resetrequest/"><span class="glyphicon glyphicon-repeat"></span> Reset</a></li>
-                        {% endif %}
-                    </ul>
-                </div>
-            </div>
-        </div>
+				<!-- Header -->
+					<header id="header" class="alt">
+						<h1><a href="index.html">FC15 Website</a></h1>
+						<nav>
+							<li>
+								<a href="/home/">Home</a>
+								<a href="/index/">Index</a>
+								<a href="/about/">About</a>
+								<a href="/team/">Team</a>
+								<a href="/upload/">Upload</a>
+								<a href="/postblog/">Blog</a>
+                                {% if username %}
+                                    <a href="#menu">Hello {{ username }}!</a>  
+                                {% else %}
+                                    <a href="#menu">Please login</a>
+                                {% endif %}
+							</li>
+						</nav>
+					</header>
 
-        <div class="container body-content">
+				<!-- Menu -->
+					<nav id="menu">
+						<div class="inner">
+							<h2>Login Menu</h2>
+							<ul class="links">
+                                {% if username %}
+                                    <li><a href="/logout/">Log Out</a></li>
+								    <li><a href="/change/">Change Account</a></li>
+								    <li><a href="/resetrequest/">Reset Account</a></li>
+                                {% else %}
+                                    <li><a href="/login/">Log In</a></li>
+								    <li><a href="/regist/">Register</a></li>
+								    <li><a href="/resetrequest/">Reset Account</a></li>
+                                {% endif %}
+							</ul>
+							<a href="" class="close">Close</a>
+						</div>
+					</nav>
 
-            {% if messages %}
-                <script language="javascript">
-                    {% for msg in messages %}
-                        alert('{{ msg.message }}');
-                    {% endfor %}
-                </script>
-            {% endif %}
+				{% if messages %}
+                    <script language="javascript">
+                        {% for msg in messages %}
+                            alert('{{ msg.message }}');
+                        {% endfor %}
+                    </script>
+                {% endif %}
 
-            {% block content %}{% endblock %}
+                {% block content %}{% endblock %}
 
-            <hr/>
-            <footer>
-                <p>&copy; 2017 - FC15 Website - THU DAASTA</p>
-            </footer>
-        </div>
+				<!-- Footer -->
+					<section id="footer">
+						<div class="inner">
+							<ul class="copyright">
+								<li>&copy; FC15, DAASTA, 2017</li>
+								<li>Template from <a href="http://www.cssmoban.com/">http://www.cssmoban.com/</a></li>
+							</ul>
+						</div>
+					</section>
 
-    </body>
+			</div>
+	</body>
 </html>

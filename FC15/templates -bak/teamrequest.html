@@ -1,0 +1,32 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+
+<div class="smart-green">
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <h4>Welcome {{ username }} !</h4>
+    <h4>Please fill in the blanks to send a request to the captain.</h4>
+    <hr />
+
+    <div class="form-group">
+        <label for="id_username" class="col-md-2 control-label">Destination team</label>
+        {{ form.destin_team }}
+    </div>
+    <br />
+    <div class="form-group">
+        <label for="id_password" class="col-md-2 control-label">Message</label>
+        {{ form.message }}
+    </div>
+    <br />
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Submit" class="btn btn-default" onclick="return confirm('Are you sure to send the request to join the team?')" />
+        </div>
+    </div>
+
+    <hr />
+</form>
+</div>
+
+{% endblock %}

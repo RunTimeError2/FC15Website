@@ -20,7 +20,9 @@ admin.autodiscover()
 urlpatterns = [
     url(r'^$', FC15.views.home, name = 'home'),
     url(r'^home/$', FC15.views.home, name = 'home'),
+    url(r'^about/$', FC15.views.about, name = 'about'),
     url(r'^index/$', FC15.views.index, name = 'index'),
+    url(r'^index2/$', FC15.views.index2, name = 'index2'), #=============================================
     url(r'^login/$', FC15.views.login, name = 'login'),
     url(r'^logout/$', FC15.views.logout, name = 'logout'),
     url(r'^regist/$', FC15.views.regist, name = 'regist'),

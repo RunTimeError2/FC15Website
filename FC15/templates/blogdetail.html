@@ -2,12 +2,38 @@
 
 {% block content %}
 
-    <h1>{{ post.title }}</h1>
-    <p>{{ post.timestamp }}</p>
-    <p>Posted by {{ post.username }}</p>
-    <hr />
-    <p>{{ post.content|linebreaks }}</p>
-    <hr />
-    <a href="/index/">Back</a>
+<!-- Banner -->
+<section id="banner">
+	<div class="inner">
+		<h2>Blog Detail</h2>
+        <a href="/index/" class="button">Read more</a>
+	</div>
+</section>
+
+<!-- Wrapper -->
+<section id="wrapper">
+	<section id="one" class="wrapper spotlight style1">
+		<div class="inner">
+            <a href="" class="image"><img src="/static/images/pic02.jpg" alt="" /></a>
+			<div class="content">
+				<h2>{{ post.title }}</h2>
+                <hr />
+                <h5>Posted at {{ post.timestamp }}</h5>
+                <p>Posted by {{ post.username }}</p>
+			</div>
+		</div>
+	</section>
+
+    <section id="two" class="wrapper alt spotlight style2">
+		<div class="inner">
+			<div class="content">
+				<hr />
+				<p>{{ post.content }}</p>
+                <hr />
+                <a href="/index/" class="button">Go back</a>
+			</div>
+		</div>
+	</section>
+</section>
 
 {% endblock %}

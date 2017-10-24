@@ -2,23 +2,36 @@
 
 {% block content %}
 
-<div class="smart-green">
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <h1>Enter your information to create a new account.</h1>
-    <br />
-    <div class="form-group">
-        <label for="id_username" class="col-md-2 control-label">Username</label>
-        {{ form.username }}
-    </div>
-    <div class="form-group">
-        <label for="id_email" class="col-md-2 control-label">Email</label>
-        {{ form.email }}
-    </div>
-    <div class="form-group">
-        <input type="submit" value="Reset" class="button" onclick="return confirm('Are you sure to send the request to reset you password?')" />
-    </div>
-</form>
-</div>
+<!-- Banner -->
+<section id="banner">
+	<div class="inner">
+		<h2>Welcome to FC15!</h2>
+		<p>You can fill in the request to reset you password here.</p>
+	</div>
+</section>
+
+<!-- Wrapper -->
+<section id="wrapper">
+    <section id="one" class="wrapper spotlight style1">
+		<div class="inner"><div class="content">
+		    <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+                <h1>Enter your information to create a new account.</h1>
+                <br />
+                <div class="form-group">
+                    <label for="id_username" class="col-md-2 control-label">Username</label>
+                    {{ form.username }}
+                </div>
+                <div class="form-group">
+                    <label for="id_email" class="col-md-2 control-label">Email</label>
+                    {{ form.email }}
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Reset" class="button" onclick="return confirm('Are you sure to send the request to reset you password?')" />
+                </div>
+            </form>       
+		</div></div>
+	</section>
+</section>
 
 {% endblock %}

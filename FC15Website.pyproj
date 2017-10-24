@@ -60,15 +60,6 @@
     <Compile Include="FC15Website\settings.py" />
     <Compile Include="FC15Website\urls.py" />
     <Compile Include="FC15Website\wsgi.py" />
-    <Compile Include="OJ\admin.py" />
-    <Compile Include="OJ\apps.py" />
-    <Compile Include="OJ\models.py" />
-    <Compile Include="OJ\start.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="OJ\tests.py" />
-    <Compile Include="OJ\views.py" />
-    <Compile Include="OJ\__init__.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="app\" />
@@ -84,8 +75,6 @@
     <Folder Include="FC15\" />
     <Folder Include="FC15\migrations\" />
     <Folder Include="FC15\templates\" />
-    <Folder Include="OJ\" />
-    <Folder Include="OJ\templates\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="FC15\templates\base.html" />
@@ -95,6 +84,7 @@
     <Content Include="FC15\templates\createteam.html" />
     <Content Include="FC15\templates\home.html" />
     <Content Include="FC15\templates\index.html" />
+    <Content Include="FC15\templates\userindex.html" />
     <Content Include="FC15\templates\login.html" />
     <Content Include="FC15\templates\regist.html" />
     <Content Include="FC15\templates\resetrequest.html" />
@@ -102,7 +92,7 @@
     <Content Include="FC15\templates\teamdetail.html" />
     <Content Include="FC15\templates\upload.html" />
     <Content Include="FC15\templates\teamrequest.html" />
-    <Content Include="OJ\templates\index.html" />
+    <Content Include="FC15\templates\about.html" />
     <Content Include="requirements.txt" />
     <Content Include="db.sqlite3" />
     <Content Include="app\static\app\content\bootstrap.css" />

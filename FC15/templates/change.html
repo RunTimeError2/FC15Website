@@ -2,31 +2,45 @@
 
 {% block content %}
 
-<div class="smart-green">
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <h1>Welcome {{ username }}! You can change your account information here.</h1>
-    <br />
-    <div class="form-group">
-        <label for="id_email" class="col-md-2 control-label">Email</label>
-        {{ form.email }}
-    </div>
-    <div class="form-group">
-        <label for="id_old_password" class="col-md-2 control-label">Old Password</label>
-        {{ form.old_password }}
-    </div>
-    <div class="form-group">
-        <label for="id_new_password" class="col-md-2 control-label">New password</label>
-        {{ form.new_password }}
-    </div>
-    <div class="form-group">
-        <label for="id_confirm_password" class="col-md-2 control-label">Confirm password</label>
-        {{ form.confirm_password }}
-    </div>
-    <div class="form-group">
-        <input type="submit" value="Submit" class="button" onclick="return confirm('Are you sure to change you account information?')" />
-    </div>
-</form>
-</div>
+<!-- Banner -->
+<section id="banner">
+	<div class="inner">
+	    <h2>Welcome {{ username }}!</h2>
+	    <p>You can post your blog here</p>
+	</div>
+</section>
+
+<!-- Wrapper -->        
+<section id="wrapper">
+    <section id="one" class="wrapper spotlight style1">
+		<div class="inner">
+            <form method="post" enctype="multipart/form-data" style="left: 20px;">
+            {% csrf_token %}
+            <h1>Welcome {{ username }}! You can change your account information here.</h1>
+            <br />
+            <div class="form-group">
+                <label for="id_email" class="col-md-2 control-label">Email</label>
+                {{ form.email }}
+            </div>
+            <div class="form-group">
+                <label for="id_old_password" class="col-md-2 control-label">Old Password</label>
+                {{ form.old_password }}
+            </div>
+            <div class="form-group">
+                <label for="id_new_password" class="col-md-2 control-label">New password</label>
+                {{ form.new_password }}
+            </div>
+           <div class="form-group">
+                <label for="id_confirm_password" class="col-md-2 control-label">Confirm password</label>
+                {{ form.confirm_password }}
+            </div>
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Submit" class="button" onclick="return confirm('Are you sure to change you account information?')" />
+            </div>
+            </form>
+        </div>
+    </section>
+</section>
 
 {% endblock %}

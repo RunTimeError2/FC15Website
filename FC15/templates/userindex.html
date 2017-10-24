@@ -1,0 +1,129 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+
+<!-- Banner -->
+<section id="banner">
+	<div class="inner">
+		<h2>Welcome {{ username }}!</h2>
+		<p>This is the home page for all participants.</p>
+	</div>
+</section>
+
+<section id="wrapper">
+
+<!-- One -->
+<section id="one" class="wrapper spotlight style1">
+    <div class="inner">
+	    <a href="" class="image"><img src="/static/images/pic01.jpg" alt="" /></a>
+	    <div class="content">
+			<h2>My Blogs</h2>
+            {% if posts %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Time</th>
+                        <th>Command</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for post in posts %}
+                        <tr>
+                            <td><a href="{% url 'blogdetail' pk=post.pk %}">{{ post.title }}</a></td>
+                            <td>{{ post.timestamp }}</td>
+                            <td>
+                                <p>
+                                    <a href="{% url 'blogedit' pk=post.pk %}">Edit</a>  
+                                    <a href="{% url 'blogdelete' pk=post.pk %}" onclick="return confirm('Are you sure to delete the blog?')">Delete</a>
+                                </p>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <hr />
+            <h4>You have not posted any blogs yet.</h4>
+            {% endif %}
+		</div>
+	</div>
+</section>
+
+<!-- Two -->
+<section id="two" class="wrapper alt spotlight style2">
+	<div class="inner">
+		<div class="content">
+            <h2>My Code</h2>
+            {% if files %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Filename</th>
+                            <th>State</th>
+                            <th>Description</th>
+                            <th>Command</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for file in files %}
+                            <tr>
+                                <td>{{ file.filename }}</td>
+                                <td>{{ file.is_compiled }} | {{ file.is_compile_success }}</td>
+                                <td>{{ file.description }}</td>
+                                <td>
+                                    <p>
+                                        <a href="{% url 'fileedit' pk=file.pk %}">Edit</a>
+                                        <a href="{% url 'filedelete' pk=file.pk %}" onclick="return confirm('Are you sure to delete the file?')">Delete</a>
+                                        <a href="{% url 'filedownload' pk=file.pk %}">Download</a>
+                                    </p>
+                             </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <hr />
+                <h4>You have not uploaded any code yet.</h4>
+            {% endif %}
+		</div>
+	</div>
+</section>
+
+<!-- Three -->
+<section id="three" class="wrapper spotlight style3">
+	<div class="inner">
+		<div class="content">
+            {% if warning %}
+                <h3>{{ warning }}</h3>
+            {% else %}
+                <h3>Code of my teammates</h3>
+                <br />
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Filename</th>
+                            <th>Author</th>
+                            <th>Description</th>
+                            <th>Command</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for code in codes %}
+                            <tr>
+                                <td>{{ code.filename }}</td>
+                                <td>{{ code.username }}</td>
+                                <td>{{ code.description }}</td>
+                                <td><a href="{% url 'filedownload' pk=code.pk %}">Download</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+		</div>
+	</div>
+</section>
+
+</section>
+
+{% endblock %}

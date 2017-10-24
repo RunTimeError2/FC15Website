@@ -2,53 +2,84 @@
 
 {% block content %}
 
-<h1>Welcome to FC15 Website !</h1>
-<p>This is the home page</p>
-<hr />
+				<!-- Banner -->
+					<section id="banner">
+						<div class="inner">
+							<div class="logo"><span class="icon fa-diamond"></span></div>
+							<h2>Welcome to Freshmen C 15!</h2>
+							<p>Presented by DAASTA, 2017</p>
+						</div>
+					</section>
 
-<h3>Blogs</h3>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Author</th>
-            <th>Time</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for post in posts %}
-            <tr>
-                <th><a href="{% url 'blogdetail' pk=post.pk %}">{{ post.title }}</a></th>
-                <th>{{ post.username }}</th>
-                <th>{{ post.timestamp }}</th>
-            </tr>
-        {% endfor %}
-    </tbody>
-    <!--
-{% for post in posts %}
-    <tr>
-        <th><a href="{% url 'blogdetail' pk=post.pk %}">{{ post.title }}</a></th>
-        <th>{{ post.username }}</th>
-        <th>Posted at {{ post.timestamp }}</th>
-    </tr>
-{% endfor %}
-        -->
-</table>
-<hr />
+				<!-- Wrapper -->
+					<section id="wrapper">
 
-<h3>Competition rank</h3>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Rank</th>
-            <th>Author</th>
-            <th>AI name</th>
-            <th>AI Description</th>
-        </tr>
-    </thead>
-    <tbody>
+						<!-- One -->
+							<section id="one" class="wrapper spotlight style1">
+								<div class="inner">
+									<a href="" class="image"><img src="/static/images/pic01.jpg" alt="" /></a>
+									<div class="content">
+										<h2 class="major">Game: DA GAN</h2>
+										<p>Here should be the introduction and rules for the game.</p>
+										<a href="" class="special">Learn more</a>
+										<a href="" class="special">Join now</a>
+										<a href="" class="special">Download tools</a>
+									</div>
+								</div>
+							</section>
 
-    </tbody>
-</table>
+						<!-- Two -->
+							<section id="two" class="wrapper alt spotlight style2">
+								<div class="inner">
+									<a href="" class="image"><img src="/static/images/pic02.jpg" alt="" /></a>
+									<div class="content">
+										<h2 class="major">Something about FC and us</h2>
+										<p>
+											Here should be the introduction about FC and DAASTA<br />
+											Also link to daasta.cn can be put here.
+										</p>
+										<a href="" class="special">Learn more</a>
+									</div>
+								</div>
+							</section>
+
+						<!-- Three -->
+							<section id="three" class="wrapper spotlight style3">
+								<div class="inner">
+									<a href="" class="image"><img src="/static/images/pic01.jpg" alt="" /></a>
+									<div class="content">
+										<h2 class="major">Something about the sponsor</h2>
+										<p>If they want to put introductio or advertisements, they can be put here.</p>
+										<a href="" class="special">Learn more</a>
+									</div>
+								</div>
+							</section>
+
+						<!-- Four -->
+							<section id="four" class="wrapper alt style1">
+								<div class="inner">
+									<h2 class="major">Game status</h2>
+									<p>
+										Contents about the status of the game, including updates or ranks, etc. can be put here.<br />
+									    Because the game has not began yet, this part is empty now.
+									</p>
+									<section class="features">
+										<article>
+											<a href="" class="image"><img src="/static/images/pic02.jpg" alt="" /></a>
+											<h3 class="major">Part 01</h3>
+											<p>This is part 01.</p>
+											<a href="" class="special">Learn more</a>
+										</article>
+										<article>
+											<a href="" class="image"><img src="/static/images/pic01.jpg" alt="" /></a>
+											<h3 class="major">Part 02</h3>
+											<p>This is part 02.</p>
+											<a href="" class="special">Learn more</a>
+										</article>
+									</section>
+								</div>
+							</section>
+
+					</section>
 
 {% endblock %}
