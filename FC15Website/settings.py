@@ -32,7 +32,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'app',
+    #'app',
 
     'FC15',
     # Add your apps here to enable them

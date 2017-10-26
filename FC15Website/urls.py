@@ -8,9 +8,6 @@ from datetime import datetime
 from django.conf.urls import url
 import django.contrib.auth.views
 
-import app.forms
-import app.views
-
 # Uncomment the next lines to enable the admin:
 from django.conf.urls import include
 from django.contrib import admin
@@ -22,7 +19,6 @@ urlpatterns = [
     url(r'^home/$', FC15.views.home, name = 'home'),
     url(r'^about/$', FC15.views.about, name = 'about'),
     url(r'^index/$', FC15.views.index, name = 'index'),
-    url(r'^index2/$', FC15.views.index2, name = 'index2'), #=============================================
     url(r'^login/$', FC15.views.login, name = 'login'),
     url(r'^logout/$', FC15.views.logout, name = 'logout'),
     url(r'^regist/$', FC15.views.regist, name = 'regist'),
@@ -36,8 +32,6 @@ urlpatterns = [
     url(r'^teamrequet/$', FC15.views.jointeamrequest, name = 'jointeamrequest'),
     url(r'^quitteam/$', FC15.views.quitteam, name = 'quitteam'),
     url(r'^dismissteam/$', FC15.views.dismissteam, name = 'dismissteam'),
-
-    url(r'^compileall/$', FC15.views.compileall, name = 'compileall'), # test =============================
 
     url(r'^blogdetail/(?P<pk>[0-9]+)/$', FC15.views.blogdetail, name = 'blogdetail'),
     url(r'^blogedit/(?P<pk>[0-9]+)/$', FC15.views.blogedit, name = 'blogedit'),

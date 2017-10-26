@@ -218,11 +218,6 @@ def index(request):
         return render(request, 'userindex.html', {'username': username, 'posts': posts, 'files': files, 'warning': '', 'codes': codes})
 
 
-# index 2 test =====================================================
-def index2(request):
-    return render(request, 'userindex.html')
-
-
 # Uplaod file
 def upload(request):
     username = request.COOKIES.get('username', '')
@@ -709,9 +704,3 @@ def dismissteam(request):
     else:
         flash(request, 'Error', 'User does not exist', 'error')
         return HttpResponseRedirect('/login/')
-
-
-# compile all file ==============================================
-def compileall(request):
-    run()
-    return HttpResponse('done!')
