@@ -489,6 +489,7 @@ def createteam(request):
             newteam.save()
             me = UserInfo.objects.get(username = username)
             me.team = newteam.teamname
+            me.save()
             flash(request, 'Success', 'Team created successfully', 'success')
             return HttpResponseRedirect('/team/')
             #return HttpResponse('Team created successfully')
