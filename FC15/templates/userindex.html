@@ -99,26 +99,30 @@
             {% else %}
                 <h3>Code of my teammates</h3>
                 <br />
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Filename</th>
-                            <th>Author</th>
-                            <th>Description</th>
-                            <th>Command</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for code in codes %}
-                            <tr>
-                                <td>{{ code.filename }}</td>
-                                <td>{{ code.username }}</td>
-                                <td>{{ code.description }}</td>
-                                <td><a href="{% url 'filedownload' pk=code.pk %}">Download</a></td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+				{% if codes %}
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Filename</th>
+								<th>Author</th>
+								<th>Description</th>
+								<th>Command</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for code in codes %}
+								<tr>
+									<td>{{ code.filename }}</td>
+									<td>{{ code.username }}</td>
+									<td>{{ code.description }}</td>
+									<td><a href="{% url 'filedownload' pk=code.pk %}">Download</a></td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				{% else %}
+					<h4>You teammates have not uploaded any code yet.</h4>
+				{% endif %}
             {% endif %}
 		</div>
 	</div>
