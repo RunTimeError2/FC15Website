@@ -77,11 +77,14 @@
     <Folder Include="FC15\templates\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="FC15\templates\about_asta.html" />
+    <Content Include="FC15\templates\about_sponsor.html" />
     <Content Include="FC15\templates\base.html" />
     <Content Include="FC15\templates\blogdetail.html" />
     <Content Include="FC15\templates\blogpost.html" />
     <Content Include="FC15\templates\change.html" />
     <Content Include="FC15\templates\createteam.html" />
+    <Content Include="FC15\templates\document.html" />
     <Content Include="FC15\templates\home.html" />
     <Content Include="FC15\templates\index.html" />
     <Content Include="FC15\templates\userindex.html" />
@@ -92,7 +95,7 @@
     <Content Include="FC15\templates\teamdetail.html" />
     <Content Include="FC15\templates\upload.html" />
     <Content Include="FC15\templates\teamrequest.html" />
-    <Content Include="FC15\templates\about.html" />
+    <Content Include="FC15\templates\about_fc15.html" />
     <Content Include="requirements.txt" />
     <Content Include="db.sqlite3" />
     <Content Include="app\static\app\content\bootstrap.css" />

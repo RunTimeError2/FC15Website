@@ -1,86 +1,189 @@
 ﻿<!DOCTYPE html>
-
 <html>
     <head>
-        <meta charset="utf-8" />
+        <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>FC 15 Website</title>
+        <title>FC15 Website</title>
         {% load staticfiles %}
-        <link rel="stylesheet" type="text/css" href="{% static 'app/assets/css/main.css' %}" />
-        <!--link rel="stylesheet" type="text/css" href="forms.css" /-->
-        <!-- Scripts -->
-		<script src="{% static 'app/assets/js/skel.min.js' %}"></script>
-		<script src="{% static 'app/assets/js/jquery.min.js' %}"></script>
-		<script src="{% static 'app/assets/js/jquery.scrollex.min.js' %}"></script>
-		<script src="{% static 'app/assets/js/util.js' %}"></script>
-		<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
-		<script src="{% static 'app/assets/js/main.js' %}"></script>
-    </head>
+  		<!-- Import style sheet -->
+  		<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+        <link rel="stylesheet" type="text/css" href="{% static 'app/content/bootstrap.min.css' %}" />
+        <link rel="stylesheet" type="text/css" href="{% static 'app/content/forms.css' %}"
+        <!-- Use bootstrap for some special elements -->
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+	</head>
 
-	<body>
+	<body style="width: 100%; height: 100%; background-image: url("bg.jpg");">
+		<div id="app" style="font-family: Arial;">
+  	<!--el-container-->
+  		<!-- Header -->
+  		<!--el-header-->
+  			<!-- navbar -->
+			<div class="line"></div>
+			<el-menu
+  				:default-active="activeIndex2"
+  				class="el-menu-demo"
+  				mode="horizontal"
+  				@select="handleSelect"
+  				background-color="#545c64"
+  				text-color="#fff"
+  				active-text-color="#ffd04b">
+  				<a href="/home/"><el-menu-item index="1">
+  					<i class="el-icon-menu"></i>Home
+  				</el-menu-item></a>
+  				<a href="/index/"><el-menu-item index="2">
+  					<i class="el-icon-document"></i>Index
+  				</el-menu-item></a>
+  				<el-submenu index="3">
+  					<template slot="title"><i class="el-icon-info"></i>About</template>
+  					<a href="/about_fc15/"><el-menu-item index="3-1"><i class="el-icon-tickets"></i>FC15</el-menu-item></a>
+  					<a href="/about_asta/"><el-menu-item index="3-2"><i class="el-icon-edit"></i>DAASTA</el-menu-item></a>
+  					<a href="/about_sponsor/"><el-menu-item index="3-3"><i class="el-icon-goods"></i>Sponsor</el-menu-item></a>
+  				</el-submenu>
+  				<el-submenu index="4">
+    				<template slot="title"><i class="el-icon-service"></i>Game</template>
+    				<a href="/document/"><el-menu-item index="4-1"><i class="el-icon-document"></i>Documents</el-menu-item></a>
+    				<a href=""><el-menu-item index="4-2"><i class="el-icon-star-off"></i>Ranking</el-menu-item></a>
+    				<a href="/team/"><el-menu-item index="4-3"><i class="el-icon-circle-plus"></i>Teams</el-menu-item></a>
+    				<a href="/upload/"><el-menu-item index="4-4"><i class="el-icon-upload"></i>Uploading code</el-menu-item></a>
+    				<a href=""><el-menu-item index="4-5"><i class="el-icon-time"></i>Playing online</el-menu-item></a>
+  				</el-submenu>
+  				<a href="/postblog/"><el-menu-item index="5">
+  					<i class="el-icon-edit"></i>Blogs
+  				</el-menu-item></a>
+  				<el-submenu index="6">
+    				<template slot="title"><i class="el-icon-success"></i>Sign in</template>
+    				<a href="/login/"><el-menu-item index="6-1">Sign in</el-menu-item></a>
+    				<a href="/regist/"><el-menu-item index="6-2">Sign up</el-menu-item></a>
+    				<a href="/change/"><el-menu-item index="6-3">Alter account</el-menu-item></a>
+    				<a href="/resetrequest/"><el-menu-item index="6-4">Reset account</el-menu-item></a>
+    				<a href="/logout/"><el-menu-item index="6-5">Log out</el-menu-item></a>
+  				</el-submenu>
+			</el-menu>
+		<!--/el-header-->
 
-		<!-- Page Wrapper -->
-			<div id="page-wrapper">
-
-				<!-- Header -->
-					<header id="header" class="alt">
-						<h1><a href="index.html">FC15 Website</a></h1>
-						<nav>
-							<li>
-								<a href="/home/">Home</a>
-								<a href="/index/">Index</a>
-								<a href="/about/">About</a>
-								<a href="/team/">Team</a>
-								<a href="/upload/">Upload</a>
-								<a href="/postblog/">Blog</a>
-                                {% if username %}
-                                    <a href="#menu">Hello {{ username }}!</a>  
-                                {% else %}
-                                    <a href="#menu">Please login</a>
-                                {% endif %}
-							</li>
-						</nav>
-					</header>
-
-				<!-- Menu -->
-					<nav id="menu">
-						<div class="inner">
-							<h2>Login Menu</h2>
-							<ul class="links">
-                                {% if username %}
-                                    <li><a href="/logout/">Log Out</a></li>
-								    <li><a href="/change/">Change Account</a></li>
-								    <li><a href="/resetrequest/">Reset Account</a></li>
-                                {% else %}
-                                    <li><a href="/login/">Log In</a></li>
-								    <li><a href="/regist/">Register</a></li>
-								    <li><a href="/resetrequest/">Reset Account</a></li>
-                                {% endif %}
-							</ul>
-							<a href="" class="close">Close</a>
-						</div>
-					</nav>
-
+		<!-- Main content -->
+		<!--el-main-->
+			<!-- Show messages -->
+			<div class="showmessage">
 				{% if messages %}
-                    <script language="javascript">
-                        {% for msg in messages %}
-                            alert('{{ msg.message }}');
-                        {% endfor %}
-                    </script>
-                {% endif %}
-
-                {% block content %}{% endblock %}
-
-				<!-- Footer -->
-					<section id="footer">
-						<div class="inner">
-							<ul class="copyright">
-								<li>&copy; FC15, DAASTA, 2017</li>
-								<li>Template from <a href="http://www.cssmoban.com/">http://www.cssmoban.com/</a></li>
-							</ul>
-						</div>
-					</section>
-
+					<script language="javascript">
+						{% for msg in messages %}
+							alert('{{ msg.message }}');
+						{% endfor %}
+					</script>
+				{% endif %}
+				
+				<!-- maybe this can do
+				<el-button @click="visible = true">按钮</el-button>
+				<el-dialog :visible.sync='visible' title='hello world'>
+					<p>Welcome!</p>
+				</el-dialog>-->
 			</div>
+
+            <!-- Template for Django -->
+            {% block content %}{% endblock %} 
+			
+			<!-- Carousel for home page -->
+            <!--
+   	 		<template>
+  				<el-carousel :interval="4000" type="card" height="200px">
+    			<el-carousel-item v-for="item in 6" :key="item">
+      				<h3>{{ item }}</h3>
+    			</el-carousel-item>
+  				</el-carousel>
+			</template>-->
+
+			<!-- A brief introduction demonstrated with Collapse -->
+            <!--
+			<el-collapse v-model="activeNames">
+				<el-collapse-item title="Collapse item 1" name="1">
+					<div style="background-image: url('bg.jpg');">Content 1</div>
+					<div>Content 2</div>
+					<a href="">More..</a>
+				</el-collapse-item>
+				<el-collapse-item title="Collapse item 2" name="2">
+					<div>Content 1</div>
+					<div>Content 2</div>
+					<a href="">More..</a>
+				</el-collapse-item>
+			</el-collapse>
+
+			<div class="abc" style="background-image: url('bg.jpg');">
+				<h1>title</h1>
+				<p>this is a paragraph with a background image</p>
+			</div>-->
+   	 	<!--/el-main-->
+
+   	 	<!-- Footer -->
+   	 	<!--el-footer-->
+   	 		<div class="line"></div>
+   	 		<el-row>
+   	 			<el-col :span="24">
+   	 				<div class="grid-content bg-dark">
+						<li style="color: #fff;">&copy; FC15, DAASTA, 2018</li>
+   	 				</div>
+   	 			</el-col>
+   	 		</el-row>
+   	 	<!--/el-footer-->
+   	<!--/el-container-->
+   		</div>
 	</body>
+
+  	<!-- import Vue -->
+  	<script src="https://unpkg.com/vue/dist/vue.js"></script>
+  	<!-- import components -->
+  	<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  	<script>
+    	new Vue({
+      		el: '#app',
+      		data: function() {
+        		return { visible: false }
+      		}
+    	})
+  	</script>
+
+  	<!-- Style sheets for this page -->
+  	<style>
+  		.el-row {
+    		margin-bottom: 20px;
+    		&:last-child {
+      		margin-bottom: 0;
+    		}
+  		}
+  		.el-col {
+    		border-radius: 0px;
+  		}
+  		.bg-purple-dark {
+    		background: #99a9bf;
+  		}
+  		.bg-dark {
+  			background: #545c64;
+  		}
+  		.bg-purple {
+    		background: #d3dce6;
+  		}
+  		.bg-purple-light {
+    		background: #e5e9f2;
+  		}
+  		.grid-content {
+    		border-radius: 0px;
+    		min-height: 36px;
+  		}
+  		.row-bg {
+    		padding: 10px 0;
+    		background-color: #f9fafc;
+  		}		
+
+  		.el-carousel__item h3 {
+    		color: #475669;
+    		font-size: 18px;
+    		opacity: 0.75;
+    		line-height: 300px;
+    		margin: 0;
+  		}
+  		
+  	</style>
 </html>

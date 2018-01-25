@@ -2,84 +2,100 @@
 
 {% block content %}
 
-				<!-- Banner -->
-					<section id="banner">
-						<div class="inner">
-							<div class="logo"><span class="icon fa-diamond"></span></div>
-							<h2>Welcome to Freshmen C 15!</h2>
-							<p>Presented by DAASTA, 2017</p>
-						</div>
-					</section>
+<div class="banner" style="text-align: center;">
+    <h2>Welcome to FC15!</h2>
+    <p>Presented by DAASTA, 2017-2018</p>
+</div>
 
-				<!-- Wrapper -->
-					<section id="wrapper">
+<template>
+  	<el-carousel :interval="4000" type="card">
+    	<el-carousel-item>
+      		<img src="/static/images/pic01.jpg" style="width: 100%;"/>
+    	</el-carousel-item>
+        <el-carousel-item>
+      		<img src="/static/images/pic01-hj.jpg" style="width: 100%;"/>
+    	</el-carousel-item>
+         <el-carousel-item>
+      		<img src="/static/images/pic02.jpg" style="width: 100%;"/>
+    	</el-carousel-item>
+        <el-carousel-item>
+      		<img src="/static/images/pic03.jpg" style="width: 100%;"/>
+    	</el-carousel-item>
+  	</el-carousel>
+</template>
 
-						<!-- One -->
-							<section id="one" class="wrapper spotlight style1">
-								<div class="inner">
-									<a href="" class="image"><img src="/static/images/pic01.jpg" alt="" /></a>
-									<div class="content">
-										<h2 class="major">Game: DA GAN</h2>
-										<p>Here should be the introduction and rules for the game.</p>
-										<a href="" class="special">Learn more</a>
-										<a href="" class="special">Join now</a>
-										<a href="" class="special">Download tools</a>
-									</div>
-								</div>
-							</section>
+<el-container>
+    <el-header>
+        <h3>Game: DA GAN</h3>
+    </el-header>
+    <el-container>
+        <el-aside width="250px" style="background-color: aqua;">
+            <img src="static/images/pic01.jpg" style="width: 100%;"/>
+        </el-aside>
+        <el-main>
+            <p>Here should be the introduction for the game</p>
+            <p>including background, rules, etc.</p>
+            <el-button type="info" plain>Learn more</el-button>
+        </el-main>
+    </el-container>
+</el-container>
 
-						<!-- Two -->
-							<section id="two" class="wrapper alt spotlight style2">
-								<div class="inner">
-									<a href="" class="image"><img src="/static/images/pic02.jpg" alt="" /></a>
-									<div class="content">
-										<h2 class="major">Something about FC and us</h2>
-										<p>
-											Here should be the introduction about FC and DAASTA<br />
-											Also link to daasta.cn can be put here.
-										</p>
-										<a href="" class="special">Learn more</a>
-									</div>
-								</div>
-							</section>
+<el-container>
+    <el-header>
+        <h3>Play game</h3>
+    </el-header>
+    <el-main>
+        <el-collapse v-model="activeNames">
+            <el-collapse-item title="Download SDK">
+                <p>Here should be a brief introduction of the SDK</p>
+                <el-button type="info" plain>Learn more</el-button>
+                <el-button type="success" plain>Download now</el-button>
+            </el-collapse-item>
+            <el-collapse-item title="Current ranking">
+                <p>The game has not been started yet.</p>
+            </el-collapse-item>
+            <el-collapse-item title="Teams">
+                <p>Here should be a list of all teams.</p>
+            </el-collapse-item>
+            <el-collapse-item title="Blogs">
+                <p>Here should be a list of all blogs.</p>
+            </el-collapse-item>
+        </el-collapse>
+    </el-main>
+</el-container>
 
-						<!-- Three -->
-							<section id="three" class="wrapper spotlight style3">
-								<div class="inner">
-									<a href="" class="image"><img src="/static/images/pic01.jpg" alt="" /></a>
-									<div class="content">
-										<h2 class="major">Something about the sponsor</h2>
-										<p>If they want to put introductio or advertisements, they can be put here.</p>
-										<a href="" class="special">Learn more</a>
-									</div>
-								</div>
-							</section>
+<el-container>
+    <el-aside width="25%">
+        <img src="/static/images/pic01-hj.jpg" style="width: 100%;"/>
+    </el-aside>
+    <el-main>
+        <h3>Something about FC and DAASTA</h3>
+        <p>Here should be a brief introduction about DAASTA and FC</p>
+        <el-button type="info" plain>Learn more</el-button>
+        <el-button type="primary" plain>Link to more articles</el-button>
+    </el-main>
+</el-container>
 
-						<!-- Four -->
-							<section id="four" class="wrapper alt style1">
-								<div class="inner">
-									<h2 class="major">Game status</h2>
-									<p>
-										Contents about the status of the game, including updates or ranks, etc. can be put here.<br />
-									    Because the game has not began yet, this part is empty now.
-									</p>
-									<section class="features">
-										<article>
-											<a href="" class="image"><img src="/static/images/pic02.jpg" alt="" /></a>
-											<h3 class="major">Part 01</h3>
-											<p>This is part 01.</p>
-											<a href="" class="special">Learn more</a>
-										</article>
-										<article>
-											<a href="" class="image"><img src="/static/images/pic01.jpg" alt="" /></a>
-											<h3 class="major">Part 02</h3>
-											<p>This is part 02.</p>
-											<a href="" class="special">Learn more</a>
-										</article>
-									</section>
-								</div>
-							</section>
+<el-container>
+    <el-aside width="75%">
+        <h3>Something about the sponsor</h3>
+        <p>Here shouold be a brief introduction about the sponsor</p>
+        <el-button type="info" plain>Learn more</el-button>
+    </el-aside>
+    <el-main>
+        <img src="/static/images/pic02.jpg" />
+    </el-main>
+</el-container>
 
-					</section>
+<el-container>
+    <el-aside width="25%">
+        <img src="/static/images/pic01.jpg" />
+    </el-aside>
+    <el-main>
+        <h3>Contact us</h3>
+        <p>Email: ******</p>
+        <el-button type="primary">Send Email</el-button>
+    </el-main>
+</el-container>
 
 {% endblock %}

@@ -17,7 +17,11 @@ admin.autodiscover()
 urlpatterns = [
     url(r'^$', FC15.views.home, name = 'home'),
     url(r'^home/$', FC15.views.home, name = 'home'),
-    url(r'^about/$', FC15.views.about, name = 'about'),
+    #url(r'^about/$', FC15.views.about, name = 'about'),
+    url(r'^about_fc15/$', FC15.views.about_fc15, name = 'about_fc15'),
+    url(r'^about_asta/$', FC15.views.about_asta, name = 'about_asta'),
+    url(r'^about_sponsor/$', FC15.views.about_sponsor, name = 'about_sponsor'),
+    url(r'^document/$', FC15.views.document, name = 'document'),
     url(r'^index/$', FC15.views.index, name = 'index'),
     url(r'^login/$', FC15.views.login, name = 'login'),
     url(r'^logout/$', FC15.views.logout, name = 'logout'),
@@ -29,7 +33,7 @@ urlpatterns = [
     url(r'^resetrequest/$', FC15.views.resetrequest, name = 'resetrequest'),
     url(r'^change/$', FC15.views.change, name = 'change'),
     url(r'^teamdetail/$', FC15.views.teamdetail, name = 'teamdetail'),
-    url(r'^teamrequet/$', FC15.views.jointeamrequest, name = 'jointeamrequest'),
+    url(r'^teamrequest/$', FC15.views.jointeamrequest, name = 'jointeamrequest'),
     url(r'^quitteam/$', FC15.views.quitteam, name = 'quitteam'),
     url(r'^dismissteam/$', FC15.views.dismissteam, name = 'dismissteam'),
 
@@ -47,6 +51,8 @@ urlpatterns = [
     url(r'^rejectrequest/(?P<pk>[0-9]+)/$', FC15.views.rejectrequest, name = 'rejectrequest'),
 
     url(r'^admin/', include(admin.site.urls)),
+
+    #url(r'^static/(?P<path>.*)', 'django.views.static.serve', {'document_root': '/static'}),  
 ]
 
 #urlpatterns += staticfiles_urlpatterns()

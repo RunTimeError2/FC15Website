@@ -67,6 +67,8 @@ def logout(request):
 def regist(request):
     if request.method == 'POST':
         userform = UserRegistForm(request.POST)
+        un = request.POST['username']
+        print(un)
         if userform.is_valid():
             username = userform.cleaned_data['username']
             realname = userform.cleaned_data['realname']
@@ -94,14 +96,37 @@ def regist(request):
             else:
                 flash(request, 'Error', 'You should enter the same password!')
                 return HttpResponseRedirect('/regist/')
+        else:
+            flash(request, 'Error', 'Please complete the form and then submit.')
+            print('userform is invalid')
     else:
         userform = UserRegistForm()
     return render(request, 'regist.html', {'form': userform})
 
 
 # About page
-def about(request):
-    return render(request, 'about.html')
+#def about(request):
+#    return render(request, 'about.html')
+
+
+# Introduction for FC15(and the game)
+def about_fc15(request):
+    return render(request, 'about_fc15.html')
+
+
+# Introduction for DAASTA
+def about_asta(request):
+    return render(request, 'about_asta.html')
+
+
+# Introduction for the sponsor
+def about_sponsor(request):
+    return render(request, 'about_sponsor.html')
+
+
+# Documents of the game
+def document(request):
+    return render(request, 'document.html')
 
 
 # Activate account with email
@@ -193,6 +218,9 @@ def change(request):
             response = HttpResponseRedirect('/login/')
             response.delete_cookie('username')
             return response
+        else:
+            flash(request, 'Error', 'Please complete the form!', 'error')
+            return render(request, 'change.html', {'username': username, 'form': userform})
     else:
         userform = ChangeForm(data = {'email': user.email})
     return render(request, 'change.html', {'username': username, 'form': userform})
@@ -553,6 +581,9 @@ def jointeamrequest(request, pk):
             team_request.save()
             flash(request, 'Success', 'Request has been sent! Please wait for the captain to reply.', 'success')
             return HttpResponseRedirect('/team/')
+        else:
+            flash(request, 'Error', 'Please complete the form!')
+            return render(request, 'teamrequest.html', {'username': username, 'form': userform})
     else:
         msg = 'I am ' + username + ', ' + me.realname
         userform = TeamRequestForm(data = {'destin_team': team.teamname, 'message': msg})

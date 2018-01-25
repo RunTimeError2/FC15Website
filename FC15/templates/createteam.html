@@ -2,13 +2,34 @@
 
 {% block content %}
 
-<!-- Banner -->
-<section id="banner">
-	<div class="inner">
-		<h2>Welcome {{ username }}!</h2>
-		<p>You can create your team here.</p>
-	</div>
-</section>
+<div class="banner">
+    <h3>Welcome to FC15 Website!</h3>
+    <p>Please input the information to create you own team.</p>
+</div>
+
+<el-container>
+    <el-aside width="20%">
+
+    </el-aside>
+    <el-main>
+        <div class="contact-input" style="margin-left: 0px;">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form_input">
+                    <label for="teamname" id="teamname">Teamname</label>
+                    <input type="text" name="teamname" class="contact-input"
+                           style="width: 80%; overflow: hidden;margin-bottom: 20px;  padding: 5px;  background: #eef7f9;  border-radius: 2px;  display: block; height: 29px;  padding: 0 9px;  color: #4d5a5e;  background: white;  border: 1px solid #cfdfe3;  border-bottom-color: #d2e2e7;  border-radius: 2px;  -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05), 0 1px rgba(255, 255, 255, 0.2);  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05), 0 1px rgba(255, 255, 255, 0.2);"/>
+                </div>
+                <div class="form_input">
+                    <label for="intro" id="intro">Introduction</label>
+                    <input type="text" name="introduction" class="contact-input"
+                           style="width: 80%; overflow: hidden;margin-bottom: 20px;  padding: 5px;  background: #eef7f9;  border-radius: 2px;  display: block; height: 29px;  padding: 0 9px;  color: #4d5a5e;  background: white;  border: 1px solid #cfdfe3;  border-bottom-color: #d2e2e7;  border-radius: 2px;  -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05), 0 1px rgba(255, 255, 255, 0.2);  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05), 0 1px rgba(255, 255, 255, 0.2);"/>
+                </div>
+                <input type="submit" value="Submit" class="el-button" onclick="return confirm('Are you sure to create the team?')"/>
+            </form>
+        </div>
+    </el-main>
+</el-container>
 
 <!-- Wrapper -->
 <section id="wrapper">

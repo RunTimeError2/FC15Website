@@ -10,6 +10,34 @@
 	</div>
 </section>
 
+<div class="banner">
+    <el-container>
+        <el-aside width="20%" style="background-color: aqua">
+
+        </el-aside>
+        <el-main>
+            <h3>Welcome {{ username }}! Please choose the file you want to upload</h3>
+        </el-main>
+    </el-container>
+    <div class="form">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <el-form ref="form" :model="form" label-width="80px">
+                <el-form-item label="Name">
+                    {{ form.filename }}
+                </el-form-item>
+                <el-form-item label="Description">
+                    {{ form.description }}
+                </el-form-item>
+                <el-form-item label="File">
+                    {{ form.file}}
+                </el-form-item>
+                <input type="submit" value="submit" class="button" onclick="return confirm('Are you sure to upload the code?')" />
+            </el-form>
+        </form>
+    </div>
+</div>
+
 <!-- Wrapper -->
 <section id="wrapper">
     <section id="one" class="wrapper spotlight style1">

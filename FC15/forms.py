@@ -6,16 +6,16 @@ from FC15.models import UserInfo, FileInfo, BlogPost, TeamInfo
 
 # For users to login
 class UserLoginForm(forms.Form):
-    username = forms.CharField(max_length = 100)
-    password = forms.CharField(max_length = 100, widget = forms.PasswordInput)
+    username = forms.CharField(max_length = 100, widget = forms.TextInput(attrs = {'class': 'form_input'}))
+    password = forms.CharField(max_length = 100, widget = forms.PasswordInput(attrs = {'class': 'form_input'}))
 
 
 # For users to register
 class UserRegistForm(forms.Form):
-    username = forms.CharField(max_length = 100)
-    realname = forms.CharField(max_length = 100)
-    email = forms.EmailField()
-    stu_number = forms.CharField(max_length = 10)
+    username = forms.CharField(max_length = 100, widget = forms.TextInput)
+    realname = forms.CharField(max_length = 100, widget = forms.TextInput)
+    email = forms.CharField(widget = forms.EmailInput)
+    stu_number = forms.CharField(max_length = 10, widget = forms.TextInput)
     password = forms.CharField(max_length = 100, widget = forms.PasswordInput)
     password_confirm = forms.CharField(max_length = 100, widget = forms.PasswordInput)
 
