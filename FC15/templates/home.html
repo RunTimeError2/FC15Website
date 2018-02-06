@@ -1,14 +1,64 @@
 ﻿{% extends "base.html" %}
 
-{% block content %}
+<!-- 
+<div class="swiper-container">
+    <div class="swiper-wrapper">
+        <div class="swiper-slide" style="background-color: #409EFF;">
+            <button class="btn">Button</button>
+            <div class="container">
+                <div class="leaderboard">
+                    <h1 style="font-family: Arial; font: 40px arial;">
+                        Welcome to FC15 Website!
+                    </h1>
+                    <p style="font: 18px arial;">
+                        Join FC15 now and have fun!
+                    </p>
+                </div>
+                <div class="row" style="height: 50%;">
+                    
+                </div>
+            </div>
+        </div>
 
-<div class="banner" style="text-align: center;">
-    <h2>Welcome to FC15!</h2>
-    <p>Presented by DAASTA, 2017-2018</p>
+        <div class="swiper-slide">
+        Slide 2
+        </div>
+                    
+        <div class="swiper-slide">
+        Slide 3
+        </div>
+                    
+        <div class="swiper-slide">
+        Slide 4
+        </div>
+                    
+        <div class="swiper-slide">
+        Slide 5
+        </div>
+    </div>
+
+    <!-- Add Pagination --
+    <div class="swiper-pagination"></div>
 </div>
 
+<!-- Scripts for swiper --
+<script src="/static/app/scripts/swiper.min.js"></script>
+<script>
+    var swiper = new Swiper('.swiper-container', {
+        direction: 'vertical',
+        slidesPerView: 1,
+        spaceBetween: 30,
+        mousewheel: true,
+        pagination: {
+          el: '.swiper-pagination',
+          clickable: true,
+        },
+    });
+</script>-->
+{% block content %}
+
 <template>
-  	<el-carousel :interval="4000" type="card">
+  	<el-carousel :interval="4000" arrow="always" height="500px">
     	<el-carousel-item>
       		<img src="/static/images/pic01.jpg" style="width: 100%;"/>
     	</el-carousel-item>
@@ -24,22 +74,230 @@
   	</el-carousel>
 </template>
 
+<div>
+    <h1 style="text-align: center">
+        Welcome to FC15 Website!
+    </h1>
+</div>
+<!--
+<div class="container">
+    <div class="leaderboard" style="width: 100%;">
+        <h1 style="text-align: center;">Welcome to FC15 Website!</h1>
+    </div>
+    <div class="row">
+        <div class="row-container">
+            <div class="leftpart" style="float: left; margin-left: 10%; width: 20%;">
+                <img src="/static/images/pic01-hj.jpg" width="100%" />
+                <p style="text-align: center;">
+                    Here should be the first part of a brief introduction.
+                </p>
+            </div>
+            <div class="rightpart" style="float: left; margin-left: 10%; width: 20%;">
+                <img src="/static/images/pic01-hj.jpg" width="100%" />
+                <p style="text-align: center;">
+                    Here should be the second part of a brief introduction.
+                </p>
+            </div>
+            <div class="rightpart" style="float: left; margin-left: 10%; width: 20%;">
+                <img src="/static/images/pic01-hj.jpg" width="100%" />
+                <p style="text-align: center;">
+                    Here should be the second part of a brief introduction.
+                </p>
+            </div>
+        </div>
+
+    </div>
+</div>-->
+
+<br /><br />
+<!--
 <el-container>
-    <el-header>
-        <h3>Game: DA GAN</h3>
+    <el-header style="text-align: center; margin: auto;">
+        <h2>Latest information</h2>
     </el-header>
-    <el-container>
-        <el-aside width="250px" style="background-color: aqua;">
-            <img src="static/images/pic01.jpg" style="width: 100%;"/>
-        </el-aside>
-        <el-main>
-            <p>Here should be the introduction for the game</p>
-            <p>including background, rules, etc.</p>
-            <el-button type="info" plain>Learn more</el-button>
-        </el-main>
-    </el-container>
+    <el-main>
+        <div style="width: 70%; margin-left: 15%;">
+            <el-collapse v-model="activeNames" @change="handleChange">
+                <el-collapse-item title="Game ranking" name="1">
+                    <p>Here should be the current ranking of the game.</p>
+                </el-collapse-item>
+                <el-collapse-item title="SDK updates" name="2">
+                    <p>Here should be a brief description about the current version of SDK.</p>
+                    <el-button type="success" plain>More details</el-button>
+                    <el-button type="primary" plain>Download</el-button>
+                </el-collapse-item>
+            </el-collapse>
+        </div>
+    </el-main>
+</el-container>-->
+
+<br />
+
+<el-container style="width: 80%; margin-left: 10%;">
+    <el-aside width="20%">
+        <img src="/static/images/pic01-hj.jpg" />
+    </el-aside>
+    <el-main>
+        <div style="margin-left: 5%;">
+            <h3 style="text-align: center;">Latest information</h3>
+            <br />
+            <div style="width: 90%; margin-left: 5%;">
+                <el-collapse v-model="activeNames" @change="handleChange">
+                    <el-collapse-item title="Notifications" name="0">
+                        <p>Here should be the latest notifications.</p>
+                    </el-collapse-item>
+                    <el-collapse-item title="Game ranking" name="1">
+                        <p>Here should be the current ranking of the game.</p>
+                    </el-collapse-item>
+                    <el-collapse-item title="SDK updates" name="2">
+                        <p>Here should be a brief description about the current version of SDK.</p>
+                        <el-button type="success" plain>More details</el-button>
+                        <el-button type="primary" plain>Download</el-button>
+                    </el-collapse-item>
+                </el-collapse>
+            </div>
+        </div>
+    </el-main>
 </el-container>
 
+<br />
+
+<el-container style="width: 100%; background-color: #EBEEF5;">
+    <div class="row-container" style="margin: auto; width: 80%; margin-top: 80px; margin-bottom: 80px;">
+        <div class="col1" style="float:left; margin-left: 10%; width: 20%;">
+            <img src="/static/images/pic01-hj.jpg" />
+            <h3>Game: DA GAN</h3>
+            <p>Here should be an brief introduction on the game.</p>
+            <a href="">
+                <el-button type="success" plain>Learn more</el-button>
+            </a>
+        </div>
+        <div class="col2" style="float:left; margin-left: 10%; width: 20%;">
+            <img src="/static/images/pic01-hj.jpg" />
+            <h3>Play game</h3>
+            <p>Here should be an brief introduction about the SDK.</p>
+            <a href="">
+                <el-button type="success" plain>Learn more</el-button>
+            </a>
+            <a href="">
+                <el-button type="primary" plain>Download SDK</el-button>
+            </a>
+        </div>
+        <div class="col2" style="float:left; margin-left: 10%; width: 20%;">
+            <img src="/static/images/pic01-hj.jpg" />
+            <h3>THU AI</h3>
+            <p>Here should be an brief introduction about THU AI competition.</p>
+            <a href="">
+                <el-button type="success" plain>Learn more</el-button>
+            </a>
+        </div>
+    </div>
+</el-container>
+
+<br />
+
+<el-container>
+    <el-header>
+        <h3 style="text-align: center;">Discussion</h3>
+        <p style="text-align: center">This zone is designed to post blogs from players.</p>
+        <hr />
+    </el-header>
+    <el-main style="height: 200px;" height="200px">
+
+    </el-main>
+</el-container>
+
+<el-container style="width: 80%; margin-left: 10%;">
+    <div class="row-container" style="margin: auto; width: 100%;">
+        <div class="col1" style="float: left; margin-left: 0px; width: 45%;">
+            <el-container>
+                <el-aside>
+                    <img src="/static/images/pic01-hj.jpg" />
+                </el-aside>
+                <el-main>
+                    <h4>Blog 01</h4>
+                    <hr />
+                    <p>Here should be an outline about this blogpost.</p>
+                    <a href="">
+                        <el-button type="success" plain>Details</el-button>
+                    </a>
+                </el-main>
+            </el-container>
+            <el-container>
+                <el-aside>
+                    <img src="/static/images/pic01-hj.jpg" />
+                </el-aside>
+                <el-main>
+                    <h4>Blog 03</h4>
+                    <hr />
+                    <p>Here should be an outline about this blogpost.</p>
+                    <a href="">
+                        <el-button type="success" plain>Details</el-button>
+                    </a>
+                </el-main>
+            </el-container>
+        </div>
+        <div class="col1" style="float: right; margin-left: 0px; width: 45%;">
+            <el-container>
+                <el-aside>
+                    <img src="/static/images/pic01-hj.jpg" />
+                </el-aside>
+                <el-main>
+                    <h4>Blog 02</h4>
+                    <hr />
+                    <p>Here should be an outline about this blogpost.</p>
+                    <a href="">
+                        <el-button type="success" plain>Details</el-button>
+                    </a>
+                </el-main>
+            </el-container>
+            <el-container>
+                <el-aside>
+                    <img src="/static/images/pic01-hj.jpg" />
+                </el-aside>
+                <el-main>
+                    <h4>Blog 04</h4>
+                    <hr />
+                    <p>Here should be an outline about this blogpost.</p>
+                    <a href="">
+                        <el-button type="success" plain>Details</el-button>
+                    </a>
+                </el-main>
+            </el-container>
+        </div>
+    </div>
+</el-container>
+
+<br />
+
+<el-container style="background-color: #E4E7ED;">
+    <el-aside style="width: 80%; text-align: center;">
+        <h4>Contact us</h4>
+        <p>Copyright DAASTA 2018</p>
+        <hr />
+        <div class="row-container" style="margin-left: 10%; width: 80%;">
+            <div class="col1" style="float: left; width: 20%;">
+                <p>For more information, please send email to contact us.</p>
+                <p>Email: ******</p>
+                <a href="">
+                    <el-button type="success" plain>Send Email</el-button>
+                </a>
+            </div>
+            <div class="col2" style="float: left; width: 20%; margin-left: 10%;">
+                <p>You can alse subscribe to the Wechat Official Accounts of DAASTA.</p>
+                <el-button type="success" plain>Learn more</el-button>
+            </div>
+            <div class="col3" style="float: left; width: 20%; margin-left: 10%;">
+                <p>If you want to join us, welcome to the website of DAASTA to learn more, or contact the DALAOs here.</p>
+                <el-button type="success" plain>Contact us</el-button>
+            </div>
+        </div>
+    </el-aside>
+    <el-main>
+        <img src="/static/images/pic01-hj.jpg" />
+    </el-main>
+</el-container>
+<!--
 <el-container>
     <el-header>
         <h3>Play game</h3>
@@ -96,6 +354,6 @@
         <p>Email: ******</p>
         <el-button type="primary">Send Email</el-button>
     </el-main>
-</el-container>
+</el-container>-->
 
 {% endblock %}

@@ -3,20 +3,22 @@
 {% block content %}
 
 <el-container>
+    <el-header>
+        <h4>{{ post.title }}</h4>
+    </el-header>
     <el-aside width="20%" style="background-color: antiquewhite;">
 
     </el-aside>
     <el-main>
-        <el-aside width="75%">
-
-        </el-aside>
-        <el-main style="background-color: antiquewhite;">
-
-        </el-main>
+        <p>Posted at {{ post.timestamp }}</p>
+        <p>Posted by {{ post.username }}</p>
+        <div style="width: 75%">
+            {{ post.content }}
+        </div>
     </el-main>
 </el-container>
 
-<!-- Banner -->
+<!-- Banner 
 <section id="banner">
 	<div class="inner">
 		<h2>Blog Detail</h2>
@@ -24,7 +26,7 @@
 	</div>
 </section>
 
-<!-- Wrapper -->
+<!-- Wrapper 
 <section id="wrapper">
 	<section id="one" class="wrapper spotlight style1">
 		<div class="inner">
@@ -48,6 +50,6 @@
 			</div>
 		</div>
 	</section>
-</section>
+</section>-->
 
 {% endblock %}

@@ -2,33 +2,64 @@
 
 {% block content %}
 
-<el-container>
-    <el-aside width="200px" style="background-color: blueviolet;">
-        Aside
-    </el-aside>
-    <el-main>
-        <h2>Welcome {{ username }}</h2>
-        <p>This is the home page for all participants</p>
-    </el-main>
-</el-container>
-
-<!-- Carousel for user index -->
+<!-- Banner -->
 <template>
-  	<el-carousel :interval="4000" type="card" height="200px">
-        <el-carousel-item v-for="item in 6" :key="item">
-      		<h3>{{ item }} item</h3>
+  	<el-carousel :interval="4000" arrow="always" height="500px">
+    	<el-carousel-item>
+      		<img src="/static/images/pic01.jpg" style="width: 100%;"/>
+    	</el-carousel-item>
+        <el-carousel-item>
+      		<img src="/static/images/pic01-hj.jpg" style="width: 100%;"/>
+    	</el-carousel-item>
+         <el-carousel-item>
+      		<img src="/static/images/pic02.jpg" style="width: 100%;"/>
+    	</el-carousel-item>
+        <el-carousel-item>
+      		<img src="/static/images/pic03.jpg" style="width: 100%;"/>
     	</el-carousel-item>
   	</el-carousel>
 </template>
 
+<br /><br />
+
+<el-container style="margin-left: 5%; width: 90%;">
+    <el-aside style="">
+        <img src="/static/images/pic01-hj.jpg" />
+    </el-aside>
+    <el-main>
+        <h2 style="text-align: center;">Welcome back, {{ username }}!</h2>
+        <p style="text-align: center;">This is the home page for all participants</p>
+        <hr />
+        <h3 style="text-align: center;">Latest information</h3>
+        <div style="width: 90%; margin-left: 5%;">
+                <el-collapse v-model="activeNames" @change="handleChange">
+                    <el-collapse-item title="Notifications" name="0">
+                        <p>Here should be the latest notifications.</p>
+                    </el-collapse-item>
+                    <el-collapse-item title="Game ranking" name="1">
+                        <p>Here is your current ranking in the game.</p>
+                    </el-collapse-item>
+                    <el-collapse-item title="SDK updates" name="2">
+                        <p>Here should be a brief description about the current version of SDK.</p>
+                        <el-button type="success" plain>More details</el-button>
+                        <el-button type="primary" plain>Download</el-button>
+                    </el-collapse-item>
+                </el-collapse>
+            </div>
+    </el-main>
+</el-container>
+
+<br />
+
 <!-- Blog posts of the user -->
-<div class="blogposts">
-    <el-container>
-        <el-aside width="250px" style="background-color: aqua">
-            Aside
+<div class="blogposts" style="background-color: aqua;">
+    <el-container style="width: 70%; margin-left: 15%;">
+        <el-aside>
+            <img src="/static/images/pic01-hj.jpg" />
         </el-aside>
         <el-main>
             <h3>My blogs</h3>
+            <hr />
             {% if posts %}
                 <p>The following are all the blogs you have ever posted.</p>
             {% else %}
@@ -40,6 +71,37 @@
         {% endif %}
     </el-container>
     {% if posts %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Timestamp</th>
+                    <th>Description</th>
+                    <th>   </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for post in posts %}
+                    <tr>
+                        <td>{{ post.title }}</td>
+                        <td>{{ post.timestamp}}</td>
+                        <td>{{ post.description }}</td>
+                        <td>
+                            <a href="{% url 'blogdetail' pk=post.pk %}">
+                                <el-button type="success"><i class="el-icon-view"></i> View</el-button>
+                            </a>
+                            <a href="{% url 'blogedit' pk=post.pk %}">
+                                <el-button type="info"><i class="el-icon-edit"></i> Edit</el-button>
+                            </a>
+                            <a href="{% url 'blogdelete' pk=post.pk %}">
+                                <el-button type="danger"><i class="el-icon-circle-close"></i> Delete</el-button>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
         <el-collapse v-model="activeName" accordion>
             {% for post in posts %}
                 <el-collapse-item title="{{ post.title }}">
@@ -60,25 +122,72 @@
             {% endfor %}
         </el-collapse>
     {% endif %}
-    <hr />
 </div>
 
 <!-- Code of the user -->
 <div class="mycode">
     <el-container>
-        <el-aside width="70%">
-            <h3>My code</h3>
-            {% if files %}
-                <p>The following are all the code you have uploaded.</p>
-            {% else %}
-                <p>You have not uploaded any code yet.</p>
-            {% endif %}
+        <el-aside width="70%" style="text-align: center; margin: auto;">
+            <div style="width: 70%; margin-left: 15%;">
+                <h3>My code</h3>
+                <hr />
+                {% if files %}
+                    <p>The following are all the code you have uploaded.</p>
+                {% else %}
+                    <p>You have not uploaded any code yet.</p>
+                {% endif %}
+            </div>
         </el-aside>
-        <el-main style="background-color: aquamarine;">
-            main
+        <el-main>
+            <img src="/static/images/pic01-hj.jpg" />
         </el-main>
     </el-container>
     {% if files %}
+        <table class="table" style="width: 80%; margin-left: 10%;">
+            <thead>
+                <tr>
+                    <th>File Name</th>
+                    <th>Description</th>
+                    <th>State</th>
+                    <th>  </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for file in files %}
+                    <tr>
+                        <td>{{ file.filename }}</td>
+                        <td>{{ file.description }}</td>
+                        <td>
+                            <template>
+                            {% if file.is_compiled %}
+                                <el-tag type="info">已编译</el-tag>
+                                {% if file.is_compile_success %}
+                                    <el-tag type="success">编译成功</el-tag>
+                                {% else %}
+                                    <el-tag type="danger">编译失败</el-tag>
+                                {% endif %}
+                            {% else %}
+                                <el-tag type="warning">未编译</el-tag>
+                            {% endif %}
+                            </template>
+                        </td>
+                        <td>
+                            <a href="{% url 'fileedit' pk=file.pk %}">
+                                <el-button type="info"><i class="el-icon-edit"></i> Edit</el-button>
+                            </a>
+                            <a href="{% url 'filedelete' pk=file.pk %}">
+                                <el-button type="danger"><i class="el-icon-circle-close"></i> Delete</el-button>
+                            </a>
+                            <a href="{% url 'filedownload' pk=file.pk %}">
+                                <el-button type="success"><i class="el-icon-document"></i> Download</el-button>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    <!--
         <el-collapse v_model="activeName" accordion>
             {% for file in files %}
                 <el-collapse-item title="{{ file.filename }}">
@@ -112,27 +221,71 @@
             {% endfor %}
         </el-collapse>
     {% endif %}
-    <hr />
+    <hr />-->
 </div>
 
 <!-- Code of teammates of the user -->
 <div class="teamcode">
-    <el-container>
-        <el-aside width="20%" style="background-color: beige">
-            aside
+    <el-container style="width: 70%; margin-left: 15%;">
+        <el-aside width="30%">
+            <img src="/static/images/pic01-hj.jpg" />
         </el-aside>
         <el-main>
-            <h3>Code of my teammates</h3>
-            {% if warning %}
-                <p>{{ warning }}</p>
-            {% else %}
-                <p>The following are the code of your teammates.</p>
-            {% endif %}
+            <div style="width: 70%; margin-left: 15%;">
+                <h3>Code of my teammates</h3>
+                <hr />
+                {% if warning %}
+                    <p>{{ warning }}</p>
+                {% else %}
+                    <p>The following are the code of your teammates.</p>
+                {% endif %}
+            </div>
         </el-main>
     </el-container>
     {% if warning %}
     {% else %}
         {% if codes %}
+            <table class="table" style="width: 80%; margin-left: 10%;">
+                <thead>
+                    <tr>
+                        <th>File Name</th>
+                        <th>Author</th>
+                        <th>Description</th>
+                        <th>State</th>
+                        <th>   </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for code in codes %}
+                        <tr>
+                            <td>{{ code.filename }}</td>
+                            <td>{{ code.username }}</td>
+                            <td>{{ code.description }}</td>
+                            <td>
+                                <template>
+                                {% if code.is_compiled %}
+                                    <el-tag type="info">已编译</el-tag>
+                                    {% if file.is_compile_success %}
+                                        <el-tag type="success">编译成功</el-tag>
+                                    {% else %}
+                                        <el-tag type="danger">编译失败</el-tag>
+                                    {% endif %}
+                                {% else %}
+                                    <el-tag type="warning">未编译</el-tag>
+                                {% endif %}
+                                </template>
+                            </td>
+                            <td>
+                                <a href="{% url 'filedownload' pk=code.pk %}">
+                                    <el-button type="success"><i class="el-icon-document"></i> Download</el-button>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+    <!--
             <el-collapse v-model="activeName" accordion>
                 {% for code in codes %}
                     <el-collapse-item title="{{ code.filename }}">
@@ -164,22 +317,21 @@
             <p>Your teammates have not uploaded any code yet.</p>
         {% endif %}
     {% endif %}
-    <hr />
+    <hr />-->
 </div>
 
 <!-- Ranking -->
 <div class="ranking">
-    <el-container>
-        <el-aside width="70%">
+    <el-container style="width: 70%; margin-left: 15%;">
+        <el-aside width="70%" style="text-align: center; margin: auto;">
             <h3>Game ranking</h3>
+            <hr />
+            <p>Waiting to be done.</p>
         </el-aside>
-        <el-main style="background-color: burlywood">
-            main
+        <el-main>
+            <img src="/static/images/pic01-hj.jpg" />
         </el-main>
     </el-container>
-    <hr />
-    <p>waiting to be done.</p>
-    <hr />
 </div>
 
 {% endblock %}
