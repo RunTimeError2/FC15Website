@@ -57,6 +57,7 @@
 </script>-->
 {% block content %}
 
+<!--
 <template>
   	<el-carousel :interval="4000" arrow="always" height="500px">
     	<el-carousel-item>
@@ -72,70 +73,25 @@
       		<img src="/static/images/pic03.jpg" style="width: 100%;"/>
     	</el-carousel-item>
   	</el-carousel>
-</template>
+</template>-->
 
-<div>
-    <h1 style="text-align: center">
-        Welcome to FC15 Website!
-    </h1>
+<div class="banner" style="width: 100%; background: url('/static/images/banner1.jpg') fixed center center no-repeat; background-size: cover; height: 90%; margin: 0px 0px 0px 0px;">
+    <div style="height: 30%; background-color: rgba(0, 0, 0, 0);"></div>
+    <div class="fi" style="margin-left: 30%; width: 40%; margin-top: 20%; height: 50%; margin: auto; text-align: center;">
+        <font size="150" color="white" face="微软雅黑">Welcome to FC15 Website!</font>
+        <p style="font: bold 16px 微软雅黑">Join us and have fun!</p>
+        <hr />
+        <a href="">
+            <el-button type="primary">Learn more</el-button>
+        </a>
+        <a href="">
+            <el-button type="success">Quick start</el-button>
+        </a>
+    </div>
 </div>
-<!--
-<div class="container">
-    <div class="leaderboard" style="width: 100%;">
-        <h1 style="text-align: center;">Welcome to FC15 Website!</h1>
-    </div>
-    <div class="row">
-        <div class="row-container">
-            <div class="leftpart" style="float: left; margin-left: 10%; width: 20%;">
-                <img src="/static/images/pic01-hj.jpg" width="100%" />
-                <p style="text-align: center;">
-                    Here should be the first part of a brief introduction.
-                </p>
-            </div>
-            <div class="rightpart" style="float: left; margin-left: 10%; width: 20%;">
-                <img src="/static/images/pic01-hj.jpg" width="100%" />
-                <p style="text-align: center;">
-                    Here should be the second part of a brief introduction.
-                </p>
-            </div>
-            <div class="rightpart" style="float: left; margin-left: 10%; width: 20%;">
-                <img src="/static/images/pic01-hj.jpg" width="100%" />
-                <p style="text-align: center;">
-                    Here should be the second part of a brief introduction.
-                </p>
-            </div>
-        </div>
-
-    </div>
-</div>-->
-
-<br /><br />
-<!--
-<el-container>
-    <el-header style="text-align: center; margin: auto;">
-        <h2>Latest information</h2>
-    </el-header>
-    <el-main>
-        <div style="width: 70%; margin-left: 15%;">
-            <el-collapse v-model="activeNames" @change="handleChange">
-                <el-collapse-item title="Game ranking" name="1">
-                    <p>Here should be the current ranking of the game.</p>
-                </el-collapse-item>
-                <el-collapse-item title="SDK updates" name="2">
-                    <p>Here should be a brief description about the current version of SDK.</p>
-                    <el-button type="success" plain>More details</el-button>
-                    <el-button type="primary" plain>Download</el-button>
-                </el-collapse-item>
-            </el-collapse>
-        </div>
-    </el-main>
-</el-container>-->
-
-<br />
 
 <el-container style="width: 80%; margin-left: 10%;">
-    <el-aside width="20%">
-        <img src="/static/images/pic01-hj.jpg" />
+    <el-aside width="0%">
     </el-aside>
     <el-main>
         <div style="margin-left: 5%;">
@@ -145,9 +101,33 @@
                 <el-collapse v-model="activeNames" @change="handleChange">
                     <el-collapse-item title="Notifications" name="0">
                         <p>Here should be the latest notifications.</p>
+                        <el-button type="primary" plain>Details</el-button>
                     </el-collapse-item>
                     <el-collapse-item title="Game ranking" name="1">
-                        <p>Here should be the current ranking of the game.</p>
+                        {% if ranking %}
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Username</th>
+                                        <th>File Name</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in ranking %}
+                                        <tr>
+                                            <td>{{ item.rank }}</td>
+                                            <td>{{ item.username }}</td>
+                                            <td>{{ item.filename }}</td>
+                                            <td>{{ item.description }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p>The ranking list has not been prepared yet.</p>
+                        {% endif %}
                     </el-collapse-item>
                     <el-collapse-item title="SDK updates" name="2">
                         <p>Here should be a brief description about the current version of SDK.</p>
@@ -162,33 +142,33 @@
 
 <br />
 
-<el-container style="width: 100%; background-color: #EBEEF5;">
+<el-container style="width: 100%; background-color: #E6A23C;">
     <div class="row-container" style="margin: auto; width: 80%; margin-top: 80px; margin-bottom: 80px;">
         <div class="col1" style="float:left; margin-left: 10%; width: 20%;">
-            <img src="/static/images/pic01-hj.jpg" />
+            <img src="/static/images/intro-pic-01.jpg" />
             <h3>Game: DA GAN</h3>
             <p>Here should be an brief introduction on the game.</p>
             <a href="">
-                <el-button type="success" plain>Learn more</el-button>
+                <el-button type="success">Learn more</el-button>
             </a>
         </div>
         <div class="col2" style="float:left; margin-left: 10%; width: 20%;">
-            <img src="/static/images/pic01-hj.jpg" />
+            <img src="/static/images/intro-pic-02.jpg" />
             <h3>Play game</h3>
             <p>Here should be an brief introduction about the SDK.</p>
             <a href="">
-                <el-button type="success" plain>Learn more</el-button>
+                <el-button type="success">Learn more</el-button>
             </a>
             <a href="">
-                <el-button type="primary" plain>Download SDK</el-button>
+                <el-button type="primary">Download SDK</el-button>
             </a>
         </div>
         <div class="col2" style="float:left; margin-left: 10%; width: 20%;">
-            <img src="/static/images/pic01-hj.jpg" />
+            <img src="/static/images/intro-pic-03.jpg" />
             <h3>THU AI</h3>
             <p>Here should be an brief introduction about THU AI competition.</p>
             <a href="">
-                <el-button type="success" plain>Learn more</el-button>
+                <el-button type="success">Learn more</el-button>
             </a>
         </div>
     </div>
@@ -212,10 +192,10 @@
         <div class="col1" style="float: left; margin-left: 0px; width: 45%;">
             <el-container>
                 <el-aside>
-                    <img src="/static/images/pic01-hj.jpg" />
+                    <img src="/static/images/blog-pic-01.jpg" />
                 </el-aside>
                 <el-main>
-                    <h4>Blog 01</h4>
+                    <h2>Blog 01</h2>
                     <hr />
                     <p>Here should be an outline about this blogpost.</p>
                     <a href="">
@@ -223,12 +203,13 @@
                     </a>
                 </el-main>
             </el-container>
+            <br />
             <el-container>
                 <el-aside>
-                    <img src="/static/images/pic01-hj.jpg" />
+                    <img src="/static/images/blog-pic-02.jpg" />
                 </el-aside>
                 <el-main>
-                    <h4>Blog 03</h4>
+                    <h2>Blog 03</h2>
                     <hr />
                     <p>Here should be an outline about this blogpost.</p>
                     <a href="">
@@ -240,10 +221,10 @@
         <div class="col1" style="float: right; margin-left: 0px; width: 45%;">
             <el-container>
                 <el-aside>
-                    <img src="/static/images/pic01-hj.jpg" />
+                    <img src="/static/images/blog-pic-03.jpg" />
                 </el-aside>
                 <el-main>
-                    <h4>Blog 02</h4>
+                    <h2>Blog 02</h2>
                     <hr />
                     <p>Here should be an outline about this blogpost.</p>
                     <a href="">
@@ -251,12 +232,13 @@
                     </a>
                 </el-main>
             </el-container>
+            <br />
             <el-container>
                 <el-aside>
-                    <img src="/static/images/pic01-hj.jpg" />
+                    <img src="/static/images/blog-pic-04.jpg" />
                 </el-aside>
                 <el-main>
-                    <h4>Blog 04</h4>
+                    <h2>Blog 04</h2>
                     <hr />
                     <p>Here should be an outline about this blogpost.</p>
                     <a href="">

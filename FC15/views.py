@@ -289,6 +289,8 @@ def upload(request):
                 run()
             return HttpResponseRedirect('/index/')
             #return HttpResponse('Upload success!')
+        else:
+            pass
     else:
         userform = FileUploadForm()
         username = request.COOKIES.get('username', '')
@@ -398,30 +400,27 @@ def filedownload(request ,pk):
 
 # Post a blog
 def postblog(request):
+    username = request.COOKIES.get('username', '')
+    if username == '':
+        flash(request, 'Error', 'Please login first', 'error')
+        return HttpResponseRedirect('/login/')
     if request.method == 'POST':
         userform = BlogPostForm(request.POST)
         if userform.is_valid():
-            username = request.COOKIES.get('username', '')
-            if username == '':
-                flash(request, 'Error', 'Please login first', 'error')
-                return HttpResponseRedirect('/login/')
-            else:
-                blogpost = BlogPost()
-                blogpost.title = userform.cleaned_data['title']
-                blogpost.content = userform.cleaned_data['content']
-                blogpost.username = username
-                blogpost.timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
-                blogpost.save()
-                flash(request, 'Success', 'The blog has been successfully posted.')
-                return HttpResponseRedirect('/index/')
-                #return HttpResponse('Blog posted successfully')
+            blogpost = BlogPost()
+            blogpost.title = userform.cleaned_data['title']
+            blogpost.content = userform.cleaned_data['content']
+            blogpost.username = username
+            blogpost.timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+            blogpost.save()
+            flash(request, 'Success', 'The blog has been successfully posted.')
+            return HttpResponseRedirect('/index/')
+            #return HttpResponse('Blog posted successfully')\
+        else:
+            print('Invalid userform')
     else:
         userform = BlogPostForm()
-        username = request.COOKIES.get('username', '')
-        if username == '':
-            flash(request, 'Error', 'Please login first', 'error')
-            return HttpResponseRedirect('/login/')
-    return render(request, 'blogpost.html', {'username': username, 'form': userform})
+    return render(request, 'blogpost.html', {'username': username, 'form': userform, 'title': '', content: ''})
 
 
 # Show the detail of a blog
@@ -451,7 +450,7 @@ def blogedit(request, pk):
             return render(request ,'blogdetail.html', {'post': post})
     else:
         userform = BlogPostForm(data = {'title': post.title, 'content': post.content})
-    return render(request, 'blogpost.html', {'username': username, 'form': userform})
+    return render(request, 'blogpost.html', {'username': username, 'form': userform, 'title': post.title, 'content': post.content})
 
 
 # Delete a blog

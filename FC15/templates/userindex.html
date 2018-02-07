@@ -6,7 +6,7 @@
 <template>
   	<el-carousel :interval="4000" arrow="always" height="500px">
     	<el-carousel-item>
-      		<img src="/static/images/pic01.jpg" style="width: 100%;"/>
+            <img src="/static/images/pic01-hj.jpg" style="width: 100%;"/>
     	</el-carousel-item>
         <el-carousel-item>
       		<img src="/static/images/pic01-hj.jpg" style="width: 100%;"/>
@@ -20,18 +20,29 @@
   	</el-carousel>
 </template>
 
+<div style="margin: 0px 0px 0px 0px; margin: auto; text-align: center; background-color: rgba(240, 95, 64, 0.8);">
+    <br />
+    <div class="fi" style="background-color: rgba(240, 95, 64, 0.0); width: 100%; margin-top: 80px; margin-bottom: 0px; margin: auto; text-align: center;">
+        <h1 style="color: white; font: 40px 微软雅黑; text-align: center;">Welcome back, {{ username }}!</h1>
+        <p style="color: #f0f0f0; font: 16px 微软雅黑; text-align: center;">This is the home page for all participants.</p>
+        <div style="width: 50%; margin-left: 25%; background-color: rgba(0, 0, 0, 0);"><hr /></div>
+    <a href="/home/"><el-button type="primary" style="margin: auto; text-align: center;">Return to homepage</el-button></a>
+    <a href=""><el-button type="success">Update SDK</el-button></a>
+    <a href=""><el-button type="info">Learn more about the game</el-button></a>
+    </div>
+    
+    
+    <br /><br /><br /><br />
+</div>
+
 <br /><br />
 
-<el-container style="margin-left: 5%; width: 90%;">
-    <el-aside style="">
-        <img src="/static/images/pic01-hj.jpg" />
+<el-container style="margin-left: 15%; width: 70%;">
+    <el-aside style="width: 0%;">
     </el-aside>
     <el-main>
-        <h2 style="text-align: center;">Welcome back, {{ username }}!</h2>
-        <p style="text-align: center;">This is the home page for all participants</p>
-        <hr />
         <h3 style="text-align: center;">Latest information</h3>
-        <div style="width: 90%; margin-left: 5%;">
+        <div style="width: 100%; margin-left: 0%;">
                 <el-collapse v-model="activeNames" @change="handleChange">
                     <el-collapse-item title="Notifications" name="0">
                         <p>Here should be the latest notifications.</p>
@@ -52,12 +63,13 @@
 <br />
 
 <!-- Blog posts of the user -->
-<div class="blogposts" style="background-color: aqua;">
-    <el-container style="width: 70%; margin-left: 15%;">
+<div class="blogposts" style="background-color: #E4E7ED;">
+    <br /><br /><br />
+    <el-container style="width: 80%; margin-left: 10%;">
         <el-aside>
-            <img src="/static/images/pic01-hj.jpg" />
+            <img src="/static/images/index-blog.jpg" width="100%" />
         </el-aside>
-        <el-main>
+        <el-main style="margin-left: 5%;">
             <h3>My blogs</h3>
             <hr />
             {% if posts %}
@@ -65,11 +77,8 @@
             {% else %}
                 <p>You have not posted any blogs yet.</p>
             {% endif %}
-        </el-main>
-        {% if posts %}
+            <br />
             
-        {% endif %}
-    </el-container>
     {% if posts %}
         <table class="table">
             <thead>
@@ -101,48 +110,30 @@
                 {% endfor %}
             </tbody>
         </table>
-
-        <el-collapse v-model="activeName" accordion>
-            {% for post in posts %}
-                <el-collapse-item title="{{ post.title }}">
-                    <div><i class="el-icon-time"></i>Posted at {{ post.timestamp }}</div>
-                    <div><i class="el-icon-edit-outline"></i> {{ post.description }}</div>
-                    <div>
-                        <a href="{% url 'blogdetail' pk=post.pk %}">
-                            <el-button type="success"><i class="el-icon-view"></i> View</el-button>
-                        </a>
-                        <a href="{% url 'blogedit' pk=post.pk %}">
-                            <el-button type="info"><i class="el-icon-edit"></i> Edit</el-button>
-                        </a>
-                        <a href="{% url 'blogdelete' pk=post.pk %}">
-                            <el-button type="danger"><i class="el-icon-circle-close"></i> Delete</el-button>
-                        </a>
-                    </div>
-                </el-collapse-item>
-            {% endfor %}
-        </el-collapse>
     {% endif %}
+
+            <br />
+            <a href=""><el-button type="success">Postblog</el-button></a>
+        </el-main>
+    </el-container>
+    <br /><br /><br />
 </div>
 
 <!-- Code of the user -->
 <div class="mycode">
+    <br /><br />
     <el-container>
         <el-aside width="70%" style="text-align: center; margin: auto;">
-            <div style="width: 70%; margin-left: 15%;">
+            <div style="width: 80%; margin-left: 10%;">
                 <h3>My code</h3>
-                <hr />
                 {% if files %}
                     <p>The following are all the code you have uploaded.</p>
                 {% else %}
                     <p>You have not uploaded any code yet.</p>
                 {% endif %}
+                <br />
             </div>
-        </el-aside>
-        <el-main>
-            <img src="/static/images/pic01-hj.jpg" />
-        </el-main>
-    </el-container>
-    {% if files %}
+            {% if files %}
         <table class="table" style="width: 80%; margin-left: 10%;">
             <thead>
                 <tr>
@@ -186,66 +177,36 @@
                 {% endfor %}
             </tbody>
         </table>
-
-    <!--
-        <el-collapse v_model="activeName" accordion>
-            {% for file in files %}
-                <el-collapse-item title="{{ file.filename }}">
-                    <div><i class="el-icon-edit-outline"></i> {{ file.description }}</div>
-                    <div>
-                        <template>
-                            {% if file.is_compiled %}
-                                <el-tag type="info">已编译</el-tag>
-                                {% if file.is_compile_success %}
-                                    <el-tag type="success">编译成功</el-tag>
-                                {% else %}
-                                    <el-tag type="danger">编译失败</el-tag>
-                                {% endif %}
-                            {% else %}
-                                <el-tag type="warning">未编译</el-tag>
-                            {% endif %}
-                        </template>
-                        <div style="margin-top: 5px;">
-                            <a href="{% url 'fileedit' pk=file.pk %}">
-                                <el-button type="info"><i class="el-icon-edit"></i> Edit</el-button>
-                            </a>
-                            <a href="{% url 'filedelete' pk=file.pk %}">
-                                <el-button type="danger"><i class="el-icon-circle-close"></i> Delete</el-button>
-                            </a>
-                            <a href="{% url 'filedownload' pk=file.pk %}">
-                                <el-button type="success"><i class="el-icon-document"></i> Download</el-button>
-                            </a>
-                        </div>
-                    </div>
-                </el-collapse-item>
-            {% endfor %}
-        </el-collapse>
     {% endif %}
-    <hr />-->
+        </el-aside>
+        <el-main>
+            <img src="/static/images/index-code.jpg" width="70%" />
+        </el-main>
+    </el-container>
+    <br /><br />
 </div>
 
 <!-- Code of teammates of the user -->
-<div class="teamcode">
-    <el-container style="width: 70%; margin-left: 15%;">
-        <el-aside width="30%">
-            <img src="/static/images/pic01-hj.jpg" />
+<div class="teamcode" style="background-color: #F2F6FC;">
+    <br /><br /><br />
+    <el-container style="width: 80%; margin-left: 10%;">
+        <el-aside>
+            <img src="/static/images/index-teamcode.jpg" width="100%" />
         </el-aside>
         <el-main>
-            <div style="width: 70%; margin-left: 15%;">
+            <div style="width: 80%; margin-left: 10%; text-align: center;">
                 <h3>Code of my teammates</h3>
-                <hr />
                 {% if warning %}
                     <p>{{ warning }}</p>
                 {% else %}
                     <p>The following are the code of your teammates.</p>
                 {% endif %}
             </div>
-        </el-main>
-    </el-container>
+            <br />
     {% if warning %}
     {% else %}
         {% if codes %}
-            <table class="table" style="width: 80%; margin-left: 10%;">
+            <table class="table" style="width: 100%; margin-left: 0%;">
                 <thead>
                     <tr>
                         <th>File Name</th>
@@ -284,49 +245,43 @@
                     {% endfor %}
                 </tbody>
             </table>
-
-    <!--
-            <el-collapse v-model="activeName" accordion>
-                {% for code in codes %}
-                    <el-collapse-item title="{{ code.filename }}">
-                        <div><i class="el-icon-upload2"></i> Author: {{ code.username }}</div>
-                        <div><i class="el-icon-edit-outline"></i> {{ code.description }}</div>
-                        <div>
-                            <template>
-                                {% if code.is_compiled %}
-                                    <el-tag type="info">已编译</el-tag>
-                                    {% if file.is_compile_success %}
-                                        <el-tag type="success">编译成功</el-tag>
-                                    {% else %}
-                                        <el-tag type="danger">编译失败</el-tag>
-                                    {% endif %}
-                                {% else %}
-                                    <el-tag type="warning">未编译</el-tag>
-                                {% endif %}
-                            </template>
-                            <div style="margin-top: 5px;">
-                                <a href="{% url 'filedownload' pk=code.pk %}">
-                                    <el-button type="success"><i class="el-icon-document"></i> Download</el-button>
-                                </a>
-                            </div>
-                        </div>
-                    </el-collapse-item>
-                {% endfor %}
-            </el-collapse> 
-        {% else %}
-            <p>Your teammates have not uploaded any code yet.</p>
         {% endif %}
     {% endif %}
-    <hr />-->
+        </el-main>
+    </el-container>
+    <br /><br /><br />
 </div>
 
 <!-- Ranking -->
 <div class="ranking">
-    <el-container style="width: 70%; margin-left: 15%;">
+    <el-container style="width: 80%; margin-left: 10%;">
         <el-aside width="70%" style="text-align: center; margin: auto;">
             <h3>Game ranking</h3>
             <hr />
-            <p>Waiting to be done.</p>
+            {% if ranking %}
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Username</th>
+                                        <th>File Name</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in ranking %}
+                                        <tr>
+                                            <td>{{ item.rank }}</td>
+                                            <td>{{ item.username }}</td>
+                                            <td>{{ item.filename }}</td>
+                                            <td>{{ item.description }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p>The ranking list has not been prepared yet.</p>
+            {% endif %}
         </el-aside>
         <el-main>
             <img src="/static/images/pic01-hj.jpg" />

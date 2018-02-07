@@ -16,6 +16,17 @@
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
         <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+        <script src="{% static 'app/scripts/jquery-1.10.2.js' %}"></script>
+
+        <!-- Fade-in animation for text in banner -->
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $(".fi").animate({marginTop:20, opacity:'show'},{ duration: 1500 });
+            });
+        </script>
+        <style type="text/css">
+            .fi{ background-color: rgba(0, 0, 0, 0);  width:100%; padding:20px; color:#fff; display:none;}
+        </style>
 
         <!-- Style Sheets for swiper -->
         <style>
@@ -62,13 +73,13 @@
         <div id="app" style="font-family: Arial;">
             <div class="line"></div>
             <el-menu
-  :default-active="activeIndex2"
-  class="el-menu-demo"
-  mode="horizontal"
-  @select="handleSelect"
-  background-color="#545c64"
-  text-color="#fff"
-  active-text-color="#ffd04b">
+                :default-active="activeIndex2"
+                class="el-menu-demo"
+                mode="horizontal"
+                @select="handleSelect"
+                background-color="#545c64"
+                text-color="#fff"
+                active-text-color="#ffd04b">
                 <el-menu-item index="1">
   					<a href="/home/"><i class="el-icon-menu"></i>Home</a>
   				</el-menu-item>
@@ -92,7 +103,7 @@
                 <el-submenu index="5">
                     <template slot="title"><i class="el-icon-edit"></i>Blogs</template>
                     <a href=""><el-menu-item index="5-1"><i class="el-icon-view"></i>View blogs</el-menu-item></a>
-                    <a href=""><el-menu-item index="5-2"><i class="el-icon-edit-outline"></i>Post blogs</el-menu-item></a>
+                    <a href="/postblog/"><el-menu-item index="5-2"><i class="el-icon-edit-outline"></i>Post blogs</el-menu-item></a>
                 </el-submenu>
 
                 {% if username %}
