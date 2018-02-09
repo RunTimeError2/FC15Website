@@ -81,10 +81,10 @@
         <font size="150" color="white" face="微软雅黑">Welcome to FC15 Website!</font>
         <p style="font: bold 16px 微软雅黑">Join us and have fun!</p>
         <hr />
-        <a href="">
+        <a href="/about_fc15/">
             <el-button type="primary">Learn more</el-button>
         </a>
-        <a href="">
+        <a href="/document/">
             <el-button type="success">Quick start</el-button>
         </a>
     </div>
@@ -148,7 +148,7 @@
             <img src="/static/images/intro-pic-01.jpg" />
             <h3>Game: DA GAN</h3>
             <p>Here should be an brief introduction on the game.</p>
-            <a href="">
+            <a href="/about_fc15/">
                 <el-button type="success">Learn more</el-button>
             </a>
         </div>
@@ -156,10 +156,10 @@
             <img src="/static/images/intro-pic-02.jpg" />
             <h3>Play game</h3>
             <p>Here should be an brief introduction about the SDK.</p>
-            <a href="">
+            <a href="/document/">
                 <el-button type="success">Learn more</el-button>
             </a>
-            <a href="">
+            <a href="/unfinished/"> <!-- This link should be completed. -->
                 <el-button type="primary">Download SDK</el-button>
             </a>
         </div>
@@ -167,7 +167,7 @@
             <img src="/static/images/intro-pic-03.jpg" />
             <h3>THU AI</h3>
             <p>Here should be an brief introduction about THU AI competition.</p>
-            <a href="">
+            <a href="/about_asta/">
                 <el-button type="success">Learn more</el-button>
             </a>
         </div>
@@ -178,74 +178,60 @@
 
 <el-container>
     <el-header>
-        <h3 style="text-align: center;">Discussion</h3>
-        <p style="text-align: center">This zone is designed to post blogs from players.</p>
+        <h2 style="text-align: center;">Discussion</h2>
+        <p style="text-align: center">This zone is designed to post blogs from players.  <a href="/viewblogs/"><el-button type="primary" plain>View more</el-button></a></p>
         <hr />
     </el-header>
     <el-main style="height: 200px;" height="200px">
 
     </el-main>
 </el-container>
-
+<br /><br />
 <el-container style="width: 80%; margin-left: 10%;">
     <div class="row-container" style="margin: auto; width: 100%;">
         <div class="col1" style="float: left; margin-left: 0px; width: 45%;">
+            {% for post in posts1 %}
             <el-container>
                 <el-aside>
-                    <img src="/static/images/blog-pic-01.jpg" />
+                    {% if forloop.counter == 1 %}
+                        <img src="/static/images/blog-pic-01.jpg" />
+                    {% else %}
+                        <img src="/static/images/blog-pic-02.jpg" />
+                    {% endif %}
                 </el-aside>
                 <el-main>
-                    <h2>Blog 01</h2>
+                    <h3>{{ post.title }}</h3>
                     <hr />
-                    <p>Here should be an outline about this blogpost.</p>
-                    <a href="">
-                        <el-button type="success" plain>Details</el-button>
+                    <p>Posted by <el-tag>{{ post.username }}</el-tag> at <el-tag type="success">{{ post.timestamp }}</el-tag></p>
+                    <a href="/unfinished/">
+                        <el-button type="success">Details</el-button>
                     </a>
                 </el-main>
             </el-container>
             <br />
-            <el-container>
-                <el-aside>
-                    <img src="/static/images/blog-pic-02.jpg" />
-                </el-aside>
-                <el-main>
-                    <h2>Blog 03</h2>
-                    <hr />
-                    <p>Here should be an outline about this blogpost.</p>
-                    <a href="">
-                        <el-button type="success" plain>Details</el-button>
-                    </a>
-                </el-main>
-            </el-container>
+            {% endfor %}
         </div>
         <div class="col1" style="float: right; margin-left: 0px; width: 45%;">
+            {% for post in posts2 %}
             <el-container>
                 <el-aside>
-                    <img src="/static/images/blog-pic-03.jpg" />
+                    {% if forloop.counter == 1 %}
+                        <img src="/static/images/blog-pic-03.jpg" />
+                    {% else %}
+                        <img src="/static/images/blog-pic-04.jpg" />
+                    {% endif %}
                 </el-aside>
                 <el-main>
-                    <h2>Blog 02</h2>
+                    <h2>{{ post.title }}</h2>
                     <hr />
-                    <p>Here should be an outline about this blogpost.</p>
-                    <a href="">
-                        <el-button type="success" plain>Details</el-button>
+                    <p>Posted by <el-tag>{{ post.username }}</el-tag> at <el-tag type="success">{{ post.timestamp }}</el-tag></p>
+                    <a href="/unfinished/">
+                        <el-button type="success">Details</el-button>
                     </a>
                 </el-main>
             </el-container>
             <br />
-            <el-container>
-                <el-aside>
-                    <img src="/static/images/blog-pic-04.jpg" />
-                </el-aside>
-                <el-main>
-                    <h2>Blog 04</h2>
-                    <hr />
-                    <p>Here should be an outline about this blogpost.</p>
-                    <a href="">
-                        <el-button type="success" plain>Details</el-button>
-                    </a>
-                </el-main>
-            </el-container>
+            {% endfor %}
         </div>
     </div>
 </el-container>
@@ -261,17 +247,21 @@
             <div class="col1" style="float: left; width: 20%;">
                 <p>For more information, please send email to contact us.</p>
                 <p>Email: ******</p>
-                <a href="">
+                <a href="/unfinished/">
                     <el-button type="success" plain>Send Email</el-button>
                 </a>
             </div>
             <div class="col2" style="float: left; width: 20%; margin-left: 10%;">
                 <p>You can alse subscribe to the Wechat Official Accounts of DAASTA.</p>
-                <el-button type="success" plain>Learn more</el-button>
+                <a href="/unfinished/">
+                    <el-button type="success" plain>Learn more</el-button>
+                </a>
             </div>
             <div class="col3" style="float: left; width: 20%; margin-left: 10%;">
                 <p>If you want to join us, welcome to the website of DAASTA to learn more, or contact the DALAOs here.</p>
-                <el-button type="success" plain>Contact us</el-button>
+                <a href="/unfinished/">
+                    <el-button type="success" plain>Contact us</el-button>
+                </a>
             </div>
         </div>
     </el-aside>

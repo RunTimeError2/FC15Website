@@ -80,6 +80,10 @@ class BlogPost(models.Model):
     def __unicode__(self):
         return self.title
 
+    class Meta:
+        verbose_name = 'blogpost'
+        ordering = ['-timestamp']
+
 
 # Determines how to display class BlogPost in tables for admin
 class BlogPostAdmin(admin.ModelAdmin):

@@ -18,8 +18,9 @@ AUTO_COMPILE = True
 # Home page
 def home(request):
     username = request.COOKIES.get('username', '')
-    posts = BlogPost.objects.all()
-    return render(request, 'home.html', {'posts': posts, 'username': username})
+    posts1 = BlogPost.objects.all()[: 2]
+    posts2 = BlogPost.objects.all()[2: 4]
+    return render(request, 'home.html', {'posts1': posts1, 'posts2': posts2, 'username': username})
 
 
 # Login
@@ -398,6 +399,17 @@ def filedownload(request ,pk):
     return response
 
 
+# View all blogs
+def viewblogs(request):
+    username = request.COOKIES.get('username', '')
+    if username == '':
+        flash(request, 'Error', 'Please login first', 'error')
+        return HttpResponseRedirect('/login/')
+    blogs = BlogPost.objects.all()
+    #return render(request, 'viewblogs.html', {'username': username, 'blogs': blogs})
+    return render(request, 'viewblogs.html', {'username': username, 'blogs': blogs})
+
+
 # Post a blog
 def postblog(request):
     username = request.COOKIES.get('username', '')
@@ -420,13 +432,22 @@ def postblog(request):
             print('Invalid userform')
     else:
         userform = BlogPostForm()
-    return render(request, 'blogpost.html', {'username': username, 'form': userform, 'title': '', content: ''})
+    return render(request, 'blogpost.html', {'username': username, 'form': userform, 'title': '', 'content': ''})
+
+
+# Return an 'unfinished' message
+def unfinished(request):
+    return HttpResponse('Oh, this function has not been finished yet!')
 
 
 # Show the detail of a blog
 def blogdetail(request, pk):
+    username = request.COOKIES.get('username', '')
     post = get_object_or_404(BlogPost, pk = pk)
-    return render(request, 'blogdetail.html', {'post': post})
+    background_image_count = 2
+    bg_index = random.randint(1, background_image_count)
+    bg_filename = 'blog-bg-' + str(bg_index) + '.jpg'
+    return render(request, 'blogdetail.html', {'post': post, 'username': username, 'bgname': bg_filename})
 
 
 # Edit a blog

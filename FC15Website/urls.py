@@ -28,6 +28,7 @@ urlpatterns = [
     url(r'^regist/$', FC15.views.regist, name = 'regist'),
     url(r'^upload/$', FC15.views.upload, name = 'upload'),
     url(r'^postblog/$', FC15.views.postblog, name = 'postblog'),
+    url(r'^viewblogs/$', FC15.views.viewblogs, name = 'viewblogs'),
     url(r'^team/$', FC15.views.team, name = 'team'),
     url(r'^createteam/$', FC15.views.createteam, name = 'createteam'),
     url(r'^resetrequest/$', FC15.views.resetrequest, name = 'resetrequest'),
@@ -36,6 +37,8 @@ urlpatterns = [
     url(r'^teamrequest/$', FC15.views.jointeamrequest, name = 'jointeamrequest'),
     url(r'^quitteam/$', FC15.views.quitteam, name = 'quitteam'),
     url(r'^dismissteam/$', FC15.views.dismissteam, name = 'dismissteam'),
+
+    url(r'^unfinished/$', FC15.views.unfinished, name = 'unfinished'),
 
     url(r'^blogdetail/(?P<pk>[0-9]+)/$', FC15.views.blogdetail, name = 'blogdetail'),
     url(r'^blogedit/(?P<pk>[0-9]+)/$', FC15.views.blogedit, name = 'blogedit'),
