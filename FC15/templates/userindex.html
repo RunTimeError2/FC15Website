@@ -127,7 +127,7 @@
             <div style="width: 80%; margin-left: 10%;">
                 <h3>My code</h3>
                 {% if files %}
-                    <p>The following are all the code you have uploaded.</p>
+                    <p>The following are all the code you have uploaded.<a href="/upload/"><el-button type="success">Upload Code</el-button></a></p>
                 {% else %}
                     <p>You have not uploaded any code yet.</p>
                 {% endif %}
@@ -150,15 +150,15 @@
                         <td>{{ file.description }}</td>
                         <td>
                             <template>
-                            {% if file.is_compiled %}
+                            {% if file.is_compiled == 'Not compiled' %}
+                                <el-tag type="warning">未编译</el-tag>
+                            {% else %}
                                 <el-tag type="info">已编译</el-tag>
-                                {% if file.is_compile_success %}
+                                {% if file.is_compile_success == 'Successfully compiled' %}
                                     <el-tag type="success">编译成功</el-tag>
                                 {% else %}
                                     <el-tag type="danger">编译失败</el-tag>
                                 {% endif %}
-                            {% else %}
-                                <el-tag type="warning">未编译</el-tag>
                             {% endif %}
                             </template>
                         </td>
@@ -167,7 +167,7 @@
                                 <el-button type="info"><i class="el-icon-edit"></i> Edit</el-button>
                             </a>
                             <a href="{% url 'filedelete' pk=file.pk %}">
-                                <el-button type="danger"><i class="el-icon-circle-close"></i> Delete</el-button>
+                                <el-button type="danger" onclick="return confirm('Are you sure to delete the code?')"><i class="el-icon-circle-close"></i> Delete</el-button>
                             </a>
                             <a href="{% url 'filedownload' pk=file.pk %}">
                                 <el-button type="success"><i class="el-icon-document"></i> Download</el-button>
@@ -224,15 +224,15 @@
                             <td>{{ code.description }}</td>
                             <td>
                                 <template>
-                                {% if code.is_compiled %}
+                                {% if code.is_compiled == 'Not compiled' %}
+                                    <el-tag type="warning">未编译</el-tag>
+                                {% else %}
                                     <el-tag type="info">已编译</el-tag>
-                                    {% if file.is_compile_success %}
+                                    {% if file.is_compile_success == 'Successfully compiled' %}
                                         <el-tag type="success">编译成功</el-tag>
                                     {% else %}
                                         <el-tag type="danger">编译失败</el-tag>
                                     {% endif %}
-                                {% else %}
-                                    <el-tag type="warning">未编译</el-tag>
                                 {% endif %}
                                 </template>
                             </td>

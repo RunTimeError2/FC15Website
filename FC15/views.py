@@ -297,13 +297,15 @@ def upload(request):
         username = request.COOKIES.get('username', '')
         if username == '':
             return HttpResponseRedirect('/login/')
-    return render(request, 'upload.html', {'username': username, 'form': userform})
+    return render(request, 'upload.html', {'username': username, 'form': userform, 'filename': '', 'description': ''})
 
 
 # Edit a file
 def fileedit(request, pk):
     file = get_object_or_404(FileInfo, pk = pk)
     username = request.COOKIES.get('username', '')
+    filename = file.filename
+    description = file.description
     if username == '':
         flash(request, 'Error', 'Please login first', 'error')
         return HttpResponseRedirect('/login/')
@@ -315,19 +317,19 @@ def fileedit(request, pk):
         userform = FileUploadForm(request.POST, request.FILES)
 
         #limit the size and type of file to be uploaded
-        myfile = reqeust.FILES.get('file', None)
+        myfile = request.FILES.get('file', None)
         if myfile:
             if myfile.size >= 1048576:
                 flash(request, 'Error', 'File should not be larger than 1 MiB', 'error')
-                return render(request, 'upload.html', {'username': username, 'form': userform})
+                return render(request, 'upload.html', {'username': username, 'form': userform, 'filename': filename, 'description': description})
                 #return HttpResponse('Error! File should not be larger than 1 MiB')
             if myfile.name.endswith('.cpp') == False:
                 flash(request, 'Error', 'Only .cpp file is accepted.', 'error')
-                return render(request, 'upload.html', {'username': username, 'form': userform})
+                return render(request, 'upload.html', {'username': username, 'form': userform, 'filename': filename, 'description': description})
                 #return HttpResponse('Error! Only .cpp file is accepted.')
         else:
             flash(request, 'Error', 'File does not exist.', 'error')
-            return render(request, 'upload.html', {'username': username, 'form': userform})
+            return render(request, 'upload.html', {'username': username, 'form': userform, 'filename': filename, 'description': description})
             #return HttpResponse('Error! File does not exist.')
 
         if userform.is_valid():
@@ -351,7 +353,7 @@ def fileedit(request, pk):
             #return HttpResponse('File edited successfully')
     else:
         userform = FileUploadForm(data = {'filename': file.filename, 'description': file.description, 'file': file.file})
-    return render(request, 'upload.html', {'username': username, 'form': userform})
+    return render(request, 'upload.html', {'username': username, 'form': userform, 'filename': filename, 'description': description})
 
 
 # Delete a file
