@@ -391,10 +391,20 @@ def filedownload(request ,pk):
     if username == '':
         flash(request, 'Error', 'Please login first', 'error')
         return HttpResponseRedirect('/login/')
-    if username != file.username:
-        flash(request, 'Error', 'You can only download you own file!')
+    me = get_object_or_404(UserInfo, username = username)
+    authors = UserInfo.objects.filter(username__exact = file.username)
+    if authors:
+        author = UserInfo.objects.get(username = username)
+    else:
+        author = None
+        flash(request, 'Error', 'Invalid code! The author of the code does not exist.')
         return HttpResponseRedirect('/index/')
-        #return HttpResponse('Error! You can only download your own file.')
+    #author = get_object_or_404(UserInfo, username = file.username)
+    if username != file.username:
+        if author.team == '' or me.team == '' or author.team != me.team:
+            flash(request, 'Error', 'You can only download your own file or code of your teammates!')
+            return HttpResponseRedirect('/index/')
+            #return HttpResponse('Error! You can only download your own file.')
     response = StreamingHttpResponse(file_iterator(file.path))  
     response['Content-Type'] = 'application/octet-stream'  
     response['Content-Disposition'] = 'attachment;filename="{0}"'.format(file.origin_name)
