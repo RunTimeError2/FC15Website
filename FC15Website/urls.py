@@ -5,7 +5,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.contrib import staticfiles
 
 from datetime import datetime
-from django.conf.urls import url
+from django.conf.urls import url, handler404, handler500
 import django.contrib.auth.views
 
 # Uncomment the next lines to enable the admin:
@@ -14,6 +14,10 @@ from django.contrib import admin
 import FC15.views
 admin.autodiscover()
 
+handler404 = 'FC15.views.page_not_found'
+handler500 = 'FC15.views.page_error'
+
+# All urls available
 urlpatterns = [
     url(r'^$', FC15.views.home, name = 'home'),
     url(r'^home/$', FC15.views.home, name = 'home'),

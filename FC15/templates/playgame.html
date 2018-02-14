@@ -12,12 +12,12 @@
             </tr>
         </thead>
         <tbody>
-            {% for i in a %}
+            {% for item in ailist %}
                 <tr>
                     <td>
-                        <input type="checkbox" value="{{ i }}" name="check_box_list" />{{ i }}
+                        <input type="checkbox" value="{{ item.pk }}" name="check_box_list" />{{ item.pk }}
                     </td>
-                    <td>Description here</td>
+                    <td>{{ item.description }}</td>
                 </tr>
             {% endfor %}
         </tbody>

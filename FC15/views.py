@@ -779,12 +779,25 @@ def playgame(request):
     if request.method == 'POST':
         check_box_list = request.POST.getlist('check_box_list')
         if check_box_list:
-            print(check_box_list)
+            for item in check_box_list:
+                print('index of ai is ', item)
             return HttpResponse('Submit successfully')
         else:
             print('fail')
             flash(request, 'Error', 'Please choose at lease one item!', 'error')
             return HttpResponseRedirect('/playgame/')
     else:
-        a = [1, 2, 3, 4, 5, 6]
-        return render(request, 'playgame.html', {'a': a})
+        all_file = FileInfo.objects.all()
+        return render(request, 'playgame.html', {'ailist': all_file})
+
+
+# Handles 404 error
+def page_not_found(request):
+    #return HttpResponse('Page not found lol.')
+    return render(request, 'page404.html')
+
+
+# Handles 500 error
+def page_error(request):
+    #return HttpResponse('Page error lol.')
+    return render(request, 'page500.html')
