@@ -70,6 +70,21 @@ class FileInfoAdmin(admin.ModelAdmin):
     list_display = ('filename', 'username', 'description')
 
 
+# Model for AI (successfully compiled file)
+class AIInfo(models.Model):
+    name = models.CharField(max_length = 255) # filename
+    author = models.CharField(max_length = 100) # username
+    team = models.CharField(max_length = 100) # teamname
+    description = models.CharField(max_length = 1000)
+    path = models.CharField(max_length = 500)
+    enabled = models.BooleanField()
+
+
+# Determines how to display class AIInfo in tables for admin
+class AIInfoAdmin(admin.ModelAdmin):
+    list_display = ('name', 'author', 'enabled')
+
+
 # Model for blogs
 class BlogPost(models.Model):
     title = models.CharField(max_length = 150)
@@ -130,6 +145,7 @@ class TeamRequestAdmin(admin.ModelAdmin):
 admin.site.register(UserInfo, UserInfoAdmin)
 admin.site.register(TeamInfo, TeamInfoAdmin)
 admin.site.register(FileInfo, FileInfoAdmin)
+admin.site.register(AIInfo, AIInfoAdmin)
 admin.site.register(BlogPost, BlogPostAdmin)
 admin.site.register(EmailActivate, EmailActivateAdmin)
 admin.site.register(PasswordReset, PasswordResetAdmin)

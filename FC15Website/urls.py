@@ -37,7 +37,7 @@ urlpatterns = [
     url(r'^teamrequest/$', FC15.views.jointeamrequest, name = 'jointeamrequest'),
     url(r'^quitteam/$', FC15.views.quitteam, name = 'quitteam'),
     url(r'^dismissteam/$', FC15.views.dismissteam, name = 'dismissteam'),
-
+    url(r'^playgame/$', FC15.views.playgame, name = 'playgame'),
     url(r'^unfinished/$', FC15.views.unfinished, name = 'unfinished'),
 
     url(r'^blogdetail/(?P<pk>[0-9]+)/$', FC15.views.blogdetail, name = 'blogdetail'),

@@ -768,3 +768,23 @@ def dismissteam(request):
     else:
         flash(request, 'Error', 'User does not exist', 'error')
         return HttpResponseRedirect('/login/')
+
+
+# Play game online
+def playgame(request):
+    username = request.COOKIES.get('username', '')
+    if username == '':
+        flash(request, 'Error', 'Please login first!', 'error')
+        return HttpResponseRedirect('/login/')
+    if request.method == 'POST':
+        check_box_list = request.POST.getlist('check_box_list')
+        if check_box_list:
+            print(check_box_list)
+            return HttpResponse('Submit successfully')
+        else:
+            print('fail')
+            flash(request, 'Error', 'Please choose at lease one item!', 'error')
+            return HttpResponseRedirect('/playgame/')
+    else:
+        a = [1, 2, 3, 4, 5, 6]
+        return render(request, 'playgame.html', {'a': a})

@@ -1,0 +1,28 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+<h1>Play game here</h1>
+<form method="post" enctype="multipart/form-data" action="">
+    {% csrf_token %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Index</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in a %}
+                <tr>
+                    <td>
+                        <input type="checkbox" value="{{ i }}" name="check_box_list" />{{ i }}
+                    </td>
+                    <td>Description here</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <input type="submit" value="Submit" />
+</form>
+
+{% endblock %}
