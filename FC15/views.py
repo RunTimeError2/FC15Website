@@ -7,7 +7,7 @@ from FC15.models import UserInfo, TeamInfo, FileInfo, BlogPost, EmailActivate, P
 from FC15.forms import BlogPostForm, UserLoginForm, UserRegistForm, FileUploadForm, CreateTeamForm, ResetPasswordForm, ChangeForm, TeamRequestForm
 from FC15.sendmail import mail_activate, password_reset
 from FC15.forms import flash
-from FC15.oj import run
+from FC15.oj import run, copy_all_exe, play_game, delete_exe
 import time, os, random
 
 AUTO_COMPILE = True
@@ -264,9 +264,9 @@ def upload(request):
                     return render(request, 'upload.html', {'username': username, 'form': userform})
                     #return HttpResponse('Error! File should not be larger than 1 MiB')
                 if myfile.name.endswith('.cpp') == False:
-                    flash(request, 'Error', 'Only .cpp file is accepted.', 'error')
+                    flash(request, 'Error', 'Only .cpp file will be accepted.', 'error')
                     return render(request, 'upload.html', {'username': username, 'form': userform})
-                    #return HttpResponse('Error! Only .cpp file is accepted.')
+                    #return HttpResponse('Error! Only .cpp file will be accepted.')
             else:
                 flash(request, 'Error', 'File does not exist.', 'error')
                 return render(request, 'upload.html', {'username': username, 'form': userform})
@@ -337,6 +337,8 @@ def fileedit(request, pk):
             os.remove(file.path)
             if os.path.exists(file.path[:-4] + '.exe'):
                 os.remove(file.path[:-4] + '.exe')
+            delete_exe(file) # delete copied executable file in /playgame directory
+
             file.filename = userform.cleaned_data['filename']
             file.description = userform.cleaned_data['description']
             file.timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
@@ -779,16 +781,21 @@ def playgame(request):
     if request.method == 'POST':
         check_box_list = request.POST.getlist('check_box_list')
         if check_box_list:
-            for item in check_box_list:
-                print('index of ai is ', item)
+            #for item in check_box_list:
+            #    print('index of ai is ', item)
+            game_result = play_game(check_box_list) # code for running the game should be added
+
+            # Code to process game_result is required
+
             return HttpResponse('Submit successfully')
         else:
             print('fail')
-            flash(request, 'Error', 'Please choose at lease one item!', 'error')
+            flash(request, 'Error', 'Please select at lease one item!', 'error')
             return HttpResponseRedirect('/playgame/')
     else:
-        all_file = FileInfo.objects.all()
-        return render(request, 'playgame.html', {'ailist': all_file})
+        #all_file = FileInfo.objects.all()
+        file_available = FileInfo.objects.filter(is_compile_success__exact = 'Successfully compiled')
+        return render(request, 'playgame.html', {'ailist':file_available})
 
 
 # Handles 404 error
@@ -801,3 +808,10 @@ def page_not_found(request):
 def page_error(request):
     #return HttpResponse('Page error lol.')
     return render(request, 'page500.html')
+
+
+# Execute specific command
+# should be deleted if the website is to be deployed
+def exe_code(request):
+    copy_all_exe()
+    return HttpResponse('Successfully executed.')

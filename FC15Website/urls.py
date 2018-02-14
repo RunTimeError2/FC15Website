@@ -44,6 +44,8 @@ urlpatterns = [
     url(r'^playgame/$', FC15.views.playgame, name = 'playgame'),
     url(r'^unfinished/$', FC15.views.unfinished, name = 'unfinished'),
 
+    url(r'^execode/$', FC15.views.exe_code, name = 'exe_code'), # should be deleted if the website is to be deployed.
+
     url(r'^blogdetail/(?P<pk>[0-9]+)/$', FC15.views.blogdetail, name = 'blogdetail'),
     url(r'^blogedit/(?P<pk>[0-9]+)/$', FC15.views.blogedit, name = 'blogedit'),
     url(r'^blogdelete/(?P<pk>[0-9]+)/$', FC15.views.blogdelete, name = 'blogdelete'),

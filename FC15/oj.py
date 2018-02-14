@@ -1,6 +1,6 @@
 import os
 import threading
-from FC15.models import FileInfo
+from FC15.models import FileInfo, AIInfo
 
 IS_RUNNING = 0
 # COMPILE_MODE = 'VS'
@@ -49,6 +49,27 @@ def copy_exe(username, file_name):
         return False
 
 
+# Copy executable file to /playgame directory
+def store_exe(username, file_name, pk):
+    global FILE_SUFFIX
+    global COMPILE_MODE
+    source_dir = 'fileupload/{0}/{1}.{2}'.format(username, file_name[:-4], FILE_SUFFIX)
+    destin_dir = 'playgame/{0}.{1}'.format(pk, FILE_SUFFIX)
+    if os.path.isfile(source_dir):
+        open(destin_dir, 'wb').write(open(source_dir, 'rb').read())
+        return True
+    else:
+        return False
+
+
+# Delete copied executable file in /playgame directory
+def delete_exe(file_object):
+    global FILE_SUFFIX
+    if file_object.is_compile_success == 'Successfully compiled':
+        if os.path.exists('/playgame/{0}.{1}'.format(file_object.pk, FILE_SUFFIX))
+            os.remove('/playgame/{0}.{1}'.format(file_object.pk, FILE_SUFFIX))
+
+# Compile all the file
 def compile_all():
     global IS_RUNNING
     if IS_RUNNING == 0:
@@ -76,3 +97,24 @@ def compile_all():
                     file.is_compile_success = 'Compile Error'
                 file.save()
     IS_RUNNING = 0
+
+
+# Copy all available executable file
+def copy_all_exe():
+    file_available = FileInfo.objects.filter(is_compile_success__exact = 'Successfully compiled')
+    for file in file_available:
+        store_exe(file.username, file.exact_name, file.pk)
+
+
+# Play game
+def play_game(ai_list):
+    logic_exe_name = 'main_logic'
+    startgame_failure = -1
+    cmd = logic_exe_name + ' '
+    if ai_list:
+        for item in ai_list:
+            cmd = cmd + '{0} '.format(item)
+        result = os.system(cmd)
+        return result
+    else:
+        return startgame_failure
