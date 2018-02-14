@@ -1,24 +1,11 @@
 # This is the website for FC15
 > created by RunTimeError2, 2017-10-17 11:56
-latest update: 2017-10-6 18:00
+latest update: 2018-2-14 10:22
 
-## 当前功能
-- 注册（需要邮件验证），登录，登出
-- 修改账号，重置密码（需要邮件验证）
-- 发布/编辑/删除博客，在主页显示博客
-- 上传/编辑/删除代码文件（只能提交1M以内的cpp）
-- 组队（创建/加入队伍，加入队伍需要队长确认），退出/解散队伍，查看/下载队友的代码文件
-- 在上传文件后自动编译
-- 加入自动编译系统选择开关，在windows下使用VS，在ubuntu下使用g++
-- 将自动编译、发送邮件改为异步操作，防止卡顿
+## Work to be done
+- Finish the function to play game online, and to download results.
+- Interfaces with logic.
+- Modifications of database structure
 
-## 关于自动编译
-- 在views.py开头有自动编译开关AUTO_COMPILE，将其设为True即可开启自动编译功能
-- 目前的自动编译使用的编译器是VS2017，需要设置环境变量（devenv.exe即vs主程序的路径）方可正常使用
-- 目前仅有自动编译功能，并不能自动运行
-- 由于多线程做的还并不完善，如果开启自动编译，提交文件成功后会卡一段时间（其实是在编译）再跳转
-- oj.py开头处有自动编译系统选择开关，选择当前使用的系统/目标文件扩展名
-
-## 前端更新日志
-- 2017-10-17 11:53 加入动态判断，自动隐藏不需要显示的内容。优化了主页界面。
-- 2017-10-24 18:31 使用了来自网络的前段模板，修改了页面布局，基本完成整体页面结构设计
+## Work to do if needed
+- OJ system, including multi-thread processing and sandbox.
