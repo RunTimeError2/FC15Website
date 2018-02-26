@@ -64,4 +64,4 @@ urlpatterns = [
     #url(r'^static/(?P<path>.*)', 'django.views.static.serve', {'document_root': '/static'}),  
 ]
 
-#urlpatterns += staticfiles_urlpatterns()
+urlpatterns += staticfiles_urlpatterns()

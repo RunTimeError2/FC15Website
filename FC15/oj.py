@@ -66,7 +66,7 @@ def store_exe(username, file_name, pk):
 def delete_exe(file_object):
     global FILE_SUFFIX
     if file_object.is_compile_success == 'Successfully compiled':
-        if os.path.exists('/playgame/{0}.{1}'.format(file_object.pk, FILE_SUFFIX))
+        if os.path.exists('/playgame/{0}.{1}'.format(file_object.pk, FILE_SUFFIX)):
             os.remove('/playgame/{0}.{1}'.format(file_object.pk, FILE_SUFFIX))
 
 # Compile all the file

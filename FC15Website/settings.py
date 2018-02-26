@@ -25,7 +25,7 @@ SECRET_KEY = 'd1800b35-faa6-45f3-8d8b-d057afb82a6a'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # if DEBUG == True, handler404 and handler500 will not work properly 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -127,7 +127,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 #STATIC_ROOT = os.path.join(os.path.dirname(__file__), 'static')
 #STATICFILES_DIRS = (
-#    ('images', os.path.join(STATIC_ROOT, 'img').replace('\\', '/')),
+#    ('images', os.path.join(STATIC_ROOT, 'images').replace('\\', '/')),
 #    )
 
 STATIC_ROOT = posixpath.join(*(BASE_DIR.split(os.path.sep) + ['static']))
