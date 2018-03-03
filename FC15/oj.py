@@ -1,12 +1,23 @@
-import os
+import os, time, random
 import threading
-from FC15.models import FileInfo, AIInfo
+from FC15.models import FileInfo, AIInfo, GameRecord
+from queue import Queue
+
 
 IS_RUNNING = 0
+GAME_RUNNING = 0
 # COMPILE_MODE = 'VS'
 COMPILE_MODE = 'G++'
 FILE_SUFFIX = 'exe'
+RECORD_SUFFIX = 'txt' # maybe should be changed to 'json'
+DEFAULT_RECORD_FILENAME = 'gamerecord.txt'
 # FILE_SUFFIX = 'dll'
+GAME_QUEUE = Queue()
+
+
+class SingleGameInfo(object):
+    username = ''
+    ai_list = []
 
 
 # Start running
@@ -16,6 +27,37 @@ def run():
         IS_RUNNING = 1
         t = threading.Thread(target = compile_all)
         t.start()
+
+
+# Run all games in the queue, should be put into a new thread
+def run_game():
+    global GAME_RUNNING
+    global GAME_QUEUE
+    while GAME_QUEUE.empty() == False:
+        gameinfo = GAME_QUEUE.get()
+        # Launch game
+        result = launch_game(gameinfo.ai_list, gameinfo.username)
+        # Generate game record
+        record = GameRecord()
+        record.username = gameinfo.username
+        record.timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+        if result == 0:
+            record.state = 'Success'
+        elif result == -1:
+            record.state = 'Failed to Launch game'
+        elif result == 1:
+            record.state = 'Runtime Error'
+        else:
+            record.state = 'Unknown state'
+        now = time.strftime('%Y%m%d%H%M%S')
+        file_name = '{0}_{1}.{2}'.format(now, random.randint(0, 1000), RECORD_SUFFIX)
+        destin_dir = '/gamerecord/' + file_name
+        source_dir = '/playgame/' + DEFAULT_RECORD_FILENAME
+        # Copy record file
+        open(destin_dir, 'wb').write(open(source_dir, 'rb').read())
+        record.filename = file_name
+        record.save()
+    GAME_RUNNING = 0
 
 
 # Copy file
@@ -106,14 +148,34 @@ def copy_all_exe():
         store_exe(file.username, file.exact_name, file.pk)
 
 
-# Play game
-def play_game(ai_list):
-    logic_exe_name = 'main_logic'
+# Add game infomation into waiting queue
+def play_game(ai_list, username):
+    queue_item = SingleGameInfo()
+    queue_item.ai_list = ai_list
+    queue_item.username = username
+    GAME_QUEUE.put(queue_item)
+    if GAME_RUNNING == 0:
+        GAME_RUNNING = 1
+        t = threading.Thread(target = run_game)
+        t.start()
+
+
+# Launch logic once
+def launch_game(ai_list, username):
+    exe_path = 'playgame/logic.exe'
+
+    # parameters
     startgame_failure = -1
-    cmd = logic_exe_name + ' '
+    result_success = 0
+    result_runtimeerror = 1
+    # there should be more
+
+    cmd = exe_path + ' '
     if ai_list:
+        # genereate command to launch logic
         for item in ai_list:
             cmd = cmd + '{0} '.format(item)
+        # launch logic
         result = os.system(cmd)
         return result
     else:

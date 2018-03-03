@@ -86,7 +86,6 @@
     <Content Include="FC15\templates\createteam.html" />
     <Content Include="FC15\templates\document.html" />
     <Content Include="FC15\templates\home.html" />
-    <Content Include="FC15\templates\index.html" />
     <Content Include="FC15\templates\page404.html" />
     <Content Include="FC15\templates\playgame.html" />
     <Content Include="FC15\templates\userindex.html" />

@@ -85,6 +85,19 @@ class AIInfoAdmin(admin.ModelAdmin):
     list_display = ('name', 'author', 'enabled')
 
 
+# Model for record of game
+class GameRecord(models.Model):
+    username = models.CharField(max_length = 100) # the user who launched the game
+    timestamp = models.DateTimeField()
+    filename = models.CharField(max_length = 255) # name of the record file
+    state = models.CharField(max_length = 50)
+
+
+# Determines how to display class AIInfo in tables for admin
+class GameRecordAdmin(admin.ModelAdmin):
+    list_display = ('username', 'timestamp', 'filename')
+
+
 # Model for blogs
 class BlogPost(models.Model):
     title = models.CharField(max_length = 150)
@@ -146,6 +159,7 @@ admin.site.register(UserInfo, UserInfoAdmin)
 admin.site.register(TeamInfo, TeamInfoAdmin)
 admin.site.register(FileInfo, FileInfoAdmin)
 admin.site.register(AIInfo, AIInfoAdmin)
+admin.site.register(GameRecord, GameRecordAdmin)
 admin.site.register(BlogPost, BlogPostAdmin)
 admin.site.register(EmailActivate, EmailActivateAdmin)
 admin.site.register(PasswordReset, PasswordResetAdmin)

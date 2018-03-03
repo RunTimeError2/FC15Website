@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect, StreamingHttpRespons
 from django.template import RequestContext
 from django.contrib import messages
 
-from FC15.models import UserInfo, TeamInfo, FileInfo, BlogPost, EmailActivate, PasswordReset, TeamRequest
+from FC15.models import UserInfo, TeamInfo, FileInfo, BlogPost, EmailActivate, PasswordReset, TeamRequest, GameRecord
 from FC15.forms import BlogPostForm, UserLoginForm, UserRegistForm, FileUploadForm, CreateTeamForm, ResetPasswordForm, ChangeForm, TeamRequestForm
 from FC15.sendmail import mail_activate, password_reset
 from FC15.forms import flash
@@ -781,13 +781,10 @@ def playgame(request):
     if request.method == 'POST':
         check_box_list = request.POST.getlist('check_box_list')
         if check_box_list:
-            #for item in check_box_list:
-            #    print('index of ai is ', item)
-            game_result = play_game(check_box_list) # code for running the game should be added
-
+            play_game(check_box_list, username)
             # Code to process game_result is required
-
-            return HttpResponse('Submit successfully')
+            flash(request, 'Success', 'The request for a game has been submitted. Please wait. The result will be put on this page later.')
+            return HttpResponseRedirect('/playgame/')
         else:
             print('fail')
             flash(request, 'Error', 'Please select at lease one item!', 'error')
@@ -815,3 +812,25 @@ def page_error(request):
 def exe_code(request):
     copy_all_exe()
     return HttpResponse('Successfully executed.')
+
+
+# Download game record
+def recorddownload(request, pk):
+    def file_iterator(file_name, chunk_size = 2048):
+        with open(file_name) as f:
+            while True:
+                c = f.read(chunk_size)
+                if c:
+                    yield c
+                else:
+                    break
+
+    username = request.COOKIES.get('username', '')
+    if username == '':
+        flash(request, 'Error', 'Please login first', 'error')
+        return HttpResponseRedirect('/login/')
+    record_info = get_object_or_404(GameRecord, pk = pk)
+    response = StreamingHttpResponse(file_iterator('/gamerecord/' + record_info.filename))
+    response['Content-Type'] = 'application/octet-stream'  
+    response['Content-Disposition'] = 'attachment;filename="{0}"'.format(record_info.filename)
+    return response

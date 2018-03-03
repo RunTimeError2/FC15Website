@@ -44,7 +44,10 @@ urlpatterns = [
     url(r'^playgame/$', FC15.views.playgame, name = 'playgame'),
     url(r'^unfinished/$', FC15.views.unfinished, name = 'unfinished'),
 
-    url(r'^execode/$', FC15.views.exe_code, name = 'exe_code'), # should be deleted if the website is to be deployed.
+    #url(r'^execode/$', FC15.views.exe_code, name = 'exe_code'), # should be deleted if the website is to be deployed.
+    # only for a test
+    url(r'^404/$', FC15.views.page_not_found, name = 'pagenotfount'),
+    url(r'^500/$', FC15.views.page_error, name = 'pageerror'),
 
     url(r'^blogdetail/(?P<pk>[0-9]+)/$', FC15.views.blogdetail, name = 'blogdetail'),
     url(r'^blogedit/(?P<pk>[0-9]+)/$', FC15.views.blogedit, name = 'blogedit'),
@@ -52,6 +55,7 @@ urlpatterns = [
     url(r'^fileedit/(?P<pk>[0-9]+)/$', FC15.views.fileedit, name = 'fileedit'),
     url(r'^filedelete/(?P<pk>[0-9]+)/$', FC15.views.filedelete, name = 'filedelete'),
     url(r'^filedownload/(?P<pk>[0-9]+)/$', FC15.views.filedownload, name = 'filedownload'),
+    url(r'^recorddownload/(?P<pk>[0-9]+)/$', FC15.views.recorddownload, name = 'recorddownload'),
     url(r'^jointeam/(?P<pk>[0-9]+)/$', FC15.views.jointeam, name = 'jointeam'),
     url(r'^jointeamrequest/(?P<pk>[0-9]+)/$', FC15.views.jointeamrequest, name = 'jointeamrequest'),
     url(r'^mailactivate/(?P<activate_code>.*)/$', FC15.views.activate, name = 'activate'),
