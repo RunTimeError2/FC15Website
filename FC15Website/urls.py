@@ -43,6 +43,7 @@ urlpatterns = [
     url(r'^dismissteam/$', FC15.views.dismissteam, name = 'dismissteam'),
     url(r'^playgame/$', FC15.views.playgame, name = 'playgame'),
     url(r'^unfinished/$', FC15.views.unfinished, name = 'unfinished'),
+    url(r'^ui/$', FC15.views.ui, name = 'ui'),
 
     #url(r'^execode/$', FC15.views.exe_code, name = 'exe_code'), # should be deleted if the website is to be deployed.
     # only for a test

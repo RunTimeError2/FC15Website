@@ -51,8 +51,8 @@ def run_game():
             record.state = 'Unknown state'
         now = time.strftime('%Y%m%d%H%M%S')
         file_name = '{0}_{1}.{2}'.format(now, random.randint(0, 1000), RECORD_SUFFIX)
-        destin_dir = '/gamerecord/' + file_name
-        source_dir = '/playgame/' + DEFAULT_RECORD_FILENAME
+        destin_dir = 'gamerecord/' + file_name
+        source_dir = 'playgame/' + DEFAULT_RECORD_FILENAME
         # Copy record file
         open(destin_dir, 'wb').write(open(source_dir, 'rb').read())
         record.filename = file_name
@@ -150,6 +150,7 @@ def copy_all_exe():
 
 # Add game infomation into waiting queue
 def play_game(ai_list, username):
+    global GAME_RUNNING
     queue_item = SingleGameInfo()
     queue_item.ai_list = ai_list
     queue_item.username = username
@@ -162,13 +163,19 @@ def play_game(ai_list, username):
 
 # Launch logic once
 def launch_game(ai_list, username):
-    exe_path = 'playgame/logic.exe'
+    exe_path = 'playgame\logic.exe' # should be 'playgame/logic.exe' on Ubuntu
 
     # parameters
     startgame_failure = -1
     result_success = 0
     result_runtimeerror = 1
     # there should be more
+
+    # only for Debugging =================================================================
+    print('Launch game: AI List')
+    print(ai_list)
+    print('username = ')
+    print(username)
 
     cmd = exe_path + ' '
     if ai_list:
@@ -177,6 +184,9 @@ def launch_game(ai_list, username):
             cmd = cmd + '{0} '.format(item)
         # launch logic
         result = os.system(cmd)
+        print('Logic launched')
+        print('Command:')
+        print(cmd)
         return result
     else:
         return startgame_failure

@@ -834,3 +834,8 @@ def recorddownload(request, pk):
     response['Content-Type'] = 'application/octet-stream'  
     response['Content-Disposition'] = 'attachment;filename="{0}"'.format(record_info.filename)
     return response
+
+
+# Launch UI
+def ui(request):
+    return render(request, 'ui.html')

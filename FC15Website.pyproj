@@ -99,6 +99,7 @@
     <Content Include="FC15\templates\about_fc15.html" />
     <Content Include="FC15\templates\viewblogs.html" />
     <Content Include="FC15\templates\page500.html" />
+    <Content Include="FC15\templates\ui.html" />
     <Content Include="requirements.txt" />
     <Content Include="db.sqlite3" />
     <Content Include="app\static\app\content\bootstrap.css" />
