@@ -1,12 +1,21 @@
 ﻿{% extends "base.html" %}
 
-{% block content %}
+{% block heading %}
 
-<p>UI here.</p>
+<script type="text/javascript" src="/static/app/ui/phaser.min.js"></script>
+<script type="text/javascript" src="/static/app/ui/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="/static/app/ui/cell.js"></script>
+<script type="text/javascript" src="/static/app/ui/main.js"></script>
+<script type="text/javascript" src="/static/app/ui/tentacles.js"></script>
+
+{% endblock %}
+
+{% block content %}
 
 <!-- 
     If you want to keep the basic elements, such as the navbar and footing, just delete the <p> tag add you code here, between 'block' and 'endblock'.
     If not, just delete all the code and add yours :)
 -->
+<div id="game"></div>
 
 {% endblock %}

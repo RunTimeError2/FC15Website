@@ -10,13 +10,24 @@
   		<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
         <link rel="stylesheet" type="text/css" href="{% static 'app/content/bootstrap.min.css' %}" />
         <link rel="stylesheet" type="text/css" href="{% static 'app/content/forms.css' %}"/>
-        <!--<link rel="stylesheet" type="text/css" href="{% static 'app/content/swiper.min.css' %}"/>-->
         <link rel="stylesheet" type="text/css" href="/static/app/content/swiper.min.css" />
         <!-- Use bootstrap for some special elements -->
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
         <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+        <!-- Use jquery for some animation -->
         <script src="{% static 'app/scripts/jquery-1.10.2.js' %}"></script>
+
+        {% block heading %}{% endblock %}
+
+        <!-- Import js for UI -->
+        <!--
+        <script type="text/javascript" src="/static/app/ui/phaser.min.js"></script>
+        <script type="text/javascript" src="/static/app/ui/jquery-3.2.1.min.js"></script>
+        <script type="text/javascript" src="/static/app/ui/cell.js"></script>
+        <script type="text/javascript" src="/static/app/ui/main.js"></script>
+        <script type="text/javascript" src="/static/app/ui/tentacles.js"></script>
+        -->
 
         <!-- Fade-in animation for text in banner -->
         <script type="text/javascript">
