@@ -57,6 +57,7 @@ urlpatterns = [
     url(r'^filedelete/(?P<pk>[0-9]+)/$', FC15.views.filedelete, name = 'filedelete'),
     url(r'^filedownload/(?P<pk>[0-9]+)/$', FC15.views.filedownload, name = 'filedownload'),
     url(r'^recorddownload/(?P<pk>[0-9]+)/$', FC15.views.recorddownload, name = 'recorddownload'),
+    url(r'^recorddelete/(?P<pk>[0-9]+)/$', FC15.views.recorddelete, name = 'recorddelete'),
     url(r'^jointeam/(?P<pk>[0-9]+)/$', FC15.views.jointeam, name = 'jointeam'),
     url(r'^jointeamrequest/(?P<pk>[0-9]+)/$', FC15.views.jointeamrequest, name = 'jointeamrequest'),
     url(r'^mailactivate/(?P<activate_code>.*)/$', FC15.views.activate, name = 'activate'),

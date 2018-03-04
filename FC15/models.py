@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib import admin
-import time, random
+import time, random, os
 
 
 # Model which stores information of users
@@ -41,6 +41,8 @@ class FileInfo(models.Model):
     def user_dirpath(instance, filename):
         now = time.strftime('%Y%m%d%H%M%S')
         exact_name = '{0}_{1}__{2}'.format(now, random.randint(0, 1000), filename)
+        while os.path.exists('fileupload/{0}/{1}'.format(instance.username, exact_name)):
+            exact_name = '{0}_{1}__{2}'.format(now, random.randint(0, 1000), filename)
         _path = 'fileupload/{0}/{1}'.format(instance.username, exact_name)
         instance.path = _path
         instance.origin_name = filename

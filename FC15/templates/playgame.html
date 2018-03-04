@@ -80,25 +80,16 @@
                                 </td>
                                 <td>
                                     {% if item.state == 'Success' %}
-                                        <a href="{% url 'recorddownload' pk=item.pk %}"><el-button type="success">Download record file</el-button></a>
+                                        <a href="{% url 'recorddownload' pk=item.pk %}"><el-button type="success">Download</el-button></a>
                                     {% else %}
                                         <el-button type="success" disabled>Download record file</el-button>
                                     {% endif %}
+                                    <a href="{% url 'recorddelete' pk=item.pk %}"><el-button type="warning" onclick="return confirm('Are you sure to delete the record?')">Delete</el-button></a>
                                 </td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
-
-            if result == 0:
-            record.state = 'Success'
-        elif result == -1:
-            record.state = 'Failed to Launch game'
-        elif result == 1:
-            record.state = 'Runtime Error'
-        else:
-            record.state = 'Unknown state'
-
             {% else %}
                 <p>You have not played any games yet.</p>
             {% endif %}

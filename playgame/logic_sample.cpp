@@ -10,7 +10,10 @@ using namespace std;
 
 int main(int argc, char **argv) {
 	ofstream outfile;
-	cout << "Logic Launched!" << endl;
+	cout << "Logic Launched! Parameters:" << endl;
+	for(int i = 0; i < argc; i++)
+		cout << argv[i] << "  ";
+	cout << endl;
 	outfile.open("gamerecord.txt");
 	outfile << "AI list:" << endl;
 	for(int i = 1; i < argc; i++)

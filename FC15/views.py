@@ -7,7 +7,7 @@ from FC15.models import UserInfo, TeamInfo, FileInfo, BlogPost, EmailActivate, P
 from FC15.forms import BlogPostForm, UserLoginForm, UserRegistForm, FileUploadForm, CreateTeamForm, ResetPasswordForm, ChangeForm, TeamRequestForm
 from FC15.sendmail import mail_activate, password_reset
 from FC15.forms import flash
-from FC15.oj import run, copy_all_exe, play_game, delete_exe
+from FC15.oj import run, copy_all_exe, play_game, delete_exe, FILE_SUFFIX
 import time, os, random
 
 AUTO_COMPILE = True
@@ -369,9 +369,17 @@ def filedelete(request, pk):
         flash(request, 'Error', 'You can only delete your own file.', 'error')
         return HttpResponseRedirect('/index/')
         #return HttpResponse('Error! You can only delete your own file.')
-    os.remove(file.path)
-    if os.path.exists(file.path[:-4] + '.exe'):
-        os.remove(file.path[:-4] + '.exe')
+
+    # Delete source file
+    if os.path.exists(file.path):
+        os.remove(file.path)
+    # Delete executable file in user folder
+    global FILE_SUFFIX
+    if os.path.exists(file.path[:-4] + '.' + FILE_SUFFIX):
+        os.remove(file.path[:-4] + '.' + FILE_SUFFIX)
+    # Delete executable file in 'playgame' folder
+    if os.path.exists('playgame/{0}.{1}'.format(pk, FILE_SUFFIX)):
+        os.remove('playgame/{0}.{1}'.format(pk, FILE_SUFFIX))
     file.delete()
     flash(request, 'Success', 'You have successfully deleted the file.', 'success')
     return HttpResponseRedirect('/index/')
@@ -792,7 +800,8 @@ def playgame(request):
     else:
         #all_file = FileInfo.objects.all()
         file_available = FileInfo.objects.filter(is_compile_success__exact = 'Successfully compiled')
-        return render(request, 'playgame.html', {'ailist':file_available})
+        my_record = GameRecord.objects.filter(username__exact = username)
+        return render(request, 'playgame.html', {'ailist': file_available, 'records': my_record})
 
 
 # Handles 404 error
@@ -830,10 +839,28 @@ def recorddownload(request, pk):
         flash(request, 'Error', 'Please login first', 'error')
         return HttpResponseRedirect('/login/')
     record_info = get_object_or_404(GameRecord, pk = pk)
-    response = StreamingHttpResponse(file_iterator('/gamerecord/' + record_info.filename))
+    response = StreamingHttpResponse(file_iterator('gamerecord/' + record_info.filename))
     response['Content-Type'] = 'application/octet-stream'  
     response['Content-Disposition'] = 'attachment;filename="{0}"'.format(record_info.filename)
     return response
+
+
+# Delete a game record
+def recorddelete(request, pk):
+    username = request.COOKIES.get('username', '')
+    if username == '':
+        flash(request, 'Error', 'Please login first', 'error')
+        return HttpResponseRedirect('/login/')
+    record_file = get_object_or_404(GameRecord, pk = pk)
+    if record_file.username != username:
+        flash(request, 'Error', 'You can only delete your own record file.', 'error')
+        return HttpResponseRedirect('/playgame/')
+    path = 'gamerecord/{0}'.format(record_file.filename)
+    if os.path.exists(path):
+        os.remove(path)
+    record_file.delete()
+    flash(request, 'Success', 'You have successfully deleted the record.', 'success')
+    return HttpResponseRedirect('/playgame/')
 
 
 # Launch UI

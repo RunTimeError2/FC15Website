@@ -1,7 +1,0 @@
-logic_sample.exe
-11
-12
-13
-14
-Here ends the file.
-Only for a test :)

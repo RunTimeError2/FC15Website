@@ -50,11 +50,20 @@ def run_game():
         else:
             record.state = 'Unknown state'
         now = time.strftime('%Y%m%d%H%M%S')
-        file_name = '{0}_{1}.{2}'.format(now, random.randint(0, 1000), RECORD_SUFFIX)
+        file_name = 'record{0}_{1}.{2}'.format(now, random.randint(0, 1000), RECORD_SUFFIX)
+        while os.path.exists('gamerecord/{0}'.format(file_name)):
+            file_name = 'record{0}_{1}.{2}'.format(now, random.randint(0, 1000), RECORD_SUFFIX)
         destin_dir = 'gamerecord/' + file_name
         source_dir = 'playgame/' + DEFAULT_RECORD_FILENAME
         # Copy record file
-        open(destin_dir, 'wb').write(open(source_dir, 'rb').read())
+        if os.path.exists(source_dir):
+            open(destin_dir, 'wb').write(open(source_dir, 'rb').read())
+            try:
+                os.remove(source_dir) # delete source file, avoid problems when playing game next time (sometimes the sample 'logic' fails to create record file)
+            except:
+                pass
+        else:
+            record.state = 'Failed to Launch game'
         record.filename = file_name
         record.save()
     GAME_RUNNING = 0
@@ -184,8 +193,6 @@ def launch_game(ai_list, username):
             cmd = cmd + '{0} '.format(item)
         # launch logic
         result = os.system(cmd)
-        print('Logic launched')
-        print('Command:')
         print(cmd)
         return result
     else:
