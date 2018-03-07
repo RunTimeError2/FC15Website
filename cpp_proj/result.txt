@@ -1,8 +1,0 @@
-
-Microsoft Visual Studio 2017 版本 15.0.26730.16。
-版权所有 (C) Microsoft Corp。保留所有权利。
-1>------ 已启动全部重新生成: 项目: cpp_proj, 配置: Debug Win32 ------
-1>main.cpp
-1>cpp_proj.vcxproj -> D:\Doc\Python\FC15Website\FC15Website\cpp_proj\Debug\cpp_proj.exe
-1>cpp_proj.vcxproj -> D:\Doc\Python\FC15Website\FC15Website\cpp_proj\Debug\cpp_proj.pdb (Partial PDB)
-========== 全部重新生成: 成功 1 个，失败 0 个，跳过 0 个 ==========
