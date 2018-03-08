@@ -14,6 +14,13 @@ framework.
 
 """
 import os
+# newly added
+from os.path import join, dirname, abspath
+
+PROJECT_DIR = dirname(dirname(abspath(__file__)))
+import sys
+sys.path.insert(0, PROJECT_DIR)
+# end
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "FC15Website.settings")
 
