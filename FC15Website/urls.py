@@ -65,7 +65,8 @@ urlpatterns = [
     url(r'^acceptrequest/(?P<pk>[0-9]+)/$', FC15.views.acceptrequest, name = 'acceptrequest'),
     url(r'^rejectrequest/(?P<pk>[0-9]+)/$', FC15.views.rejectrequest, name = 'rejectrequest'),
 
-    url(r'^admin/', include(admin.site.urls)),
+    #url(r'^admin/', include(admin.site.urls)),
+	url(r'^admin/', admin.site.urls),
 
     #url(r'^static/(?P<path>.*)', 'django.views.static.serve', {'document_root': '/static'}),  
 ]
