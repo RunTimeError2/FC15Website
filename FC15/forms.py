@@ -60,6 +60,7 @@ class TeamRequestForm(forms.Form):
 
 
 # Add a message and show it
+# The function may be unable to use if the version of Django changes
 def flash(request, title, text, level = 'info'):
     level_map = {
         'info': messages.INFO,

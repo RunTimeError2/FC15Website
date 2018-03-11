@@ -10,7 +10,7 @@ GAME_RUNNING = 0
 #COMPILE_MODE = 'VS'
 COMPILE_MODE = 'G++'
 FILE_SUFFIX = 'dll'
-RECORD_SUFFIX = 'txt' # maybe should be changed to 'json'
+RECORD_SUFFIX = 'json' # maybe should be changed to 'json'
 DEFAULT_RECORD_FILENAME = 'gamerecord.txt'
 # FILE_SUFFIX = 'exe'
 GAME_QUEUE = Queue()
@@ -77,7 +77,7 @@ def copy_file(username, file_name):
     if COMPILE_MODE == 'VS':
         destin_dir = 'cpp_proj/ai/ai.cpp'
     if COMPILE_MODE == 'G++':
-        destin_dir = 'g++_compile/main.cpp'
+        destin_dir = 'AI_SDK/ai.cpp'
     if os.path.isfile(source_dir):
         open(destin_dir, 'wb').write(open(source_dir, 'rb').read())
         return True
@@ -85,14 +85,14 @@ def copy_file(username, file_name):
         return False
 
 
-# Copy exe file
+# Copy executable file
 def copy_exe(username, file_name):
     global FILE_SUFFIX
     global COMPILE_MODE
     if COMPILE_MODE == 'VS':
         source_dir = 'cpp_proj/Release/ai.' + FILE_SUFFIX
     if COMPILE_MODE == 'G++':
-        source_dir = 'g++_compile/main.' + FILE_SUFFIX
+        source_dir = 'AI_SDK/ai.' + FILE_SUFFIX
     destin_dir = 'fileupload/{0}/{1}.{2}'.format(username, file_name[:-4], FILE_SUFFIX)
     if os.path.isfile(source_dir):
         open(destin_dir, 'wb').write(open(source_dir, 'rb').read())
@@ -140,7 +140,7 @@ def compile_all():
                     if COMPILE_MODE == 'VS':
                         compile_result = os.system('devenv cpp_proj/ai.sln /rebuild > result.txt')
                     if COMPILE_MODE == 'G++':
-                        compile_result = os.system('g++ -o g++_compile/main.' + FILE_SUFFIX + ' g++_compile/main.cpp')
+                        compile_result = os.system('g++ AI_SDK/definition.cpp AI_SDK/ai.cpp -o AI_SDK/ai.' + FILE_SUFFIX)
                     file.is_compiled = 'Compiled'
                 if compile_result == 0:
                     file.is_compile_success = 'Successfully compiled'
@@ -175,17 +175,10 @@ def play_game(ai_list, username):
 def launch_game(ai_list, username):
     exe_path = 'playgame\logic.exe' # should be 'playgame/logic.exe' on Ubuntu
 
-    # parameters
+    # parameters and there should be more
     startgame_failure = -1
     result_success = 0
     result_runtimeerror = 1
-    # there should be more
-
-    # only for Debugging =================================================================
-    print('Launch game: AI List')
-    print(ai_list)
-    print('username = ')
-    print(username)
 
     cmd = exe_path + ' '
     if ai_list:

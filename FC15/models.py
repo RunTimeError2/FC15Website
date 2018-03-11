@@ -10,7 +10,7 @@ class UserInfo(models.Model):
     password = models.CharField(max_length = 100)
     stu_number = models.CharField(max_length = 20)
     email = models.EmailField()
-    team = models.CharField(max_length = 100, default = '', null = True)
+    team = models.CharField(max_length = 100, default = '', null = True, blank = True)
     activated = models.BooleanField(default = False)
 
     def __unicode__(self):
@@ -51,8 +51,8 @@ class FileInfo(models.Model):
 
     filename = models.CharField(max_length = 255)
     username = models.CharField(max_length = 100)
-    teamname = models.CharField(max_length = 100)
-    description = models.CharField(max_length = 1000)
+    teamname = models.CharField(max_length = 100, null = True, blank = True)
+    description = models.CharField(max_length = 1000, null = True, blank = True)
     file = models.FileField(upload_to = user_dirpath)
     path = models.CharField(max_length = 500)
     origin_name = models.CharField(max_length = 255, default = filename)
@@ -77,7 +77,7 @@ class AIInfo(models.Model):
     name = models.CharField(max_length = 255) # filename
     author = models.CharField(max_length = 100) # username
     team = models.CharField(max_length = 100) # teamname
-    description = models.CharField(max_length = 1000)
+    description = models.CharField(max_length = 1000, null = True, blank = True)
     path = models.CharField(max_length = 500)
     enabled = models.BooleanField()
 

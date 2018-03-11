@@ -8,7 +8,6 @@ from datetime import datetime
 from django.conf.urls import url, handler404, handler500
 import django.contrib.auth.views
 
-# Uncomment the next lines to enable the admin:
 from django.conf.urls import include
 from django.contrib import admin
 import FC15.views
@@ -19,9 +18,9 @@ handler500 = 'FC15.views.page_error'
 
 # All urls available
 urlpatterns = [
+    # Basic pages
     url(r'^$', FC15.views.home, name = 'home'),
     url(r'^home/$', FC15.views.home, name = 'home'),
-    #url(r'^about/$', FC15.views.about, name = 'about'),
     url(r'^about_fc15/$', FC15.views.about_fc15, name = 'about_fc15'),
     url(r'^about_asta/$', FC15.views.about_asta, name = 'about_asta'),
     url(r'^about_sponsor/$', FC15.views.about_sponsor, name = 'about_sponsor'),
@@ -45,11 +44,11 @@ urlpatterns = [
     url(r'^unfinished/$', FC15.views.unfinished, name = 'unfinished'),
     url(r'^ui/$', FC15.views.ui, name = 'ui'),
 
-    #url(r'^execode/$', FC15.views.exe_code, name = 'exe_code'), # should be deleted if the website is to be deployed.
-    # only for a test
+    # Error pages
     url(r'^404/$', FC15.views.page_not_found, name = 'pagenotfount'),
     url(r'^500/$', FC15.views.page_error, name = 'pageerror'),
 
+    # Pages releated to pk(specific items in the database)
     url(r'^blogdetail/(?P<pk>[0-9]+)/$', FC15.views.blogdetail, name = 'blogdetail'),
     url(r'^blogedit/(?P<pk>[0-9]+)/$', FC15.views.blogedit, name = 'blogedit'),
     url(r'^blogdelete/(?P<pk>[0-9]+)/$', FC15.views.blogdelete, name = 'blogdelete'),
@@ -65,13 +64,9 @@ urlpatterns = [
     url(r'^acceptrequest/(?P<pk>[0-9]+)/$', FC15.views.acceptrequest, name = 'acceptrequest'),
     url(r'^rejectrequest/(?P<pk>[0-9]+)/$', FC15.views.rejectrequest, name = 'rejectrequest'),
 
-    #url(r'^admin/', include(admin.site.urls)),
+    # Admin page
 	url(r'^admin/', admin.site.urls),
-
-    #url(r'^static/(?P<path>.*)', 'django.views.static.serve', {'document_root': '/static'}),  
 ]
 
+# Add static files
 urlpatterns += staticfiles_urlpatterns()
-#from django.conf import settings
-#if settings.DEBUG is False:
-#    urlpatterns += patterns('', url(r'^static/(?P<path>.*)$', 'django.views.static.serve', { 'document_root': settings.STATIC_ROOT, }), )

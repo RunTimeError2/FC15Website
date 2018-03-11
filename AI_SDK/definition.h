@@ -4,7 +4,7 @@
 
 #include <vector>
 #include <string>
-//#include <initializer_list>
+#include <initializer_list>
 #include <stdexcept>
 #include <map>
 #include <set>
@@ -38,9 +38,9 @@ const TSpeed       BaseFrontSpeed = 12;
 const TSpeed       BaseBackSpeed = 20;
 const TLevel       STUDENT_LEVEL_COUNT = 5;
 const TResourceI   MAX_RESOURCE = 200;
-const TSpeed       BASE_REGENERETION_SPEED[STUDENT_LEVEL_COUNT] = { 1,1.5,2,2.5,3 };
-const TTentacleNum MAX_TENTACLE_NUMBER[STUDENT_LEVEL_COUNT] = { 1,2,2,3,3 };  //可伸触手数量
-const TResourceI   STUDENT_STAGE[STUDENT_LEVEL_COUNT + 1] = { 0 ,10,40,80,150,MAX_RESOURCE };
+const TSpeed       BASE_REGENERETION_SPEED[STUDENT_LEVEL_COUNT]{ 1,1.5,2,2.5,3 };
+const TTentacleNum MAX_TENTACLE_NUMBER[STUDENT_LEVEL_COUNT]{ 1,2,2,3,3 };  //可伸触手数量
+const TResourceI   STUDENT_STAGE[STUDENT_LEVEL_COUNT + 1]{ 0 ,10,40,80,150,MAX_RESOURCE };
 const int          NO_DATA = -1;
 const TPlayerID        Neutral = NO_DATA;
 
@@ -260,6 +260,8 @@ enum CommandType
 //保存命令相关信息
 struct Command
 {
+	Command(CommandType _type, initializer_list<int> _parameters) :
+		type(_type), parameters(_parameters) {}
 	Command(CommandType _type, vector<int> _parameters) :
 		type(_type), parameters(_parameters) {}
 	Command(){}
@@ -271,9 +273,9 @@ struct Command
 class CommandList
 {
 public:
-	void addCommand(const Command& c)
+	void addCommand(CommandType _type, initializer_list<int> _parameters)
 	{
-		m_commands.push_back(c);
+		m_commands.emplace_back(_type, _parameters);
 	}
 	void addCommand(CommandType _type, vector<int> _parameters)
 	{

@@ -24,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'd1800b35-faa6-45f3-8d8b-d057afb82a6a'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# if DEBUG == True, handler404 and handler500 will not work properly 
+# DEBUG == False means that the project has been put into production
 DEBUG = False
 
 ALLOWED_HOSTS = ['*']
@@ -126,9 +126,9 @@ STATIC_URL = '/static/'
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
 # maybe BASE_DIR is also available
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-)
+#STATICFILES_DIRS = (
+#    os.path.join(BASE_DIR, 'static'),
+#)
 #STATICFILES_FINDERS = (
 #    'django.contrib.staticfiles.finders.FileSystemFinder',
 #    'django.contrib.staticfiles.finders.AppDirectoriesFinder',

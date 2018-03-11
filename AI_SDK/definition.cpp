@@ -16,8 +16,8 @@ TLength getDistance(const TPoint& p1, const TPoint& p2)
 
 std::ostream& operator<<(std::ostream& os, const CommandList& cl)
 {
-	char stg2str[4][7] = { "Normal","Attack","Defend","Grow" };
-	char upgrade2str[4][13] = { "Regeneration","ExtendSpeed","ExtraControl","CellWall" };
+	vector<string> stg2str{ "Normal","Attack","Defend","Grow" };
+	vector<string> upgrade2str{ "Regeneration","ExtendSpeed","ExtraControl","CellWall" };
 	for (const Command& c : cl)
 	{
 		switch (c.type)
