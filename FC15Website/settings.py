@@ -25,7 +25,7 @@ SECRET_KEY = 'd1800b35-faa6-45f3-8d8b-d057afb82a6a'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # if DEBUG == True, handler404 and handler500 will not work properly 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 

@@ -1,7 +1,8 @@
 import os, time, random
 import threading
 from FC15.models import FileInfo, AIInfo, GameRecord
-from queue import Queue
+from queue import Queue # Python3
+#from Queue import Queue # Python2
 
 
 IS_RUNNING = 0
