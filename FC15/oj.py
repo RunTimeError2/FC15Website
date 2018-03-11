@@ -9,7 +9,7 @@ IS_RUNNING = 0
 GAME_RUNNING = 0
 #COMPILE_MODE = 'VS'
 COMPILE_MODE = 'G++'
-FILE_SUFFIX = 'dll'
+FILE_SUFFIX = 'so'
 RECORD_SUFFIX = 'json' # maybe should be changed to 'json'
 DEFAULT_RECORD_FILENAME = 'gamerecord.txt'
 # FILE_SUFFIX = 'exe'
@@ -55,7 +55,7 @@ def run_game():
         while os.path.exists('gamerecord/{0}'.format(file_name)):
             file_name = 'record{0}_{1}.{2}'.format(now, random.randint(0, 1000), RECORD_SUFFIX)
         destin_dir = 'gamerecord/' + file_name
-        source_dir = 'playgame/' + DEFAULT_RECORD_FILENAME
+        source_dir = 'playgame/log_json/' + DEFAULT_RECORD_FILENAME
         # Copy record file
         if os.path.exists(source_dir):
             open(destin_dir, 'wb').write(open(source_dir, 'rb').read())
@@ -106,7 +106,7 @@ def store_exe(username, file_name, pk):
     global FILE_SUFFIX
     global COMPILE_MODE
     source_dir = 'fileupload/{0}/{1}.{2}'.format(username, file_name[:-4], FILE_SUFFIX)
-    destin_dir = 'playgame/{0}.{1}'.format(pk, FILE_SUFFIX)
+    destin_dir = 'playgame/lib_ai/{0}.{1}'.format(pk, FILE_SUFFIX)
     if os.path.isfile(source_dir):
         open(destin_dir, 'wb').write(open(source_dir, 'rb').read())
         return True
@@ -118,8 +118,8 @@ def store_exe(username, file_name, pk):
 def delete_exe(file_object):
     global FILE_SUFFIX
     if file_object.is_compile_success == 'Successfully compiled':
-        if os.path.exists('/playgame/{0}.{1}'.format(file_object.pk, FILE_SUFFIX)):
-            os.remove('/playgame/{0}.{1}'.format(file_object.pk, FILE_SUFFIX))
+        if os.path.exists('/playgame/lib_ai/{0}.{1}'.format(file_object.pk, FILE_SUFFIX)):
+            os.remove('/playgame/lib_ai/{0}.{1}'.format(file_object.pk, FILE_SUFFIX))
 
 # Compile all the file
 def compile_all():
@@ -173,19 +173,27 @@ def play_game(ai_list, username):
 
 # Launch logic once
 def launch_game(ai_list, username):
-    exe_path = 'playgame\logic.exe' # should be 'playgame/logic.exe' on Ubuntu
+    exe_path = 'playgame/bin/main_logic' # should be 'playgame/logic.exe' on Ubuntu
 
     # parameters and there should be more
     startgame_failure = -1
     result_success = 0
     result_runtimeerror = 1
 
-    cmd = exe_path + ' '
+    cmd = exe_path
     if ai_list:
         # genereate command to launch logic
-        for item in ai_list:
-            cmd = cmd + '{0} '.format(item)
+        #for item in ai_list:
+        #    cmd = cmd + '{0} '.format(item)
         # launch logic
+
+        # Output AI_list to config file
+        f = open('/playgame/config_gnu.ini', 'w')
+        f.write('../map/map_2.txt') # If the map is to change, this line should be changed
+        f.write('4')
+        for item in ai_list:
+            f.write('../lib_ai/{0}.so'.format(item))
+
         result = os.system(cmd)
         print(cmd)
         return result
