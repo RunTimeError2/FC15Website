@@ -11,7 +11,7 @@ GAME_RUNNING = 0
 COMPILE_MODE = 'G++'
 FILE_SUFFIX = 'so'
 RECORD_SUFFIX = 'json' # maybe should be changed to 'json'
-DEFAULT_RECORD_FILENAME = 'gamerecord.txt'
+DEFAULT_RECORD_FILENAME = 'log.json'
 # FILE_SUFFIX = 'exe'
 GAME_QUEUE = Queue()
 
@@ -94,6 +94,7 @@ def copy_exe(username, file_name):
     if COMPILE_MODE == 'G++':
         source_dir = 'AI_SDK/ai.' + FILE_SUFFIX
     destin_dir = 'fileupload/{0}/{1}.{2}'.format(username, file_name[:-4], FILE_SUFFIX)
+    destin_dir_2 = ''
     if os.path.isfile(source_dir):
         open(destin_dir, 'wb').write(open(source_dir, 'rb').read())
         return True
@@ -121,6 +122,7 @@ def delete_exe(file_object):
         if os.path.exists('/playgame/lib_ai/{0}.{1}'.format(file_object.pk, FILE_SUFFIX)):
             os.remove('/playgame/lib_ai/{0}.{1}'.format(file_object.pk, FILE_SUFFIX))
 
+
 # Compile all the file
 def compile_all():
     global IS_RUNNING
@@ -140,7 +142,9 @@ def compile_all():
                     if COMPILE_MODE == 'VS':
                         compile_result = os.system('devenv cpp_proj/ai.sln /rebuild > result.txt')
                     if COMPILE_MODE == 'G++':
-                        compile_result = os.system('g++ AI_SDK/definition.cpp AI_SDK/ai.cpp -o AI_SDK/ai.' + FILE_SUFFIX)
+                        #compile_result = os.system('g++ AI_SDK/definition.cpp AI_SDK/ai.cpp -o AI_SDK/ai.' + FILE_SUFFIX)
+                        #compile_result = os.system('g++ -std=c++11 AI_SDK/definition.cpp AI_SDK/ai.cpp -fPIC -shared -o ai.so')
+                        compile_result = os.system('./compile_ai') # use shell 
                     file.is_compiled = 'Compiled'
                 if compile_result == 0:
                     file.is_compile_success = 'Successfully compiled'
@@ -173,14 +177,14 @@ def play_game(ai_list, username):
 
 # Launch logic once
 def launch_game(ai_list, username):
-    exe_path = 'playgame/bin/main_logic' # should be 'playgame/logic.exe' on Ubuntu
+    #exe_path = 'playgame/bin/main_logic' # should be 'playgame/logic.exe' on Ubuntu
 
     # parameters and there should be more
     startgame_failure = -1
     result_success = 0
     result_runtimeerror = 1
 
-    cmd = exe_path
+    #cmd = exe_path
     if ai_list:
         # genereate command to launch logic
         #for item in ai_list:
@@ -194,8 +198,8 @@ def launch_game(ai_list, username):
         for item in ai_list:
             f.write('../lib_ai/{0}.so'.format(item))
 
-        result = os.system(cmd)
-        print(cmd)
+        # Use shell to start main logic or it may fail to read .ini file
+        result = os.system('./run_logic')
         return result
     else:
         return startgame_failure
