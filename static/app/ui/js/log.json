@@ -31,7 +31,7 @@
     [
         {
             "currentRound": 0,
-            "runDuration": 1,
+            "runDuration": 1000,
             "cellActions":
             [
                 {
@@ -106,7 +106,7 @@
         },
         {
             "currentRound": 1,
-            "runDuration": 1,
+            "runDuration": 1000,
             "cellActions": [
                 {
                     "type": 2,
@@ -166,7 +166,7 @@
         },
         {
             "currentRound": 2,
-            "runDuration": 1,
+            "runDuration": 1000,
             "cellActions": [
                 {
                     "type": 2,
@@ -203,7 +203,7 @@
         },
         {
             "currentRound": 3,
-            "runDuration": 1,
+            "runDuration": 1000,
             "cellActions": [
                 {
                     "type": 2,
@@ -231,7 +231,7 @@
         },
         {
             "currentRound": 4,
-            "runDuration": 1,
+            "runDuration": 1000,
             "cellActions": [
                 {
                     "type": 2,
@@ -259,7 +259,7 @@
         },
         {
             "currentRound": 5,
-            "runDuration": 1,
+            "runDuration": 1000,
             "cellActions": [
                 {
                     "type": 2,
@@ -295,8 +295,8 @@
                     "id": 1,
                     "movement":
                     {
-                        "dx": -250,
-                        "dy": -90
+                        "dx": -440,
+                        "dy": -158
                     }
                 }
             ],
@@ -327,7 +327,7 @@
         },
         {
             "currentRound": 6,
-            "runDuration": 1,
+            "runDuration": 1000,
             "cellActions": [],
             "tentacleActions": [
                 {

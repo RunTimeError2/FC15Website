@@ -2,11 +2,37 @@
 
 {% block heading %}
 
-<script type="text/javascript" src="/static/app/ui/js/phaser.min.js"></script>
-<script type="text/javascript" src="/static/app/ui/js/jquery-3.2.1.min.js"></script>
-<script type="text/javascript" src="/static/app/ui/js/cell.js"></script>
-<script type="text/javascript" src="/static/app/ui/js/main.js"></script>
-<script type="text/javascript" src="/static/app/ui/js/tentacles.js"></script>
+<script type="text/javascript" src="static/app/ui/js/phaser.min.js"></script>
+<script type="text/javascript" src="static/app/ui/js/jquery-3.2.1.min.js"></script>
+    <script>
+        var jsonData;
+        window.onload = function() {
+            
+            var logFile = document.getElementById('json-selector');
+            //var jsonData;
+            logFile.addEventListener('change', function () {
+                if (!logFile.value) {
+                    alert('No file selected.');
+                    return;
+                }
+                var file = logFile.files[0];
+                if (file.size == 0) {
+                    alert('Empty file!');
+                    return;
+                }
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    jsonData = JSON.parse(e.target.result);
+                    console.log(jsonData);
+                    loadGame();
+                };
+                reader.readAsText(file);
+            });
+        }
+    </script>
+<script type="text/javascript" src="static/app/ui/js/main.js"></script>
+<script type="text/javascript" src="static/app/ui/js/cells.js"></script>
+<script type="text/javascript" src="static/app/ui/js/tentacles.js"></script>
 
 {% endblock %}
 
@@ -16,6 +42,9 @@
     If you want to keep the basic elements, such as the navbar and footing, just delete the <p> tag add you code here, between 'block' and 'endblock'.
     If not, just delete all the code and add yours :)
 -->
+<div>
+    <input id="json-selector" type="file" />
+</div>
 <div id="game"></div>
 
 {% endblock %}
