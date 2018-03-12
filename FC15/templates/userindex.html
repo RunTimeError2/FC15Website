@@ -151,13 +151,13 @@
                         <td>
                             <template>
                             {% if file.is_compiled == 'Not compiled' %}
-                                <el-tag type="warning">未编译</el-tag>
+                                <el-tag type="warning">Not compiled</el-tag>
                             {% else %}
-                                <el-tag type="info">已编译</el-tag>
+                                <el-tag type="info">Compiled</el-tag>
                                 {% if file.is_compile_success == 'Successfully compiled' %}
-                                    <el-tag type="success">编译成功</el-tag>
+                                    <el-tag type="success">Success</el-tag>
                                 {% else %}
-                                    <el-tag type="danger">编译失败</el-tag>
+                                    <el-tag type="danger">Failure</el-tag>
                                 {% endif %}
                             {% endif %}
                             </template>
