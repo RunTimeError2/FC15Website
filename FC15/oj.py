@@ -203,3 +203,9 @@ def launch_game(ai_list, username):
         return result
     else:
         return startgame_failure
+
+
+def write_log(log_str):
+    file = 'server.log'
+    with open(file, 'w+') as f:
+        f.write(log_str)

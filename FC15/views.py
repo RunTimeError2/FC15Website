@@ -789,13 +789,16 @@ def playgame(request):
     if request.method == 'POST':
         check_box_list = request.POST.getlist('check_box_list')
         if check_box_list:
+            if len(check_box_list) != 4:
+                flash(request, 'Error', 'Please select 4 AIs.', 'error')
+                return HttpResponseRedirect('/playgame/')
             play_game(check_box_list, username)
             # Code to process game_result is required
             flash(request, 'Success', 'The request for a game has been submitted. Please wait. The result will be put on this page later.')
             return HttpResponseRedirect('/playgame/')
         else:
             print('fail')
-            flash(request, 'Error', 'Please select at lease one item!', 'error')
+            flash(request, 'Error', 'Please select 4 AIs.', 'error')
             return HttpResponseRedirect('/playgame/')
     else:
         #all_file = FileInfo.objects.all()

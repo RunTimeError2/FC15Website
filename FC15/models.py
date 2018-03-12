@@ -51,8 +51,8 @@ class FileInfo(models.Model):
 
     filename = models.CharField(max_length = 255)
     username = models.CharField(max_length = 100)
-    teamname = models.CharField(max_length = 100, null = True, blank = True)
-    description = models.CharField(max_length = 1000, null = True, blank = True)
+    teamname = models.CharField(max_length = 100, null = True, blank = True, default = '')
+    description = models.CharField(max_length = 1000, null = True, blank = True, default = '')
     file = models.FileField(upload_to = user_dirpath)
     path = models.CharField(max_length = 500)
     origin_name = models.CharField(max_length = 255, default = filename)
