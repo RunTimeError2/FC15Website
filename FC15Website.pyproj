@@ -74,7 +74,7 @@
     <Folder Include="FC15\templates\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="FC15\templates\about_asta.html" />
+    <Content Include="FC15\templates\about_story.html" />
     <Content Include="FC15\templates\about_sponsor.html" />
     <Content Include="FC15\templates\base.html" />
     <Content Include="FC15\templates\blogdetail.html" />
@@ -93,7 +93,7 @@
     <Content Include="FC15\templates\teamdetail.html" />
     <Content Include="FC15\templates\upload.html" />
     <Content Include="FC15\templates\teamrequest.html" />
-    <Content Include="FC15\templates\about_fc15.html" />
+    <Content Include="FC15\templates\about_rule.html" />
     <Content Include="FC15\templates\viewblogs.html" />
     <Content Include="FC15\templates\page500.html" />
     <Content Include="FC15\templates\ui.html" />

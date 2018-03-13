@@ -10,7 +10,9 @@ from FC15.forms import flash
 from FC15.oj import run, copy_all_exe, play_game, delete_exe, FILE_SUFFIX
 import time, os, random
 
+
 AUTO_COMPILE = True
+EMAIL_ACTIVATE = True
 
 
 # All of the views
@@ -89,9 +91,15 @@ def regist(request):
                     flash(request, 'Error', 'The email address has already been used!', 'error')
                     return render(request, 'regist.html', {'form': userform})
                     #return HttpResponse('Error! The email address has already been used!')
-                UserInfo.objects.create(username = username, realname = realname, password = password, email = email, stu_number = stu_number, activated = False)
-                mail_activate(email, username)
-                flash(request, 'Success', 'The confirmation email has been successfully sent. Please check you email!')
+
+                # Switch whether the account should be activated with email
+                if EMAIL_ACTIVATE:
+                    UserInfo.objects.create(username = username, realname = realname, password = password, email = email, stu_number = stu_number, activated = False)
+                    mail_activate(email, username)
+                    flash(request, 'Success', 'The confirmation email has been successfully sent. Please check you email!')
+                else:
+                    UserInfo.objects.create(username = username, realname = realname, password = password, email = email, stu_number = stu_number, activated = True)
+                    flash(request, 'Success', 'Your account has been successfully created.')
                 return HttpResponseRedirect('/home/')
                 #return HttpResponse('Regist success! Please check your email.')
             else:
@@ -110,14 +118,14 @@ def regist(request):
 #    return render(request, 'about.html')
 
 
-# Introduction for FC15(and the game)
-def about_fc15(request):
-    return render(request, 'about_fc15.html')
+# Introduction of game rule
+def about_rule(request):
+    return render(request, 'about_rule.html')
 
 
 # Introduction for DAASTA
-def about_asta(request):
-    return render(request, 'about_asta.html')
+def about_story(request):
+    return render(request, 'about_story.html')
 
 
 # Introduction for the sponsor

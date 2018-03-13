@@ -21,8 +21,8 @@ urlpatterns = [
     # Basic pages
     url(r'^$', FC15.views.home, name = 'home'),
     url(r'^home/$', FC15.views.home, name = 'home'),
-    url(r'^about_fc15/$', FC15.views.about_fc15, name = 'about_fc15'),
-    url(r'^about_asta/$', FC15.views.about_asta, name = 'about_asta'),
+    url(r'^about_rule/$', FC15.views.about_rule, name = 'about_rule'),
+    url(r'^about_story/$', FC15.views.about_story, name = 'about_story'),
     url(r'^about_sponsor/$', FC15.views.about_sponsor, name = 'about_sponsor'),
     url(r'^document/$', FC15.views.document, name = 'document'),
     url(r'^index/$', FC15.views.index, name = 'index'),

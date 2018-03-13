@@ -192,11 +192,11 @@ def launch_game(ai_list, username):
         # launch logic
 
         # Output AI_list to config file
-        f = open('/playgame/config_gnu.ini', 'w')
-        f.write('../map/map_2.txt') # If the map is to change, this line should be changed
-        f.write('4')
+        f = open('/home/songjh/playgame/config_gnu.ini', 'w')
+        f.write('../map/map_2.txt\n') # If the map is to change, this line should be changed
+        f.write('4\n')
         for item in ai_list:
-            f.write('../lib_ai/{0}.so'.format(item))
+            f.write('../lib_ai/{0}.so\n'.format(item))
 
         # Use shell to start main logic or it may fail to read .ini file
         result = os.system('./run_logic')
