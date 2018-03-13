@@ -2,15 +2,17 @@
 
 {% block heading %}
 
-<script type="text/javascript" src="/static/app/ui/js/phaser.min.js"></script>
-<script type="text/javascript" src="/static/app/ui/js/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="/static/app/ui/js/phaser.min.js"></script>
+    <script type="text/javascript" src="/static/app/ui/js/jquery-3.2.1.min.js"></script>
     <script>
         var jsonData;
+
         window.onload = function() {
             
             var logFile = document.getElementById('json-selector');
             //var jsonData;
             logFile.addEventListener('change', function () {
+                $('canvas').show();
                 if (!logFile.value) {
                     alert('No file selected.');
                     return;
@@ -28,11 +30,19 @@
                 };
                 reader.readAsText(file);
             });
+            $('#info-board').hide();
         }
     </script>
-<script type="text/javascript" src="/static/app/ui/js/main.js"></script>
-<script type="text/javascript" src="/static/app/ui/js/cells.js"></script>
-<script type="text/javascript" src="/static/app/ui/js/tentacles.js"></script>
+    <script type="text/javascript" src="/static/app/ui/js/main.js"></script>
+    <script type="text/javascript" src="/static/app/ui/js/cells.js"></script>
+    <script type="text/javascript" src="/static/app/ui/js/tentacles.js"></script>
+    <style>
+        #info-board {
+            position: absolute;
+            left: 820px;
+            border: 2px solid #0026ff;
+        }
+    </style>
 
 {% endblock %}
 
@@ -42,9 +52,10 @@
     If you want to keep the basic elements, such as the navbar and footing, just delete the <p> tag add you code here, between 'block' and 'endblock'.
     If not, just delete all the code and add yours :)
 -->
-<div>
-    <input id="json-selector" type="file" />
-</div>
-<div id="game"></div>
+    <div>
+        <input id="json-selector" type="file" />
+    </div>
+    <div id="game"></div>
+    <canvas id="info-board" width="500" height="800"></canvas>
 
 {% endblock %}

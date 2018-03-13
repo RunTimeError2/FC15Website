@@ -93,6 +93,10 @@ class GameRecord(models.Model):
     timestamp = models.DateTimeField()
     filename = models.CharField(max_length = 255) # name of the record file
     state = models.CharField(max_length = 50)
+    AI1 = models.CharField(max_length = 20, blank = True, null = True, default = '')
+    AI2 = models.CharField(max_length = 20, blank = True, null = True, default = '')
+    AI3 = models.CharField(max_length = 20, blank = True, null = True, default = '')
+    AI4 = models.CharField(max_length = 20, blank = True, null = True, default = '')
 
 
 # Determines how to display class AIInfo in tables for admin

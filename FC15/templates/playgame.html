@@ -69,13 +69,11 @@
                                     {% if item.state == 'Success' %}
                                         <el-tag type="success">Success</el-tag>
                                     {% else %}
-                                        {% if item.state == 'Failed to Launch game' %}
-                                            <el-tag type="warining">Failed to launch</el-tag>
+                                        {% if item.state == 'Failure' %}
+                                            <el-tag type="warining">Failure</el-tag>
                                         {% else %}
-                                            {% if item.state == 'Runtime Error' %}
-                                                <el-tag type="danger">Runtime Error</el-tag>
-                                            {% else %}
-                                                <el-tag type="info">Unknown state</el-tag>
+                                            {% if item.state == 'Unstarted' %}
+                                                <el-tag type="info">Unstarted</el-tag>
                                             {% endif %}
                                         {% endif %}
                                     {% endif %}
@@ -84,7 +82,12 @@
                                     {% if item.state == 'Success' %}
                                         <a href="{% url 'recorddownload' pk=item.pk %}"><el-button type="success">Download</el-button></a>
                                     {% else %}
-                                        <el-button type="success" disabled>Download record file</el-button>
+                                        <el-button type="success" disabled>Download</el-button>
+                                    {% endif %}
+                                    {% if item.state == 'Success' %}
+                                        <a href="{% url 'replay' pk=item.pk %}"><el-button type="primary">Replay</el-button></a>
+                                    {% else %}
+                                        <el-button type="primary" disabled>Replay</el-button>
                                     {% endif %}
                                     <a href="{% url 'recorddelete' pk=item.pk %}"><el-button type="warning" onclick="return confirm('Are you sure to delete the record?')">Delete</el-button></a>
                                 </td>

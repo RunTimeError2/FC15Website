@@ -44,6 +44,8 @@ urlpatterns = [
     url(r'^unfinished/$', FC15.views.unfinished, name = 'unfinished'),
     url(r'^ui/$', FC15.views.ui, name = 'ui'),
 
+    url(r'^execode/$', FC15.views.exe_code, name = 'exe_code'),
+
     # Error pages
     url(r'^404/$', FC15.views.page_not_found, name = 'pagenotfount'),
     url(r'^500/$', FC15.views.page_error, name = 'pageerror'),
@@ -63,6 +65,7 @@ urlpatterns = [
     url(r'^resetpassword/(?P<reset_code>.*)/$', FC15.views.resetpassword, name = 'resetpassword'),
     url(r'^acceptrequest/(?P<pk>[0-9]+)/$', FC15.views.acceptrequest, name = 'acceptrequest'),
     url(r'^rejectrequest/(?P<pk>[0-9]+)/$', FC15.views.rejectrequest, name = 'rejectrequest'),
+    url(r'^replay/(?P<pk>[0-9]+)/$', FC15.views.replay, name = 'replay'),
 
     # Admin page
 	url(r'^admin/', admin.site.urls),

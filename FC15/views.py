@@ -7,12 +7,13 @@ from FC15.models import UserInfo, TeamInfo, FileInfo, BlogPost, EmailActivate, P
 from FC15.forms import BlogPostForm, UserLoginForm, UserRegistForm, FileUploadForm, CreateTeamForm, ResetPasswordForm, ChangeForm, TeamRequestForm
 from FC15.sendmail import mail_activate, password_reset
 from FC15.forms import flash
-from FC15.oj import run, copy_all_exe, play_game, delete_exe, FILE_SUFFIX
+from FC15.oj import run, copy_all_exe, play_game, delete_exe, FILE_SUFFIX, run_game_queue, run_allgame
 import time, os, random
 
 
 AUTO_COMPILE = True
 EMAIL_ACTIVATE = True
+TSINGHUA_ONLY = True
 
 
 # All of the views
@@ -91,6 +92,24 @@ def regist(request):
                     flash(request, 'Error', 'The email address has already been used!', 'error')
                     return render(request, 'regist.html', {'form': userform})
                     #return HttpResponse('Error! The email address has already been used!')
+
+                # Judge if the student number is valids
+                if stu_number.isdigit() and len(stu_number) == 10:
+                    pass
+                else:
+                    flash(request, 'Error', 'Incorrect format of student number!')
+                    return render(request, 'regist.html', {'form': userform})
+                existing_stunumber = UserInfo.objects.filter(stu_number__exact = stu_number)
+                if existing_stunumber:
+                    flash(request, 'Error', 'One student number can only be used once!', 'error')
+                    return render(request, 'regist.html', {'form': userform})
+
+                # Judge if the email address belongs to Tsinghua mailbox
+                if TSINGHUA_ONLY:
+                    low_email = email.lower()
+                    if len(low_email) < 15 or low_email[-15:] != 'tsinghua.edu.cn':
+                        flash(request, 'Error', 'Only addresses of Tsinghua mailbox will be accepted.')
+                        return render(request, 'regist.html', {'form': userform})
 
                 # Switch whether the account should be activated with email
                 if EMAIL_ACTIVATE:
@@ -800,8 +819,26 @@ def playgame(request):
             if len(check_box_list) != 4:
                 flash(request, 'Error', 'Please select 4 AIs.', 'error')
                 return HttpResponseRedirect('/playgame/')
-            play_game(check_box_list, username)
+            # play_game(check_box_list, username)
             # Code to process game_result is required
+            record = GameRecord()
+            record.username = username
+            record.timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+            record.state = 'Unstarted'
+            now = time.strftime('%Y%m%d%H%M%S')
+            record.filename = 'record{0}_{1}.json'.format(now, random.randint(0, 1000))
+            while os.path.exists(record.filename):
+                now = time.strftime('%Y%m%d%H%M%S')
+                record.filename = 'record{0}_{1}.json'.format(now, random.randint(0, 1000))
+            record.AI1 = check_box_list[0].strip()
+            record.AI2 = check_box_list[1].strip()
+            record.AI3 = check_box_list[2].strip()
+            record.AI4 = check_box_list[3].strip()
+            record.save()
+
+            # Add record to queue
+            run_game_queue()
+
             flash(request, 'Success', 'The request for a game has been submitted. Please wait. The result will be put on this page later.')
             return HttpResponseRedirect('/playgame/')
         else:
@@ -877,3 +914,10 @@ def recorddelete(request, pk):
 # Launch UI
 def ui(request):
     return render(request, 'ui.html')
+
+
+# Replay a specific game
+def replay(request, pk):
+    record = get_object_or_404(GameRecord, pk = pk)
+    filename = record.filename
+    return HttpResponseRedirect('/ui/?json=/gamerecord/{0}'.format(filename))
