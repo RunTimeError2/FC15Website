@@ -159,10 +159,12 @@ def document(request):
 
 # Activate account with email
 def activate(request, activate_code):
-    activate_record = EmailActivate.objects.get(activate_string = activate_code)
+    #activate_record = EmailActivate.objects.get(activate_string = activate_code)
+    activate_record = get_object_or_404(EmailActivate, activate_string = activate_code)
     if activate_record:
         username = activate_record.username
-        user = UserInfo.objects.get(username = username)
+        #user = UserInfo.objects.get(username = username)
+        user = get_object_or_404(UserInfo, username = username)
         if user:
             user.activated = True
             user.save()
@@ -813,13 +815,48 @@ def playgame(request):
     if username == '':
         flash(request, 'Error', 'Please login first!', 'error')
         return HttpResponseRedirect('/login/')
+    file_available = FileInfo.objects.filter(is_compile_success__exact = 'Successfully compiled')
+    my_record = GameRecord.objects.filter(username__exact = username)
+    me = get_object_or_404(UserInfo, username = username)
     if request.method == 'POST':
         check_box_list = request.POST.getlist('check_box_list')
         if check_box_list:
             if len(check_box_list) != 4:
                 flash(request, 'Error', 'Please select 4 AIs.', 'error')
-                return HttpResponseRedirect('/playgame/')
-            # play_game(check_box_list, username)
+                #return HttpResponseRedirect('/playgame/')
+                return render(request, 'playgame.html', {'ailist': file_available, 'records': my_record, 'username': username})
+            
+            print('Playgame! username = {0}'.format(username)) #=======================
+            print('MyTeam = {0}'.format(me.team))
+            involve_mine = False
+            for item in check_box_list:
+                pk = item.strip()
+                #AIs = FileInfo.objects.filter(pk__exact = pk)
+                AI = get_object_or_404(FileInfo, pk = pk)
+                print('Author of AI = {0}'.format(AI.username)) #========================
+                #if AI.username == username or (AI.teamname == me.team and AI.teamname != ''):
+                #if AIs:
+                #    for ai in AIs:
+                #        if ai.username == username or (ai.teamname == me.teamname and ai.teamname != ''):
+                #            involve_mine = True
+                #    involve_mine = True
+                #else:
+                #    pass
+                # flash(request, 'Error', 'Invalid AI selected!', 'error')
+                #return HttpResponseRedirect('/playgame/')
+                #return render(request, 'playgame.html', {'ailist': file_available, 'records': my_record, 'username': username})
+                if me.team:
+                    if AI.username == username or AI.teamname == me.team:
+                        involve_mine = True
+                else:
+                    if AI.username == username:
+                        involve_mine = True
+
+            if involve_mine == False:
+                flash(request, 'Error', 'AI(s) of your team must be included.', 'error')
+                #return HttpResponseRedirect('/playgame/')
+                return render(request, 'playgame.html', {'ailist': file_available, 'records': my_record, 'username': username})
+
             # Code to process game_result is required
             record = GameRecord()
             record.username = username
@@ -840,16 +877,18 @@ def playgame(request):
             run_game_queue()
 
             flash(request, 'Success', 'The request for a game has been submitted. Please wait. The result will be put on this page later.')
-            return HttpResponseRedirect('/playgame/')
+            #return HttpResponseRedirect('/playgame/')
+            return render(request, 'playgame.html', {'ailist': file_available, 'records': my_record, 'username': username})
         else:
             print('fail')
             flash(request, 'Error', 'Please select 4 AIs.', 'error')
-            return HttpResponseRedirect('/playgame/')
+            #return HttpResponseRedirect('/playgame/')
+            return render(request, 'playgame.html', {'ailist': file_available, 'records': my_record, 'username': username})
     else:
         #all_file = FileInfo.objects.all()
-        file_available = FileInfo.objects.filter(is_compile_success__exact = 'Successfully compiled')
-        my_record = GameRecord.objects.filter(username__exact = username)
-        return render(request, 'playgame.html', {'ailist': file_available, 'records': my_record})
+        #file_available = FileInfo.objects.filter(is_compile_success__exact = 'Successfully compiled')
+        #my_record = GameRecord.objects.filter(username__exact = username)
+        return render(request, 'playgame.html', {'ailist': file_available, 'records': my_record, 'username': username})
 
 
 # Handles 404 error
@@ -913,11 +952,32 @@ def recorddelete(request, pk):
 
 # Launch UI
 def ui(request):
-    return render(request, 'ui.html')
+    username = request.COOKIES.get('username', '')
+    return render(request, 'ui.html', {'path': '', 'username': username})
 
 
 # Replay a specific game
 def replay(request, pk):
     record = get_object_or_404(GameRecord, pk = pk)
     filename = record.filename
-    return HttpResponseRedirect('/ui/?json=/gamerecord/{0}'.format(filename))
+    #path = '/static/gamerecord/{0}'.format(filename)
+    username = request.COOKIES.get('username', '')
+    return HttpResponseRedirect('/ui/?json=/static/gamerecord/{0}'.format(filename))
+    #return render(request, 'ui.html', {'path': path, 'username': username})
+
+
+# Download SDK
+def sdkdownload(request):
+    def file_iterator(file_name, chunk_size = 2048):  
+        with open(file_name) as f:  
+            while True:  
+                c = f.read(chunk_size)  
+                if c:
+                    yield c
+                else:
+                    break  
+
+    response = StreamingHttpResponse(file_iterator('/static/SDK_release.zip'))  
+    response['Content-Type'] = 'application/octet-stream'  
+    response['Content-Disposition'] = 'attachment;filename="{0}"'.format(file.origin_name)
+    return response

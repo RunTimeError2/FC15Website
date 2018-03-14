@@ -4,7 +4,6 @@
 
 #include <vector>
 #include <string>
-#include <initializer_list>
 #include <stdexcept>
 #include <map>
 #include <set>
@@ -17,7 +16,7 @@ typedef int    TResourceI;  //int    的资源数，用于显示
 typedef double TTechPoint;  //科技点数
 
 typedef double TLength;
-typedef int    TCellID;
+typedef int    TTowerID;
 typedef int    TPlayerID;
 typedef int    TTentacleID;
 
@@ -36,33 +35,33 @@ const double       Density = 0.1;
 const TSpeed       BaseExtendSpeed = 3;
 const TSpeed       BaseFrontSpeed = 12;
 const TSpeed       BaseBackSpeed = 20;
-const TLevel       STUDENT_LEVEL_COUNT = 5;
+const TLevel       TOWER_LEVEL_COUNT = 5;
 const TResourceI   MAX_RESOURCE = 200;
-const TSpeed       BASE_REGENERETION_SPEED[STUDENT_LEVEL_COUNT]{ 1,1.5,2,2.5,3 };
-const TTentacleNum MAX_TENTACLE_NUMBER[STUDENT_LEVEL_COUNT]{ 1,2,2,3,3 };  //可伸触手数量
-const TResourceI   STUDENT_STAGE[STUDENT_LEVEL_COUNT + 1]{ 0 ,10,40,80,150,MAX_RESOURCE };
+const TSpeed       BASE_REGENERETION_SPEED[TOWER_LEVEL_COUNT]{ 1,1.5,2,2.5,3 };
+const TTentacleNum MAX_TENTACLE_NUMBER[TOWER_LEVEL_COUNT]{ 1,2,2,3,3 };  //可伸兵线数量
+const TResourceI   STUDENT_STAGE[TOWER_LEVEL_COUNT + 1]{ 0 ,10,40,80,150,MAX_RESOURCE };
 const int          NO_DATA = -1;
 const TPlayerID        Neutral = NO_DATA;
 
-//最大技能等级
+//最大属性等级
 const TLevel MAX_REGENERATION_SPEED_LEVEL = 5;
 const TLevel MAX_EXTENDING_SPEED_LEVEL = 5;
 const TLevel MAX_EXTRA_CONTROL_LEVEL = 3;
 const TLevel MAX_DEFENCE_LEVEL = 3;
 
-//各技能等级对应数值
+//各属性等级对应数值
 const TPower RegenerationSpeedStage[MAX_REGENERATION_SPEED_LEVEL + 1] = { 1,1.05,1.1,1.15,1.2,1.25 };
 const TPower SpeedStage[MAX_EXTENDING_SPEED_LEVEL + 1] = { 1,1.1,1.2,1.3,1.4,1.5 };
 const TPower ExtraControlStage[MAX_EXTRA_CONTROL_LEVEL + 1] = { 0,0.5,1,1.5 };
 const TPower DefenceStage[MAX_DEFENCE_LEVEL + 1] = { 1.5,1.4,1.3,1.2 };
 
-//各个技能升级所需科创点数
+//各个技能升级所需科技点数
 const TResourceD RegenerationSpeedUpdateCost[MAX_REGENERATION_SPEED_LEVEL] = { 2,4,6,8,10 };
 const TResourceD ExtendingSpeedUpdateCost[MAX_EXTENDING_SPEED_LEVEL] = { 2,4,6,8,10 };
 const TResourceD ExtraControlStageUpdateCost[MAX_EXTRA_CONTROL_LEVEL] = { 3,5,7 };
 const TResourceD DefenceStageUpdateCost[MAX_DEFENCE_LEVEL] = { 3,5,7 };
 
-enum CellStrategy
+enum TowerStrategy
 {
 	Normal    //初始状态
 	, Attack  //攻击  
@@ -70,8 +69,8 @@ enum CellStrategy
 	, Grow    //发育
 };
 
-//细胞策略改变花费科技点
-const TTechPoint CellChangeCost[4][4] =
+//兵塔策略改变花费科技点
+const TTechPoint StrategyChangeCost[4][4] =
 {
 	//TO        N    A    D    G
 	/*F  N */   0,   2,   2,   2,
@@ -80,8 +79,8 @@ const TTechPoint CellChangeCost[4][4] =
 	/*M  G */   3,   5,   5,   0
 };
 
-//细胞对峙消耗倍率
-const TPower CellConfrontPower[4][4] =
+//兵线对峙消耗倍率
+const TPower ConfrontPower[4][4] =
 {
 	//TO        N    A    D    G
 	/*F  N */  1.0, 1.0, 1.0, 1.0,
@@ -90,8 +89,8 @@ const TPower CellConfrontPower[4][4] =
 	/*M  G */  2.0, 1.0, 1.0, 1.0
 };
 
-//细胞压制消耗倍率
-const TPower CellSupressPower[4][4] =
+//兵线压制消耗倍率
+const TPower SupressPower[4][4] =
 {
 	//TO        N    A    D    G
 	/*F  N */  1.5, 1.5, 1.5, 1.5,
@@ -100,16 +99,17 @@ const TPower CellSupressPower[4][4] =
 	/*M  G */  3.0, 1.5, 1.5, 1.5
 };
 
-//细胞资源生长倍率
-const TPower CellStrategyRegenerate[4] =
+//兵塔资源生长倍率
+const TPower StrategyRegeneratePower[4] =
 {
 	//    N    A    D    G
 		 1.0, 1.0, 0.5, 1.5
 };
 
-const TPower TentacleDecay[4] = 
+//兵线数量对应传输速率衰减
+const TPower LineDecay[4] = 
 {
-	//触手数量   0    1    2    3
+	//兵线数量   0    1    2    3
 	           1.0, 1.0, 0.8, 0.6
 };
 
@@ -118,13 +118,13 @@ enum TPlayerProperty
 	RegenerationSpeed    //再生速度
 	, ExtendingSpeed //延伸速度
 	, ExtraControl   //额外控制数
-	, CellWall        //防御等级
+	, Wall        //防御等级
 };
 
-enum TentacleState
+enum LineState
 {
 	Extending           //延伸中
-	, Attacking          //攻击中（面对对方触手）
+	, Attacking          //攻击中（面对对方兵线）
 	, Backing            //退后中（被打退）
 	, Confrontation      //对峙中
 	, Arrived            //已到达目的地
@@ -143,7 +143,7 @@ TPoint operator-(const TPoint& p1, const TPoint& p2);
 //计算欧式距离
 TLength getDistance(const TPoint& p1, const TPoint& p2);
 
-enum CellType  //细胞种类的枚举
+enum TowerType  //兵塔种类的枚举
 {
 	Alpha = 0,
 	Beta_1,
@@ -152,12 +152,12 @@ enum CellType  //细胞种类的枚举
 	Gamma_2
 };
 
-struct CellInfo
+struct TowerInfo
 {
-	TCellID id;
-	CellType type;
+	TTowerID id;
+	TowerType type;
 	TPlayerID owner;
-	CellStrategy strategy;
+	TowerStrategy strategy;
 
 	TResourceD resource;
 	TResourceD occupyPoint;  //只有中立时才有意义
@@ -166,17 +166,17 @@ struct CellInfo
 	TPoint position;
 
 	TResourceD maxResource;
-	int maxTentacleNum;  //最大触手数量
-	int currTentacleNum;
-	TPower techSpeed;    //科创点数是资源再生速率的几倍
+	int maxLineNum;  //最大兵线数量
+	int currLineNum;  //当前兵线数量
+	TPower techSpeed;    //科技点数是资源再生速率的几倍
 };
 
 struct PlayerInfo
 {
 	TPlayerID id;
 
-	int rank;          //排名/按总资源/包括触手上的
-	set<TCellID> cells; //所有的细胞
+	int rank;          //排名/按总资源/包括兵线上的
+	set<TTowerID> towers; //所有的兵塔
 	TResourceD technologyPoint;        //科技点数
 
 	TLevel RegenerationSpeedLevel;      //再生倍率等级
@@ -189,16 +189,16 @@ struct PlayerInfo
 	bool alive;                  //是否还活着
 };
 
-struct TentacleInfo
+struct LineInfo
 {
 	bool exist; //是否存在
-	TCellID         sourceCell;              //源同学
-	TCellID         targetCell;              //目标同学
-	TentacleState   state;                     //触手状态
-	TLength         maxlength;                     //触手长度（由源/目标决定）
-	TResourceD      resource;                   //当前资源      （切断前有效）
-	TResourceD      frontResource;              //切断后前方资源（切断后有效）
-	TResourceD      backResource;               //切断后后方资源（切断后有效）
+	TTowerID         sourceTower;              //源兵塔
+	TTowerID         targetTower;              //目标兵塔
+	LineState   state;                     //兵线状态
+	TLength         maxlength;                     //兵线最大长度（由源/目标决定）
+	TResourceD      resource;                   //当前兵力      （切断前有效）
+	TResourceD      frontResource;              //切断后前方兵力（切断后有效）
+	TResourceD      backResource;               //切断后后方兵力（切断后有效）
 };
 
 struct TBarrier
@@ -213,7 +213,7 @@ public:
 	void   setID(TMapID _id) { id = _id; }
 	TMap   getWidth()  const { return m_width; }
 	TMap   getHeigth() const { return m_height; }
-	bool   passable(TPoint p1, TPoint p2)   //判断触手能否连接这两个点
+	bool   passable(TPoint p1, TPoint p2)   //判断兵线能否连接这两个点
 	{
 		for (auto b : m_barrier)
 		{
@@ -240,7 +240,7 @@ public:
 	string             id;                  //记录地图的id，由game赋值，被init函数使用，选择对应的文件
 	TMap               m_width;
 	TMap               m_height;
-	vector<TPoint>     m_studentPos;        //只设定细胞的坐标，之后的势力分配交给game
+	vector<TPoint>     m_studentPos;        //只设定兵塔的坐标，之后的势力分配交给game
 	vector<TBarrier>   m_barrier;
 private:
 	int cross(const TPoint& p1, const TPoint& p2) { return p1.m_x*p2.m_y - p1.m_y*p2.m_x; }//叉乘
@@ -252,16 +252,14 @@ private:
 enum CommandType
 {
 	upgrade          //升级属性
-	, changeStrategy //改变细胞策略
-	, addTentacle    //添加触手
-	, cutTentacle    //切断触手
+	, changeStrategy //改变兵塔策略
+	, addLine    //添加兵线
+	, cutLine    //切断兵线
 };
 
 //保存命令相关信息
 struct Command
 {
-	Command(CommandType _type, initializer_list<int> _parameters) :
-		type(_type), parameters(_parameters) {}
 	Command(CommandType _type, vector<int> _parameters) :
 		type(_type), parameters(_parameters) {}
 	Command(){}
@@ -339,9 +337,9 @@ struct Info
 	TRound round;     //回合数
 	CommandList myCommandList;
 	vector<PlayerInfo> playerInfo;   //势力信息
-	vector<CellInfo> cellInfo; //同学信息
-	int cellNum;    //细胞总数量
-	vector<vector<TentacleInfo> > tentacleInfo; //触手信息
+	vector<TowerInfo> towerInfo; //兵塔信息
+	int towerNum;    //兵塔总数量
+	vector<vector<LineInfo> > lineInfo; //兵线信息
 	BaseMap* mapInfo;  //地图信息
 };
 

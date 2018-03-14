@@ -22,10 +22,10 @@ std::ostream& operator<<(std::ostream& os, const CommandList& cl)
 	{
 		switch (c.type)
 		{
-		case addTentacle:
+		case addLine:
 			os << "Add a tentacle from cell " << c.parameters[0] << " to cell " << c.parameters[1] << endl;
 			break;
-		case cutTentacle:
+		case cutLine:
 			os << "Cut the tentacle from cell " << c.parameters[0] << " to cell " << c.parameters[1] << " at the postion " << c.parameters[2] << endl;
 			break;
 		case changeStrategy:

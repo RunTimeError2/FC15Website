@@ -55,7 +55,6 @@
                     <thead>
                         <tr>
                             <th>Timestamp</th>
-                            <th>Description</th>
                             <th>State</th>
                             <th>    </th>
                         </tr>
@@ -64,7 +63,6 @@
                         {% for item in records %}
                             <tr>
                                 <td>{{ item.timestamp }}</td>
-                                <td>Here should be the description</td>
                                 <td>
                                     {% if item.state == 'Success' %}
                                         <el-tag type="success">Success</el-tag>

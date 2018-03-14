@@ -137,21 +137,14 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
 
 # Settings for QQ mailbox (which is mine), as a temporary substitude for the SMTP server
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-#EMAIL_HOST = 'smtp.qq.com'
-#EMAIL_PORT = 25
-#EMAIL_HOST_USER = '1548039150@qq.com'
-#EMAIL_HOST_PASSWORD = 'bxalpxogazkyhhdi'
-#EMAIL_SUBJECT_PREFIX = '[FC15]'
-#EMAIL_USE_TLS = True
-#DEFAULT_EMAIL_FROM = '1548039150@qq.com'
 
 # Use Tsinghua Mailbox if internet access is not available
 EMAIL_HOST = 'mails.tsinghua.edu.cn'
 EMAIL_PORT = 25
 EMAIL_HOST_USER = 'songjh16@mails.tsinghua.edu.cn'
-EMAIL_HOST_PASSWORD = 'MyPw4THinfo$'
+EMAIL_HOST_PASSWORD = '******'
 EMAIL_SUBJECT_PREFIX = '[FC15]'
 EMAIL_USE_TLS = True
-DEFAULT_EMAIL_FROM = 'songjh16@mails.tsinghua.edu.cn'
+DEFAULT_EMAIL_FROM = 'FC15 Website Administrator'
 
 #from FC15.models import FileInfo

@@ -43,8 +43,9 @@ urlpatterns = [
     url(r'^playgame/$', FC15.views.playgame, name = 'playgame'),
     url(r'^unfinished/$', FC15.views.unfinished, name = 'unfinished'),
     url(r'^ui/$', FC15.views.ui, name = 'ui'),
-
-    url(r'^execode/$', FC15.views.exe_code, name = 'exe_code'),
+    url(r'^sdkdownload/$', FC15.views.sdkdownload, name = 'sdkdownload'),
+ 
+    #url(r'^execode/$', FC15.views.exe_code, name = 'exe_code'),
 
     # Error pages
     url(r'^404/$', FC15.views.page_not_found, name = 'pagenotfount'),

@@ -5,6 +5,11 @@ from queue import Queue # Python3
 #from Queue import Queue # Python2
 
 
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
+
 IS_RUNNING = 0
 GAME_RUNNING = 0
 #COMPILE_MODE = 'VS'
@@ -69,6 +74,7 @@ def run_game():
         # Copy record file
         if os.path.exists(source_dir):
             open(destin_dir, 'wb').write(open(source_dir, 'rb').read())
+            open('static/' + destin_dir, 'wb').write(open(source_dir, 'rb').read())
             try:
                 os.remove(source_dir) # delete source file, avoid problems when playing game next time (sometimes the sample 'logic' fails to create record file)
             except:
@@ -188,7 +194,7 @@ def run_allgame():
                 # Edit config file
                 file = '/home/songjh/playgame/config_gnu.ini'
 
-                print('Running game, with ai_list = [{0}, {1}, {2}, {3}], username = {4}'.format(ai1, ai2, ai3, ai4, username))
+                print('Running game, with ai_list = [{0}, {1}, {2}, {3}], username = {4}'.format(ai1, ai2, ai3, ai4, record.username))
 
                 with open(file, 'w') as f:
                     f.write('../map/map_2.txt\n')
