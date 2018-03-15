@@ -5,7 +5,7 @@ from django.contrib import messages
 
 from FC15.models import UserInfo, TeamInfo, FileInfo, BlogPost, EmailActivate, PasswordReset, TeamRequest, GameRecord
 from FC15.forms import BlogPostForm, UserLoginForm, UserRegistForm, FileUploadForm, CreateTeamForm, ResetPasswordForm, ChangeForm, TeamRequestForm
-from FC15.sendmail import mail_activate, password_reset
+from FC15.sendmail import mail_activate, password_reset, random_string, send_mail_to_mine
 from FC15.forms import flash
 from FC15.oj import run, copy_all_exe, play_game, delete_exe, FILE_SUFFIX, run_game_queue, run_allgame
 import time, os, random
@@ -48,6 +48,8 @@ def login(request):
                     response.set_cookie('username', username, 3600)
                     return response
                 else:
+                    response = HttpResponseRedirect('/login/')
+                    response.set_cookie('tmp_username', username, 600)
                     flash(request, 'Error', 'This user account has not been activated!', 'error')
                 #    return HttpResponse('This user account has not been activated!')
             else:
@@ -83,12 +85,28 @@ def regist(request):
 
             if password == password_confirm:
                 existing_user = UserInfo.objects.filter(username__exact = username)
+                username_invalid = False
                 if existing_user:
+                    for user in existing_user:
+                        if user.activated:
+                            username_invalid = True
+                if username_invalid:
                     flash(request, 'Error', 'The username already exists!', 'error')
                     return render(request, 'regist.html', {'form': userform})
                     #return HttpResponse('Error! The username already exists')
+
+                existing_realname = UserInfo.objects.filter(realname__exact = realname, activated = True)
+                if existing_realname:
+                    flash(request, 'Error', 'The realname already exists!', 'error')
+                    return render(request, 'regist.html', {'form': userform})
+
                 existing_email = UserInfo.objects.filter(email__exact = email)
+                email_invalid = False
                 if existing_email:
+                    for email in existing_email:
+                        if email.activated:
+                            email_invalid = True
+                if email_invalid:
                     flash(request, 'Error', 'The email address has already been used!', 'error')
                     return render(request, 'regist.html', {'form': userform})
                     #return HttpResponse('Error! The email address has already been used!')
@@ -99,8 +117,14 @@ def regist(request):
                 else:
                     flash(request, 'Error', 'Incorrect format of student number!')
                     return render(request, 'regist.html', {'form': userform})
+
                 existing_stunumber = UserInfo.objects.filter(stu_number__exact = stu_number)
+                stunumber_invalid = False
                 if existing_stunumber:
+                    for stunumber in existing_stunumber:
+                        if stunumber.activated:
+                            stunumber_invalid = True
+                if stunumber_invalid:
                     flash(request, 'Error', 'One student number can only be used once!', 'error')
                     return render(request, 'regist.html', {'form': userform})
 
@@ -119,7 +143,22 @@ def regist(request):
                 else:
                     UserInfo.objects.create(username = username, realname = realname, password = password, email = email, stu_number = stu_number, activated = True)
                     flash(request, 'Success', 'Your account has been successfully created.')
-                return HttpResponseRedirect('/home/')
+
+                # Delete user that are not activated and has the same information
+                existing_username = UserInfo.objects.filter(username__exact = username, activated = False)
+                for item in existing_username:
+                    item.delete()
+                existing_email = UserInfo.objects.filter(email__exact = email, activated = False)
+                for item in existing_email:
+                    item.delete()
+                existing_stunumber = UserInfo.objects.filter(stu_number__exact = stu_number, activated = False)
+                for item in existing_stunumber:
+                    item.delete()
+                existing_realname = UserInfo.objects.filter(realname__exact = realname, activated = False)
+                for item in existing_realname:
+                    item.delete()
+
+                return HttpResponseRedirect('/login/')
                 #return HttpResponse('Regist success! Please check your email.')
             else:
                 flash(request, 'Error', 'You should enter the same password!')
@@ -589,6 +628,7 @@ def createteam(request):
             me = UserInfo.objects.get(username = username)
             me.team = newteam.teamname
             me.save()
+            updatecodeteaminfo() #================================================
             flash(request, 'Success', 'Team created successfully', 'success')
             return HttpResponseRedirect('/team/')
             #return HttpResponse('Team created successfully')
@@ -604,10 +644,12 @@ def jointeam(request, pk):
         flash(request, 'Error', 'Please login first', 'error')
         return HttpResponseRedirect('/login/')
     me = get_object_or_404(UserInfo, username = username)
-    if me.team != '':
+    if me.team:
+        pass
+    else:
         my_current_team = TeamInfo.objects.filter(teamname__exact = me.team)
         if my_current_team:
-            flash(request, 'Error', 'You have already joined a tem', 'error')
+            flash(request, 'Error', 'You have already joined a team', 'error')
             return HttpResponseRedirect('/team/')
         else:
             flash(request, 'Error', 'Your current team does not exist, now you do not belong to any team lol.')
@@ -615,8 +657,10 @@ def jointeam(request, pk):
             me.save()
         #return HttpResponse('You have already joined a team!')
     team = get_object_or_404(TeamInfo, pk = pk)
-    userform = TeamRequestForm(data = {'destin_team': team.teamname})
-    return render(request, 'teamrequest.html', {'username': username, 'form': userform})
+    # userform = TeamRequestForm(data = {'destin_team': team.teamname})
+    userform = TeamRequestForm()
+    print('teamname = {0}'.format(team.teamname))
+    return render(request, 'teamrequest.html', {'username': username, 'form': userform, 'destin_team': team.teamname})
 
 
 # Send a request to join the team
@@ -625,8 +669,9 @@ def jointeamrequest(request, pk):
     if username == '':
         flash(request, 'Error', 'Please login first', 'error')
         return HttpResponseRedirect('/login/')
+    destin_team = ''
     me = get_object_or_404(UserInfo, username = username)
-    if me.team != '':
+    if me.team:
         my_current_team = TeamInfo.objects.filter(teamname__exact = me.team)
         if my_current_team:
             flash(request, 'Error', 'You have already joined a team!', 'error')
@@ -637,6 +682,7 @@ def jointeamrequest(request, pk):
             me.save()
         #return HttpResponse('You have already joined a team!')
     team = get_object_or_404(TeamInfo, pk = pk)
+    destin_team = team.teamname
     if request.method == 'POST':
         userform = TeamRequestForm(request.POST)
         if userform.is_valid():
@@ -658,7 +704,7 @@ def jointeamrequest(request, pk):
     else:
         msg = 'I am ' + username + ', ' + me.realname
         userform = TeamRequestForm(data = {'destin_team': team.teamname, 'message': msg})
-    return render(request, 'teamrequest.html', {'username': username, 'form': userform})
+    return render(request, 'teamrequest.html', {'username': username, 'form': userform, 'destin_team': team.teamname})
 
 
 # Accept a request to join a team
@@ -687,6 +733,7 @@ def acceptrequest(request, pk):
         team.members = team.members + 1
         team.save()
         team_request.delete()
+        updatecodeteaminfo() #================================================
         flash(request, 'Success', 'You have successfully accepted the request')
         return HttpResponseRedirect('/team/')
         #return HttpResponse('You have successfully accepted the requet.')
@@ -708,6 +755,7 @@ def rejectrequest(request, pk):
     team = get_object_or_404(TeamInfo, teamname = destin_team)
     if team.captain == me.username:
         team_request.delete()
+        updatecodeteaminfo() #================================================
         flash(request, 'Success', 'You have successfully rejected the request', 'succes')
         return HttpResponseRedirect('/team/')
         #return HttpResponse('You have successfully rejected the request')
@@ -764,6 +812,7 @@ def quitteam(request):
                 me.save()
                 team.members = team.members - 1
                 team.save()
+                updatecodeteaminfo() #================================================
                 flash(request, 'Success', 'You have successfully quitted the team.')
                 return HttpResponseRedirect('/team/')
         else:
@@ -799,6 +848,7 @@ def dismissteam(request):
                         member.team = ''
                         member.save()
                 team.delete()
+                updatecodeteaminfo() #================================================
                 flash(request, 'Success', 'You have successfully dismissed the team', 'success')
                 return HttpResponseRedirect('/team/')
         else:
@@ -862,11 +912,14 @@ def playgame(request):
             record.username = username
             record.timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
             record.state = 'Unstarted'
-            now = time.strftime('%Y%m%d%H%M%S')
-            record.filename = 'record{0}_{1}.json'.format(now, random.randint(0, 1000))
+            now = time.strftime('%Y%m%d%H%M%S') 
+            #record.filename = 'record{0}_{1}.json'.format(now, random.randint(0, 1000))
+            #while os.path.exists(record.filename):
+            #    now = time.strftime('%Y%m%d%H%M%S')
+            #    record.filename = 'record{0}_{1}.json'.format(now, random.randint(0, 1000))
+            record.filename = 'record_{0}.json'.format(random_string(25))
             while os.path.exists(record.filename):
-                now = time.strftime('%Y%m%d%H%M%S')
-                record.filename = 'record{0}_{1}.json'.format(now, random.randint(0, 1000))
+                record.filename = 'record_{0}.json'.format(random_string(25))
             record.AI1 = check_box_list[0].strip()
             record.AI2 = check_box_list[1].strip()
             record.AI3 = check_box_list[2].strip()
@@ -925,10 +978,13 @@ def recorddownload(request, pk):
     if username == '':
         flash(request, 'Error', 'Please login first', 'error')
         return HttpResponseRedirect('/login/')
+    now = time.strftime('%Y%m%d%H%M%S') 
+    download_name = 'record_{0}.json'.format(now)
     record_info = get_object_or_404(GameRecord, pk = pk)
     response = StreamingHttpResponse(file_iterator('gamerecord/' + record_info.filename))
     response['Content-Type'] = 'application/octet-stream'  
-    response['Content-Disposition'] = 'attachment;filename="{0}"'.format(record_info.filename)
+    #response['Content-Disposition'] = 'attachment;filename="{0}"'.format(record_info.filename)
+    response['Content-Disposition'] = 'attachment;filename="{0}"'.format(download_name)
     return response
 
 
@@ -969,7 +1025,7 @@ def replay(request, pk):
 # Download SDK
 def sdkdownload(request):
     def file_iterator(file_name, chunk_size = 2048):  
-        with open(file_name) as f:  
+        with open(file_name, 'rb') as f:  
             while True:  
                 c = f.read(chunk_size)  
                 if c:
@@ -977,7 +1033,43 @@ def sdkdownload(request):
                 else:
                     break  
 
-    response = StreamingHttpResponse(file_iterator('/static/SDK_release.zip'))  
+    response = StreamingHttpResponse(file_iterator('static/SDK_release.zip'))  
+    #response = StreamingHttpResponse(file_iterator('static/a.ppt'))  
     response['Content-Type'] = 'application/octet-stream'  
-    response['Content-Disposition'] = 'attachment;filename="{0}"'.format(file.origin_name)
+    response['Content-Disposition'] = 'attachment;filename="{0}"'.format('User_Package_v1.0.zip')
     return response
+
+
+def sendmailtest(request):
+    send_mail_to_mine
+    return HttpResponseRedirect('/home/')
+
+
+# Update info on team of all code
+def updatecodeteaminfo():
+    all_user = UserInfo.objects.all()
+    for user in all_user:
+        team = user.team
+        if team:
+            codes = FileInfo.objects.filter(username__exact = user.username)
+            for code in codes:
+                code.teamname = team
+                code.save()
+
+
+# Send activation email again
+def activateagain(request):
+    username = request.COOKIES.get('username', '')
+    if username:
+        flash(request, 'Error', 'You have already signed in.', 'error')
+        return HttpResponseRedirect('/index/')
+    tmp_username = request.COOKIES.get('tmp_username', '')
+    if tmp_username:
+        # Delete old activating infomation
+        old_activate = EmailActivate.object.filter(username__exact = tmp_username)
+        for info in old_activate:
+            info.delete()
+        # Create new information
+        mail_activate(username.email, username)
+    else:
+        return HttpResponseRedirect('/login/')

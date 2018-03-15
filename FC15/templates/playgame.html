@@ -21,6 +21,7 @@
         <thead>
             <tr>
                 <th>Index</th>
+                <th>Name</th>
                 <th>Author</th>
                 <th>Last update</th>
                 <th>Description</th>
@@ -32,6 +33,7 @@
                     <td>
                         <input type="checkbox" value="  {{ item.pk }}" name="check_box_list" />  {{ item.pk }}
                     </td>
+                    <td>{{ item.filename }}</td>
                     <td>{{ item.username }}</td>
                     <td>{{ item.timestamp }}</td>
                     <td>{{ item.description }}</td>

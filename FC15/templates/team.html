@@ -20,17 +20,22 @@
             <hr />
             <h4>Introduction:</h4>
             <p>{{ myteam.introduction|linebreaks }}</p>
+            <a href="/teamdetail/">
+                <el-button type="success">Show Detail</el-button>
+            </a>
         {% else %}
             {% if joinedteam %}
                 <h3>The team you have already joined</h3>
                 <h4>{{ joinedteam.teamname }}</h4>
                 <p>Introduction:</p>
                 <p>{{ joinedteam.introduction|linebreaks }}</p>
-                <h4><a href="/teamdetail/">Show Detail</a></h4>
+                <a href="/teamdetail/">
+                    <el-button type="success">Show Detail</el-button>
+                </a>
             {% else %}
                 <p>You have not joined a team yet. Please choose one or</p>
                 <a href="/createteam/">
-                    <el-button type="primary">Create a team</el-button>
+                    <el-button type="success">Create a team</el-button>
                 </a>
             {% endif %}
         {% endif %}

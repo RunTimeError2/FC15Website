@@ -5,9 +5,9 @@ from queue import Queue # Python3
 #from Queue import Queue # Python2
 
 
-import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
+#import sys
+#reload(sys)
+#sys.setdefaultencoding('utf-8')
 
 
 IS_RUNNING = 0

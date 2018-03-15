@@ -88,9 +88,14 @@
         <a href="/document/">
             <el-button type="success">Quick start</el-button>
         </a>
+        <br /><br />
+        <a href="/sdkdownload/">
+            <el-button type="warning">Download SDK</el-button>
+        </a>
     </div>
 </div>
 
+<!--
 <el-container style="width: 80%; margin-left: 10%;">
     <el-aside width="0%">
     </el-aside>
@@ -139,7 +144,10 @@
             </div>
         </div>
     </el-main>
-</el-container>
+</el-container>-->
+<div style="width: 80%; margin-left: 10%; margin: auto;">
+    <img src="/static/images/QRcode.jpg" width="100%" style="margin: auto;"/>
+</div>
 
 <br />
 
@@ -160,7 +168,7 @@
             <a href="/document/">
                 <el-button type="success">Learn more</el-button>
             </a>
-            <a href="/unfinished/"> <!-- This link should be completed. -->
+            <a href="/sdkdownload/"> <!-- This link should be completed. -->
                 <el-button type="primary">Download SDK</el-button>
             </a>
         </div>
@@ -204,7 +212,7 @@
                     <h2>{{ post.title }}</h2>
                     <hr />
                     <p>Posted by <el-tag>{{ post.username }}</el-tag> at <el-tag type="success">{{ post.timestamp }}</el-tag></p>
-                    <a href="/unfinished/">
+                    <a href="{% url 'blogdetail' pk=post.pk %}">
                         <el-button type="success">Details</el-button>
                     </a>
                 </el-main>
@@ -226,7 +234,7 @@
                     <h2>{{ post.title }}</h2>
                     <hr />
                     <p>Posted by <el-tag>{{ post.username }}</el-tag> at <el-tag type="success">{{ post.timestamp }}</el-tag></p>
-                    <a href="/unfinished/">
+                    <a href="{% url 'blogdetail' pk=post.pk %}">
                         <el-button type="success">Details</el-button>
                     </a>
                 </el-main>

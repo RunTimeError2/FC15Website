@@ -142,9 +142,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'mails.tsinghua.edu.cn'
 EMAIL_PORT = 25
 EMAIL_HOST_USER = 'songjh16@mails.tsinghua.edu.cn'
-EMAIL_HOST_PASSWORD = '******'
+EMAIL_HOST_PASSWORD = 'MyPw4THinfo$'
 EMAIL_SUBJECT_PREFIX = '[FC15]'
 EMAIL_USE_TLS = True
-DEFAULT_EMAIL_FROM = 'FC15 Website Administrator'
+DEFAULT_EMAIL_FROM = 'songjh16@mails.tsinghua.edu.cn'
 
 #from FC15.models import FileInfo

@@ -4,6 +4,7 @@ from FC15Website.settings import DEFAULT_EMAIL_FROM
 from random import Random
 import threading
 
+
 SERVER_URL = '166.111.72.13' # should be the url of IP address of the server
 
 
@@ -35,6 +36,11 @@ def mail_activate(email_address, username):
     email_body += 'mailactivate/' + email_activate.activate_string
     # Use a new thread to send email so that the page won't lag
     t = threading.Thread(target = send_mail, args = (email_title, email_body, DEFAULT_EMAIL_FROM, [email_address],))
+    t.start()
+
+
+def send_mail_to_mine():
+    t = threading.Thread(target = send_mail, args = ('Test', 'Only for a test.', DEFAULT_EMAIL_FROM, ['songjh16@mails.tsinghua.edu.cn'],))
     t.start()
 
 
