@@ -5,7 +5,7 @@ from django.contrib import messages
 
 from FC15.models import UserInfo, TeamInfo, FileInfo, BlogPost, EmailActivate, PasswordReset, TeamRequest, GameRecord
 from FC15.forms import BlogPostForm, UserLoginForm, UserRegistForm, FileUploadForm, CreateTeamForm, ResetPasswordForm, ChangeForm, TeamRequestForm
-from FC15.sendmail import mail_activate, password_reset, random_string, send_mail_to_mine
+from FC15.sendmail import mail_activate, password_reset, random_string
 from FC15.forms import flash
 from FC15.oj import run, copy_all_exe, play_game, delete_exe, FILE_SUFFIX, run_game_queue, run_allgame
 import time, os, random
@@ -14,6 +14,7 @@ import time, os, random
 AUTO_COMPILE = True
 EMAIL_ACTIVATE = True
 TSINGHUA_ONLY = True
+MAX_TEAM_MEMBER_NUMBER = 3
 
 
 # All of the views
@@ -46,11 +47,13 @@ def login(request):
                     response = HttpResponseRedirect('/index/')
                     # User will automatically login within 1 hour
                     response.set_cookie('username', username, 3600)
+                    response.set_cookie('tmp_username', '', 7200)
                     return response
                 else:
                     response = HttpResponseRedirect('/login/')
                     response.set_cookie('tmp_username', username, 600)
                     flash(request, 'Error', 'This user account has not been activated!', 'error')
+                    return response
                 #    return HttpResponse('This user account has not been activated!')
             else:
                 flash(request, 'Error', 'Incorrect username or password, please retry.', 'error')
@@ -135,14 +138,7 @@ def regist(request):
                         flash(request, 'Error', 'Only addresses of Tsinghua mailbox will be accepted.')
                         return render(request, 'regist.html', {'form': userform})
 
-                # Switch whether the account should be activated with email
-                if EMAIL_ACTIVATE:
-                    UserInfo.objects.create(username = username, realname = realname, password = password, email = email, stu_number = stu_number, activated = False)
-                    mail_activate(email, username)
-                    flash(request, 'Success', 'The confirmation email has been successfully sent. Please check you email!')
-                else:
-                    UserInfo.objects.create(username = username, realname = realname, password = password, email = email, stu_number = stu_number, activated = True)
-                    flash(request, 'Success', 'Your account has been successfully created.')
+                print('Regist: username={0}, realname={1}'.format(username, realname))
 
                 # Delete user that are not activated and has the same information
                 existing_username = UserInfo.objects.filter(username__exact = username, activated = False)
@@ -157,6 +153,31 @@ def regist(request):
                 existing_realname = UserInfo.objects.filter(realname__exact = realname, activated = False)
                 for item in existing_realname:
                     item.delete()
+
+                # Switch whether the account should be activated with email
+                if EMAIL_ACTIVATE:
+                    new_user = UserInfo()
+                    new_user.username = username
+                    new_user.password = password
+                    new_user.email = email
+                    new_user.stu_number = stu_number
+                    new_user.realname = realname
+                    new_user.activated = False
+                    new_user.save()
+                    #UserInfo.objects.create(username = username, realname = realname, password = password, email = email, stu_number = stu_number, activated = False)
+                    mail_activate(email, username)
+                    flash(request, 'Success', 'The confirmation email has been successfully sent. Please check you email!')
+                else:
+                    new_user = UserInfo()
+                    new_user.username = username
+                    new_user.password = password
+                    new_user.email = email
+                    new_user.stu_number = stu_number
+                    new_user.realname = realname
+                    new_user.activated = True
+                    new_user.save()
+                    #UserInfo.objects.create(username = username, realname = realname, password = password, email = email, stu_number = stu_number, activated = True)
+                    flash(request, 'Success', 'Your account has been successfully created.')
 
                 return HttpResponseRedirect('/login/')
                 #return HttpResponse('Regist success! Please check your email.')
@@ -686,6 +707,9 @@ def jointeamrequest(request, pk):
     if request.method == 'POST':
         userform = TeamRequestForm(request.POST)
         if userform.is_valid():
+            if team.members >= MAX_TEAM_MEMBER_NUMBER: 
+                flash(request, 'Error', 'A team at most has {0} members'.format(MAX_TEAM_MEMBER_NUMBER))
+                return HttpResponseRedirect('/team/')
             team_request = TeamRequest()
             team_request.username = username
             team_request.destin_team = userform.cleaned_data['destin_team']
@@ -719,8 +743,8 @@ def acceptrequest(request, pk):
     team = get_object_or_404(TeamInfo, teamname = destin_team)
     apply_user = get_object_or_404(UserInfo, username = team_request.username) # The one who sent the request
     if team.captain == me.username:
-        if team.members >= 4:
-            flash(request, 'Error', 'A team at most has 4 members')
+        if team.members >= MAX_TEAM_MEMBER_NUMBER:
+            flash(request, 'Error', 'A team at most has {0} members'.format(MAX_TEAM_MEMBER_NUMBER))
             return HttpResponseRedirect('/team/')
             #return HttpResponse('A team at most has 4 members')
         apply_user.team = destin_team
@@ -924,6 +948,10 @@ def playgame(request):
             record.AI2 = check_box_list[1].strip()
             record.AI3 = check_box_list[2].strip()
             record.AI4 = check_box_list[3].strip()
+            record.AI1_name = get_object_or_404(FileInfo, pk = record.AI1).filename
+            record.AI2_name = get_object_or_404(FileInfo, pk = record.AI2).filename
+            record.AI3_name = get_object_or_404(FileInfo, pk = record.AI3).filename
+            record.AI4_name = get_object_or_404(FileInfo, pk = record.AI4).filename
             record.save()
 
             # Add record to queue
@@ -959,7 +987,9 @@ def page_error(request):
 # Execute specific command
 # should be deleted if the website is to be deployed
 def exe_code(request):
-    copy_all_exe()
+   # UserInfo.objects.create(username = username, realname = realname, password = password, email = email, stu_number = stu_number, activated = False)
+    #for i in range(0, 50):
+    #    UserInfo.objects.create(username = i, realname = '123', password = '123456', email = 'justatest@tsinghua.edu.cn', stu_number = '2020000000', activated = True)
     return HttpResponse('Successfully executed.')
 
 
@@ -1066,10 +1096,18 @@ def activateagain(request):
     tmp_username = request.COOKIES.get('tmp_username', '')
     if tmp_username:
         # Delete old activating infomation
-        old_activate = EmailActivate.object.filter(username__exact = tmp_username)
+        old_activate = EmailActivate.objects.filter(username__exact = tmp_username)
         for info in old_activate:
             info.delete()
         # Create new information
-        mail_activate(username.email, username)
+        userinfo = get_object_or_404(UserInfo, username = tmp_username)
+        if userinfo.activated:
+            flash(request, 'Error', 'The account has already been activated.', 'error')
+            return HttpResponseRedirect('/login/')
+        print('activate again, username = {0}'.format(userinfo.username))
+        mail_activate(userinfo.email, userinfo.username)
+        flash(request, 'Success', 'The email has been sent and the old one has become invalid. Please use the latest link to activate your account')
+        return HttpResponseRedirect('/login/')
     else:
+        print('tmp_username == None')
         return HttpResponseRedirect('/login/')

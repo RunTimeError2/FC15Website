@@ -35,7 +35,7 @@
                 logFile.addEventListener('change', function () {
                     $('canvas').show();
                     if (!logFile.value) {
-                        alert('No file selected');
+                        alert('No file selected.');
                         return;
                     }
                     var file = logFile.files[0];
@@ -79,6 +79,6 @@
         <input id="json-selector" type="file" />
     </div>
     <div id="game"></div>
-    <canvas id="info-board" width="500" height="800"></canvas>
+    <canvas id="info-board" width="600" height="800"></canvas>
 
 {% endblock %}

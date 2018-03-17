@@ -97,6 +97,14 @@ class GameRecord(models.Model):
     AI2 = models.CharField(max_length = 20, blank = True, null = True, default = '')
     AI3 = models.CharField(max_length = 20, blank = True, null = True, default = '')
     AI4 = models.CharField(max_length = 20, blank = True, null = True, default = '')
+    AI1_name = models.CharField(max_length = 20, blank = True, null = True, default = '')
+    AI2_name = models.CharField(max_length = 20, blank = True, null = True, default = '')
+    AI3_name = models.CharField(max_length = 20, blank = True, null = True, default = '')
+    AI4_name = models.CharField(max_length = 20, blank = True, null = True, default = '')
+
+    class Meta:
+        verbose_name = 'GameRecord'
+        ordering = ['-timestamp']
 
 
 # Determines how to display class AIInfo in tables for admin

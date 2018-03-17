@@ -124,6 +124,8 @@ def store_exe(username, file_name, pk):
     source_dir = 'fileupload/{0}/{1}.{2}'.format(username, file_name[:-3], FILE_SUFFIX)
     destin_dir = 'playgame/lib_ai/{0}.{1}'.format(pk, FILE_SUFFIX)
     if os.path.isfile(source_dir):
+        if os.path.exists(destin_dir):
+            os.remove(destin_dir)
         open(destin_dir, 'wb').write(open(source_dir, 'rb').read())
         return True
     else:
@@ -203,14 +205,21 @@ def run_allgame():
                     f.write('../lib_ai/{0}.so\n'.format(ai2.strip()))
                     f.write('../lib_ai/{0}.so\n'.format(ai3.strip()))
                     f.write('../lib_ai/{0}.so\n'.format(ai4.strip()))
+                    f.write(record.AI1_name.strip() + '\n')
+                    f.write(record.AI1_name.strip() + '\n')
+                    f.write(record.AI1_name.strip() + '\n')
+                    f.write(record.AI1_name.strip() + '\n')
+
                 # Launch main logic, using shell
                 os.system('./run_logic')
                 # Copy record file is possible
                 source_dir = '/home/songjh/playgame/log_json/log.json'
                 destin_dir = '/home/songjh/gamerecord/{0}'.format(record.filename)
+                destin_dir2 = '/home/songjh/static/gamerecord/{0}'.format(record.filename)
                 if os.path.exists(source_dir):
                     record.state = 'Success'
                     open(destin_dir, 'wb').write(open(source_dir, 'rb').read())
+                    open(destin_dir2, 'wb').write(open(source_dir, 'rb').read())
                     os.remove(source_dir)
                 else:
                     record.state = 'Failure'

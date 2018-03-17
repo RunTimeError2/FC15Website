@@ -44,7 +44,7 @@ urlpatterns = [
     url(r'^unfinished/$', FC15.views.unfinished, name = 'unfinished'),
     url(r'^ui/$', FC15.views.ui, name = 'ui'),
     url(r'^sdkdownload/$', FC15.views.sdkdownload, name = 'sdkdownload'),
-    #url(r'^activateagain/$', FC15.views.activateagain, name = 'activateagain'),
+    url(r'^activateagain/$', FC15.views.activateagain, name = 'activateagain'),
  
     #url(r'^execode/$', FC15.views.exe_code, name = 'exe_code'),
 

@@ -109,13 +109,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+#USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
@@ -135,16 +135,16 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
 #)
 #STATIC_ROOT = posixpath.join(*(BASE_DIR.split(os.path.sep) + ['static']))
 
-# Settings for QQ mailbox (which is mine), as a temporary substitude for the SMTP server
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # Use Tsinghua Mailbox if internet access is not available
-EMAIL_HOST = 'mails.tsinghua.edu.cn'
-EMAIL_PORT = 25
+#EMAIL_HOST = 'mails.tsinghua.edu.cn'
+#EMAIL_PORT = 25
+EMAIL_HOST = 'smtp.tsinghua.edu.cn'
+EMAIL_PORT = 465
 EMAIL_HOST_USER = 'songjh16@mails.tsinghua.edu.cn'
 EMAIL_HOST_PASSWORD = 'MyPw4THinfo$'
 EMAIL_SUBJECT_PREFIX = '[FC15]'
-EMAIL_USE_TLS = True
+#EMAIL_USE_TLS = True
+EMAIL_USE_SSL = True
 DEFAULT_EMAIL_FROM = 'songjh16@mails.tsinghua.edu.cn'
-
-#from FC15.models import FileInfo
