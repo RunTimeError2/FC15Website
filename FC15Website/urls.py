@@ -43,9 +43,12 @@ urlpatterns = [
     url(r'^playgame/$', FC15.views.playgame, name = 'playgame'),
     url(r'^unfinished/$', FC15.views.unfinished, name = 'unfinished'),
     url(r'^ui/$', FC15.views.ui, name = 'ui'),
-    url(r'^sdkdownload/$', FC15.views.sdkdownload, name = 'sdkdownload'),
     url(r'^activateagain/$', FC15.views.activateagain, name = 'activateagain'),
  
+    # Download files
+    url(r'^sdkdownload/$', FC15.views.sdkdownload, name = 'sdkdownload'),
+    url(r'^download_manual/$', FC15.views.download_manual, name = 'download_manual'),
+    url(r'^download_0318ppt/$', FC15.views.download_0318ppt, name = 'download_0318ppt'),
     #url(r'^execode/$', FC15.views.exe_code, name = 'exe_code'),
 
     # Error pages

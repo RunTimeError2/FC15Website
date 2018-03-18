@@ -1,3 +1,4 @@
+#coding=utf-8
 import os, time, random
 import threading
 from FC15.models import FileInfo, AIInfo, GameRecord

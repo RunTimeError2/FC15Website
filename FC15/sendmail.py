@@ -1,3 +1,4 @@
+#coding=utf-8
 from FC15.models import EmailActivate, PasswordReset, UserInfo
 from django.core.mail import send_mail
 from FC15Website.settings import DEFAULT_EMAIL_FROM

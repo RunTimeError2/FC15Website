@@ -1,3 +1,4 @@
+#coding=utf-8
 from django.shortcuts import render, get_object_or_404, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect, StreamingHttpResponse
 from django.template import RequestContext
@@ -1068,6 +1069,35 @@ def sdkdownload(request):
     response['Content-Type'] = 'application/octet-stream'  
     response['Content-Disposition'] = 'attachment;filename="{0}"'.format('User_Package_v1.0.zip')
     return response
+
+
+# Download file of a specific path, and it can replace function 'sdkdownload'
+def downloadfile(path, _name, request):
+    def file_iterator(file_name, chunk_size = 2048):  
+        with open(file_name, 'rb') as f:  
+            while True:  
+                c = f.read(chunk_size)  
+                if c:
+                    yield c
+                else:
+                    break  
+
+    if os.path.exists(path):
+        response = StreamingHttpResponse(file_iterator(path))  
+        response['Content-Type'] = 'application/octet-stream'  
+        response['Content-Disposition'] = 'attachment;filename="{0}"'.format(_name)
+        return response
+    else:
+        flash(request, 'Error', 'File does not exist.', 'error')
+        return HttpResponseRedirect('/document/')
+
+
+def download_manual(request):
+    return downloadfile('static/FC15参赛手册.pdf', 'FC15参赛手册.pdf', request)
+
+
+def download_0318ppt(request):
+    return downloadfile('static/0318说明会.pdf', '0318说明会.pdf', request)
 
 
 def sendmailtest(request):

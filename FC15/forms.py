@@ -1,3 +1,4 @@
+#coding=utf-8
 from django import forms
 from django.contrib import messages
 from FC15.models import UserInfo, FileInfo, BlogPost, TeamInfo

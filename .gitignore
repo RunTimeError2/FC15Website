@@ -3,8 +3,10 @@ __pycache__/
 *.py[cod] 
 *$py.class 
 
+cmd.exe # It is used only for debugging in windows
+
 # C extensions 
-*.so 
+#*.so #*.so is needed when main_logic is running, so they may help test such functions
 
 # Distribution / packaging 
 .Python
