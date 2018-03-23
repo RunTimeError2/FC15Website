@@ -1,6 +1,6 @@
 #coding=utf-8
 from django.shortcuts import render, get_object_or_404, render_to_response
-from django.http import HttpResponse, HttpResponseRedirect, StreamingHttpResponse
+from django.http import HttpResponse, HttpResponseRedirect, StreamingHttpResponse, JsonResponse
 from django.template import RequestContext
 from django.contrib import messages
 
@@ -101,6 +101,11 @@ def regist(request):
                     #return HttpResponse('Error! The username already exists')
 
                 existing_realname = UserInfo.objects.filter(realname__exact = realname, activated = True)
+                realname_invalid = False
+                if existing_realname:
+                    for user in existing_realname:
+                        if user.activated:
+                            existing_realname = True;
                 if existing_realname:
                     flash(request, 'Error', 'The realname already exists!', 'error')
                     return render(request, 'regist.html', {'form': userform})
@@ -1145,7 +1150,7 @@ def activateagain(request):
 
 
 # Processing regist post from another website
-#@csrf_exempt
+@csrf_exempt
 def postregist(request):
     if request.method == 'POST':
         username = request.POST.get('name', '')
@@ -1153,23 +1158,45 @@ def postregist(request):
         password = request.POST.get('pwd', '')
         realname = request.POST.get('realname', '')
         email = request.POST.get('email', '')
-        if re.match(r'\d{10}', student_ID) and re.search(r'tsinghua.edu.cn'):
+        #if re.match(r'\d{10}', student_ID) and re.search(r'tsinghua.edu.cn'):
             # Valid information
-            new_user = UserInfo()
-            new_user.username = username
-            new_user.password = password
-            new_user.email = email
-            new_user.stu_number = student_ID
-            new_user.realname = realname
-            if EMAIL_ACTIVATE:
-                new_user.activated = False
-                mail_activate(email, username)
-            else:
-                new_user.activated = True
-            new_user.save()
-            print('Received regist info username = {0}, email = {1}'.format(username, email))
+        for user in UserInfo.objects.filter(username__exact = username):
+            if user.activated:
+                return JsonResponse({'success': False, 'message': 'The username already exists.'})
+
+        for user in UserInfo.objects.filter(realname__exact = realname):
+            if user.activated:
+                return JsonResponse({'success': False, 'message': 'The realname already exists.'})
+
+        for user in UserInfo.objects.filter(email__exact = email):
+            if user.activated:
+                return JsonResponse({'success': False, 'message': 'The email has already been in use.'})
+
+        for user in UserInfo.objects.filter(stu_number__exact = student_ID):
+            if user.activated:
+                return JsonResponse({'success': False, 'message': 'The student ID already exists.'})
+
+        if TSINGHUA_ONLY:
+            low_email = email.lower()
+            if len(low_email) < 15 or low_email[-15:] != 'tsinghua.edu.cn':
+                return JsonResponse({'success': False, 'message': 'Only email addresses of Tsinghua Mailbox will be accepted.'})
+
+        if len(student_ID) != 10 or student_ID.isdigit() == False:
+            return JsonResponse({'success': False, 'message': 'The student ID is invalid.'})
+
+        new_user = UserInfo()
+        new_user.username = username
+        new_user.password = password
+        new_user.email = email
+        new_user.stu_number = student_ID
+        new_user.realname = realname
+        if EMAIL_ACTIVATE:
+            new_user.activated = False
+            mail_activate(email, username)
         else:
-            print('Invalid user info!')
-        return HttpResponse('Success')
+            new_user.activated = True
+        new_user.save()
+        print('Received regist info username = {0}, email = {1}'.format(username, email))
+        return JsonResponse({'success': True, 'message': ''})
     else:
-        return HttpResponse('Invalid information')
+        return JsonResponse({'success': False, 'message': 'The method of http request is not POST'})
