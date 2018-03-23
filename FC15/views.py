@@ -10,6 +10,7 @@ from FC15.sendmail import mail_activate, password_reset, random_string
 from FC15.forms import flash
 from FC15.oj import run, copy_all_exe, play_game, delete_exe, FILE_SUFFIX, run_game_queue, run_allgame
 import time, os, random
+from django.views.decorators.csrf import csrf_exempt
 
 
 AUTO_COMPILE = True
@@ -1141,3 +1142,34 @@ def activateagain(request):
     else:
         print('tmp_username == None')
         return HttpResponseRedirect('/login/')
+
+
+# Processing regist post from another website
+#@csrf_exempt
+def postregist(request):
+    if request.method == 'POST':
+        username = request.POST.get('name', '')
+        student_ID = request.POST.get('studentID', '')
+        password = request.POST.get('pwd', '')
+        realname = request.POST.get('realname', '')
+        email = request.POST.get('email', '')
+        if re.match(r'\d{10}', student_ID) and re.search(r'tsinghua.edu.cn'):
+            # Valid information
+            new_user = UserInfo()
+            new_user.username = username
+            new_user.password = password
+            new_user.email = email
+            new_user.stu_number = student_ID
+            new_user.realname = realname
+            if EMAIL_ACTIVATE:
+                new_user.activated = False
+                mail_activate(email, username)
+            else:
+                new_user.activated = True
+            new_user.save()
+            print('Received regist info username = {0}, email = {1}'.format(username, email))
+        else:
+            print('Invalid user info!')
+        return HttpResponse('Success')
+    else:
+        return HttpResponse('Invalid information')

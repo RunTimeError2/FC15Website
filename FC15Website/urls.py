@@ -44,6 +44,9 @@ urlpatterns = [
     url(r'^unfinished/$', FC15.views.unfinished, name = 'unfinished'),
     url(r'^ui/$', FC15.views.ui, name = 'ui'),
     url(r'^activateagain/$', FC15.views.activateagain, name = 'activateagain'),
+
+    # Register information from another website
+    url(r'^postregist/$', FC15.views.postregist, name = 'postregist'),
  
     # Download files
     url(r'^sdkdownload/$', FC15.views.sdkdownload, name = 'sdkdownload'),
