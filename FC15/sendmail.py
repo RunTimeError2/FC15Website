@@ -22,6 +22,12 @@ def random_string(str_length = 50):
 
 # Add a record and send a mail to activate accounts
 def mail_activate(email_address, username):
+    # Delete old info
+    old_items = EmailActivate.objects.filter(username__exact = username)
+    if old_items:
+        for item in old_items:
+            item.delete()
+
     email_activate = EmailActivate()
     email_activate.username = username
     randstring = random_string(str_length = 50)
@@ -36,8 +42,9 @@ def mail_activate(email_address, username):
     email_body = 'Please click the link to activate your account for FC15:\nhttp://' + SERVER_URL + '/'
     email_body += 'mailactivate/' + email_activate.activate_string
     # Use a new thread to send email so that the page won't lag
-    t = threading.Thread(target = send_mail, args = (email_title, email_body, DEFAULT_EMAIL_FROM, [email_address],))
-    t.start()
+    #t = threading.Thread(target = send_mail, args = (email_title, email_body, DEFAULT_EMAIL_FROM, [email_address],))
+    #t.start()
+    send_mail(email_title, email_body, 'songjh16@mails.tsinghua.edu.cn', [email_address, ], fail_silently = False)
 
 
 def send_mail_to_mine():

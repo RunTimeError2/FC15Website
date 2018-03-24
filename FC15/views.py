@@ -46,6 +46,9 @@ def login(request):
             if user:
                 user_exact = UserInfo.objects.get(username = username, password = password)
                 if user_exact.activated:
+                    if user_exact.banned:
+                        flash(request, 'Error', 'Your account has been banned!')
+                        return HttpResponseRedirect('/home/')
                     response = HttpResponseRedirect('/index/')
                     # User will automatically login within 1 hour
                     response.set_cookie('username', username, 3600)
@@ -1185,17 +1188,21 @@ def postregist(request):
             return JsonResponse({'success': False, 'message': 'The student ID is invalid.'})
 
         existing_username = UserInfo.objects.filter(username__exact = username, activated = False)
-        for item in existing_username:
-            item.delete()
+        if existing_username:
+            for item in existing_username:
+                item.delete()
         existing_email = UserInfo.objects.filter(email__exact = email, activated = False)
-        for item in existing_email:
-            item.delete()
+        if existing_email:
+            for item in existing_email:
+                item.delete()
         existing_stunumber = UserInfo.objects.filter(stu_number__exact = student_ID, activated = False)
-        for item in existing_stunumber:
-            item.delete()
+        if existing_stunumber:
+            for item in existing_stunumber:
+                item.delete()
         existing_realname = UserInfo.objects.filter(realname__exact = realname, activated = False)
-        for item in existing_realname:
-            item.delete()
+        if existing_realname:s
+            for item in existing_realname:
+                item.delete()
 
         new_user = UserInfo()
         new_user.username = username
@@ -1214,3 +1221,31 @@ def postregist(request):
         return JsonResponse({'success': True, 'message': ''})
     else:
         return JsonResponse({'success': False, 'message': 'The method of http request is not POST'})
+
+
+# Send email again to accounts that are not activated yet
+def activateall(request):
+    username = request.COOKIES.get('username', '')
+    if username != 'RunTimeError2':
+        return render(request, 'page404.html')
+    users = UserInfo.objects.all()
+    if users:
+        for user in users:
+            if user.activated == False:
+                mail_activate(user.email, user.username)
+    return HttpResponse('Successfully send!')
+
+
+# Export all usre infomation to .txt file
+def export_userinfo(request):
+    username = request.COOKIES.get('username', '')
+    if username != 'RunTimeError2':
+        return render(request, 'page404.html')
+    print('Exporting all user info to .txt file')
+    file_path = '/home/songjh/FC15/userinfo.txt'
+    users = UserInfo.objects.all()
+    with open(file_path, 'w') as f:
+        if users:
+            for usr in UserRegistForm:
+                f.write('{0}\n{1}\n{2}\n{3}\n{4}\n{5}\n'.format(user.usrename, user.realname, user.password, user.stu_number, user.email, user.team))
+    return HttpResponse('Successfully exported.')
