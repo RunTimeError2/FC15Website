@@ -1184,6 +1184,19 @@ def postregist(request):
         if len(student_ID) != 10 or student_ID.isdigit() == False:
             return JsonResponse({'success': False, 'message': 'The student ID is invalid.'})
 
+        existing_username = UserInfo.objects.filter(username__exact = username, activated = False)
+        for item in existing_username:
+            item.delete()
+        existing_email = UserInfo.objects.filter(email__exact = email, activated = False)
+        for item in existing_email:
+            item.delete()
+        existing_stunumber = UserInfo.objects.filter(stu_number__exact = student_ID, activated = False)
+        for item in existing_stunumber:
+            item.delete()
+        existing_realname = UserInfo.objects.filter(realname__exact = realname, activated = False)
+        for item in existing_realname:
+            item.delete()
+
         new_user = UserInfo()
         new_user.username = username
         new_user.password = password
@@ -1196,6 +1209,7 @@ def postregist(request):
         else:
             new_user.activated = True
         new_user.save()
+
         print('Received regist info username = {0}, email = {1}'.format(username, email))
         return JsonResponse({'success': True, 'message': ''})
     else:
