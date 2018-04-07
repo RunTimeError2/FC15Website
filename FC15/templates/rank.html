@@ -1,0 +1,75 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+
+<h2 style="margin: auto;">AIs available of your team</h2>
+<table class="table" style="margin-left: 10%; width: 80%;">
+    <thead>
+        <tr>
+            <th>Index</th>
+            <th>File Name</th>
+            <th>Description</th>
+            <th>Author</th>
+            <th>Timestamp</th>
+            <th>    </th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in AI %}
+            <tr>
+                <td>{{ item.pk }}</td>
+                <td>{{ item.filename }}</td>
+                <td>{{ item.description }}</td>
+                <td>{{ item.username }}</td>
+                <td>{{ item.timestamp }}</td>
+                <td>
+                    {% if is_captain %}
+                        {% if item.selected %}
+                            <a href="{% url 'disselectai' pk=item.pk %}">
+                                <el-button type="warning">Disselect</el-button>
+                            </a>
+                        {% else %}
+                            <a href="{% url 'selectai' pk=item.pk %}">
+                                <el-button type="primary">Select</el-button>
+                            </a>
+                        {% endif %}
+                    {% else %}
+                        {% if item.selected %}
+                            <el-tag type="success">Selected</el-tag>
+                        {% else %}
+                            <el-tag type="info">Unselected</el-tag>
+                        {% endif %}
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<hr />
+
+<h2 style="margin: auto;">Current ranking</h2>
+<table class="table" style="margin-left: 10%; width: 80%;">
+    <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Team Name</th>
+            <th>Captain</th>
+            <th>Description</th>
+            <th>Score</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in rank %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ item.teamname }}</td>
+                <td>{{ item.captain }}</td>
+                <td>{{ item.description }}</td>
+                <td>{{ item.score }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

@@ -1,7 +1,10 @@
-#coding=utf-8
 from django.db import models
 from django.contrib import admin
 import time, random, os
+
+
+def user_dirpath():
+    return ''
 
 
 # Model which stores information of users
@@ -13,6 +16,7 @@ class UserInfo(models.Model):
     email = models.EmailField()
     team = models.CharField(max_length = 100, default = '', null = True, blank = True)
     activated = models.BooleanField(default = False)
+    banned = models.BooleanField(default = False)
 
     def __unicode__(self):
         return self.username
@@ -29,6 +33,9 @@ class TeamInfo(models.Model):
     captain = models.CharField(max_length = 100)
     introduction = models.CharField(max_length = 500)
     members = models.IntegerField(default = 0)
+    AI_selected = models.IntegerField(default = 0)
+    rank = models.IntegerField(default = 0)
+    score = models.IntegerField(default = 0)
 
 
 # Determines how to display class TeamInfo in tables for admin
@@ -59,8 +66,9 @@ class FileInfo(models.Model):
     origin_name = models.CharField(max_length = 255, default = filename)
     exact_name = models.CharField(max_length = 255, default = origin_name)
     timestamp = models.DateTimeField()
+    selected = models.BooleanField(default = False)
 
-    is_compiled = models.CharField(max_length = 50, default = 'Not compiled')
+    is_compiled = models.CharField(max_length = 50, default = '')
     is_compile_success = models.CharField(max_length = 50, default = '')
     compile_result = models.CharField(max_length = 4096, default = '')
 

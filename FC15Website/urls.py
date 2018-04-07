@@ -44,6 +44,7 @@ urlpatterns = [
     url(r'^unfinished/$', FC15.views.unfinished, name = 'unfinished'),
     url(r'^ui/$', FC15.views.ui, name = 'ui'),
     url(r'^activateagain/$', FC15.views.activateagain, name = 'activateagain'),
+    url(r'^rank/$', FC15.views.rank, name = 'rank'),
 
     # Register information from another website
     url(r'^postregist/$', FC15.views.postregist, name = 'postregist'),
@@ -75,6 +76,8 @@ urlpatterns = [
     url(r'^acceptrequest/(?P<pk>[0-9]+)/$', FC15.views.acceptrequest, name = 'acceptrequest'),
     url(r'^rejectrequest/(?P<pk>[0-9]+)/$', FC15.views.rejectrequest, name = 'rejectrequest'),
     url(r'^replay/(?P<pk>[0-9]+)/$', FC15.views.replay, name = 'replay'),
+    url(r'^selectai/(?P<pk>[0-9]+)/$', FC15.views.selectai, name = 'selectai'),
+    url(r'^disselectai/(?P<pk>[0-9]+)/$', FC15.views.disselectai, name = 'disselectai'),
 
     # Admin page
 	url(r'^admin/', admin.site.urls),

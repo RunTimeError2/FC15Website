@@ -37,7 +37,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 INSTALLED_APPS = [
     'FC15',
-    'corsheaders',
+    #'corsheaders',
 
     'django.contrib.admin',
     'django.contrib.auth',

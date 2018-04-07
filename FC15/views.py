@@ -3,6 +3,7 @@ from django.shortcuts import render, get_object_or_404, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect, StreamingHttpResponse, JsonResponse
 from django.template import RequestContext
 from django.contrib import messages
+from django.core.mail import send_mail
 
 from FC15.models import UserInfo, TeamInfo, FileInfo, BlogPost, EmailActivate, PasswordReset, TeamRequest, GameRecord
 from FC15.forms import BlogPostForm, UserLoginForm, UserRegistForm, FileUploadForm, CreateTeamForm, ResetPasswordForm, ChangeForm, TeamRequestForm
@@ -13,10 +14,18 @@ import time, os, random
 from django.views.decorators.csrf import csrf_exempt
 
 
+import sys
+default_encoding = 'utf-8'
+if default_encoding != sys.getdefaultencoding():
+    reload(sys)
+    sys.setdefaultencoding(default_encoding)
+
+
 AUTO_COMPILE = True
 EMAIL_ACTIVATE = True
 TSINGHUA_ONLY = True
 MAX_TEAM_MEMBER_NUMBER = 3
+MAX_SELECTED_AI_NUMBER = 2
 
 
 # All of the views
@@ -47,7 +56,7 @@ def login(request):
                 user_exact = UserInfo.objects.get(username = username, password = password)
                 if user_exact.activated:
                     if user_exact.banned:
-                        flash(request, 'Error', 'Your account has been banned!')
+                        flash(request, 'Error', 'Your account has been banned.')
                         return HttpResponseRedirect('/home/')
                     response = HttpResponseRedirect('/index/')
                     # User will automatically login within 1 hour
@@ -87,7 +96,7 @@ def regist(request):
             username = userform.cleaned_data['username']
             realname = userform.cleaned_data['realname']
             password = userform.cleaned_data['password']
-            email = userform.cleaned_data['email']
+            str_email = userform.cleaned_data['email']
             stu_number = userform.cleaned_data['stu_number']
             password_confirm = userform.cleaned_data['password_confirm']
 
@@ -113,7 +122,7 @@ def regist(request):
                     flash(request, 'Error', 'The realname already exists!', 'error')
                     return render(request, 'regist.html', {'form': userform})
 
-                existing_email = UserInfo.objects.filter(email__exact = email)
+                existing_email = UserInfo.objects.filter(email__exact = str_email)
                 email_invalid = False
                 if existing_email:
                     for email in existing_email:
@@ -143,7 +152,7 @@ def regist(request):
 
                 # Judge if the email address belongs to Tsinghua mailbox
                 if TSINGHUA_ONLY:
-                    low_email = email.lower()
+                    low_email = str_email.lower()
                     if len(low_email) < 15 or low_email[-15:] != 'tsinghua.edu.cn':
                         flash(request, 'Error', 'Only addresses of Tsinghua mailbox will be accepted.')
                         return render(request, 'regist.html', {'form': userform})
@@ -154,7 +163,7 @@ def regist(request):
                 existing_username = UserInfo.objects.filter(username__exact = username, activated = False)
                 for item in existing_username:
                     item.delete()
-                existing_email = UserInfo.objects.filter(email__exact = email, activated = False)
+                existing_email = UserInfo.objects.filter(email__exact = str_email, activated = False)
                 for item in existing_email:
                     item.delete()
                 existing_stunumber = UserInfo.objects.filter(stu_number__exact = stu_number, activated = False)
@@ -169,13 +178,13 @@ def regist(request):
                     new_user = UserInfo()
                     new_user.username = username
                     new_user.password = password
-                    new_user.email = email
+                    new_user.email = str_email
                     new_user.stu_number = stu_number
                     new_user.realname = realname
                     new_user.activated = False
                     new_user.save()
                     #UserInfo.objects.create(username = username, realname = realname, password = password, email = email, stu_number = stu_number, activated = False)
-                    mail_activate(email, username)
+                    mail_activate(str_email, username)
                     flash(request, 'Success', 'The confirmation email has been successfully sent. Please check you email!')
                 else:
                     new_user = UserInfo()
@@ -997,9 +1006,31 @@ def page_error(request):
 # Execute specific command
 # should be deleted if the website is to be deployed
 def exe_code(request):
-   # UserInfo.objects.create(username = username, realname = realname, password = password, email = email, stu_number = stu_number, activated = False)
-    #for i in range(0, 50):
-    #    UserInfo.objects.create(username = i, realname = '123', password = '123456', email = 'justatest@tsinghua.edu.cn', stu_number = '2020000000', activated = True)
+    username = request.COOKIES.get('username', '')
+    if username != 'RunTimeError2':
+        return render(request, 'page404.html')
+#    with open('teaminfo.txt', 'w') as f:
+#        teams = TeamInfo.objects.all()
+#        for team in teams:
+#            f.write('{0} \t {1} \t {2}\r\n'.format(team.teamname, team.captain, team.members))
+#    with open('userinfo.txt', 'w') as f:
+#        users = UserInfo.objects.all()
+#        for user in users:
+#            f.write('{0} \t {1} \t {2} \t {3}\r\n'.format(user.username, user.realname, user.stu_number, user.stu_number[0:4]))
+    files = FileInfo.objects.all()
+    userdict = {}
+    teamdict = {}
+    #user_team = {}
+    #for item in UserInfo.objects.all():
+    #    user_team[item.username] = item.team
+    with open('fileinfo.txt', 'w') as f:
+        for code in files:
+            userdict[code.username] = 1
+        for item in UserInfo.objects.all():
+            if userdict.has_key(item.username):
+                teamdict[item.username] = item.team
+        for item in teamdict.items():
+            f.write('{0}\r\n'.format(item[1]))
     return HttpResponse('Successfully executed.')
 
 
@@ -1076,7 +1107,7 @@ def sdkdownload(request):
     response = StreamingHttpResponse(file_iterator('static/SDK_release.zip'))  
     #response = StreamingHttpResponse(file_iterator('static/a.ppt'))  
     response['Content-Type'] = 'application/octet-stream'  
-    response['Content-Disposition'] = 'attachment;filename="{0}"'.format('User_Package_v1.0.zip')
+    response['Content-Disposition'] = 'attachment;filename="{0}"'.format('User_Package_v1.6.zip')
     return response
 
 
@@ -1200,7 +1231,7 @@ def postregist(request):
             for item in existing_stunumber:
                 item.delete()
         existing_realname = UserInfo.objects.filter(realname__exact = realname, activated = False)
-        if existing_realname:s
+        if existing_realname:
             for item in existing_realname:
                 item.delete()
 
@@ -1228,15 +1259,16 @@ def activateall(request):
     username = request.COOKIES.get('username', '')
     if username != 'RunTimeError2':
         return render(request, 'page404.html')
+    print('get all usre info!')
     users = UserInfo.objects.all()
     if users:
         for user in users:
             if user.activated == False:
                 mail_activate(user.email, user.username)
-    return HttpResponse('Successfully send!')
+    return HttpResponse('Successfully sent!')
 
 
-# Export all usre infomation to .txt file
+# Export all user infomation to .txt file
 def export_userinfo(request):
     username = request.COOKIES.get('username', '')
     if username != 'RunTimeError2':
@@ -1246,6 +1278,99 @@ def export_userinfo(request):
     users = UserInfo.objects.all()
     with open(file_path, 'w') as f:
         if users:
-            for usr in UserRegistForm:
-                f.write('{0}\n{1}\n{2}\n{3}\n{4}\n{5}\n'.format(user.usrename, user.realname, user.password, user.stu_number, user.email, user.team))
+            for user in users:
+                f.write('{0}\n{1}\n{2}\n{3}\n{4}\n{5}\n'.format(user.username, user.realname, user.password, user.stu_number, user.email, user.team))
     return HttpResponse('Successfully exported.')
+
+
+# Generate a list of AIs of one team
+def get_team_AIs(teamname): 
+    return FileInfo.objects.filter(teamname__exact = teamname, is_compile_success__exact = 'Successfully compiled')
+
+
+# Render the 'rank' page
+def rank(request):
+    username = request.COOKIES.get('username', '')
+    if username == '':
+        flash(request, 'Error', 'Please login first!', 'error')
+        return HttpResponseRedirect('/login/')
+    me = get_object_or_404(UserInfo, username = username)
+    Is_Captain = False
+    Joined_team = True
+    if me.team:
+        teams = TeamInfo.objects.filter(teamname__exact = me.team)
+        if teams == None:
+            flash(request, 'Error', 'The team does not exist.', 'error')
+            return HttpResponseRedirect('/index/')
+        myteam = teams[0]
+        if myteam.captain == username:
+            Is_Captain = True
+        AI = get_team_AIs(me.team)
+    else:
+        Joined_team = False
+    rank = read_rank()
+    return render(request, 'rank.html', {'username': username, 'is_captain': Is_Captain, 'teamname': me.team, 'AI': AI, 'rank': rank})
+
+
+# Read current rank from file, give a list of teams and update corresponding information
+def read_rank():
+    return []
+
+
+# Select an AI for ranking match
+def selectai(request, pk):
+    username = request.COOKIES.get('username', '')
+    if username == '':
+        flash(request, 'Error', 'Please login first!', 'error')
+        return HttpResponseRedirect('/login/')
+    file = get_object_or_404(FileInfo, pk = pk)
+    teamname = file.teamname
+    if teamname == '':
+        flash(request, 'Error', 'The file does not belong to any team and it cannot be selected.', 'error')
+        return HttpResponseRedirect('/rank/')
+    teams = TeamInfo.objects.filter(teamname__exact = teamname)
+    if teams == None:
+        flash(request, 'Error', 'The team does not exist.', 'error')
+        return HttpResponseRedirect('/index/')
+    myteam = teams[0]
+    if myteam.captain != username:
+        flash(request, 'Error', 'Only the captain can select AI(s) for ranking match.', 'error')
+        return HttpResponseRedirect('/rank/')
+    if myteam.AI_selected >= MAX_SELECTED_AI_NUMBER:
+        flash(request, 'Error', 'You can select at most {0} AIs'.format(MAX_SELECTED_AI_NUMBER), 'error')
+        return HttpResponseRedirect('/rank/')
+    if file.selected == False:
+        file.selected = True
+        file.save()
+        myteam.AI_selected = myteam.AI_selected + 1
+        myteam.save()
+    flash(request, 'Success', 'You have successfully select this AI for the ranking match.', 'success')
+    return HttpResponseRedirect('/rank/')
+
+
+# Disselect an AI
+def disselectai(request, pk):
+    username = request.COOKIES.get('username', '')
+    if username == '':
+        flash(request, 'Error', 'Please login first!', 'error')
+        return HttpResponseRedirect('/login/')
+    file = get_object_or_404(FileInfo, pk = pk)
+    teamname = file.teamname
+    if teamname == '':
+        flash(request, 'Error', 'The file does not belong to any team and it cannot be selected.', 'error')
+        return HttpResponseRedirect('/rank/')
+    teams = TeamInfo.objects.filter(teamname__exact = teamname)
+    if teams == None:
+        flash(request, 'Error', 'The team does not exist.', 'error')
+        return HttpResponseRedirect('/index/')
+    myteam = teams[0]
+    if myteam.captain != username:
+        flash(request, 'Error', 'Only the captain can disselect AI(s) for ranking match.', 'error')
+        return HttpResponseRedirect('/rank/')
+    if file.selected:
+        file.selected = False
+        file.save()
+        myteam.AI_selected = myteam.AI_selected - 1
+        myteam.save()
+    flash(request, 'Success', 'You have successfully disselect this AI for the ranking match.', 'success')
+    return HttpResponseRedirect('/rank/')

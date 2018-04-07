@@ -1,12 +1,12 @@
 #coding=utf-8
-import os, time, random
+import os, time, random, signal
 import threading
 from FC15.models import FileInfo, AIInfo, GameRecord
+import sys
+
 from queue import Queue # Python3
 #from Queue import Queue # Python2
 
-
-#import sys
 #reload(sys)
 #sys.setdefaultencoding('utf-8')
 
@@ -122,6 +122,7 @@ def copy_exe(username, file_name):
 def store_exe(username, file_name, pk):
     global FILE_SUFFIX
     global COMPILE_MODE
+    #print('Storing exe: {0}'.format(file_name))
     source_dir = 'fileupload/{0}/{1}.{2}'.format(username, file_name[:-3], FILE_SUFFIX)
     destin_dir = 'playgame/lib_ai/{0}.{1}'.format(pk, FILE_SUFFIX)
     if os.path.isfile(source_dir):
@@ -143,6 +144,9 @@ def delete_exe(file_object):
 
 # Compile all the file
 def compile_all():
+    def handler(signum, frame):
+        raise AssertionError
+
     global IS_RUNNING
     if IS_RUNNING == 0:
         return
@@ -151,8 +155,11 @@ def compile_all():
         is_done = False
         all_file = FileInfo.objects.all()
         for file in all_file:
+            #print('Compiling AI: {0}'.format(file.filename))
             if file.is_compiled == 'Not compiled':
+                #print('Compiling AI: {0}'.format(file.filename))
                 is_done = True
+                #failure = False
                 copy_result = copy_file(file.username, file.exact_name)
                 if copy_result:
                     # use visual studio to compile the project
@@ -162,9 +169,21 @@ def compile_all():
                     if COMPILE_MODE == 'G++':
                         #compile_result = os.system('g++ AI_SDK/definition.cpp AI_SDK/ai.cpp -o AI_SDK/ai.' + FILE_SUFFIX)
                         #compile_result = os.system('g++ -std=c++11 AI_SDK/definition.cpp AI_SDK/ai.cpp -fPIC -shared -o ai.so')
-                        compile_result = os.system('./compile_ai') # use shell 
+                        
+                        compile_result = os.system('./compile_ai') # use shell
+                        #try:
+                        #    signal.signal(signal.SIGALRM, handler)
+                        #    signal.alarm(5)
+                        #    compile_result = os.system('./compile_ai') # use shell to compile ai
+                        #    signal.alarm(0)
+                        #except AssertionError:
+                        #    failure = True
                     file.is_compiled = 'Compiled'
                 #if compile_result == 0:
+                #if failure:
+                #    if os.path.exists('AI_SDK/ai.so'):
+                #        os.remove('AI_SDK/ai.so')
+
                 if os.path.exists('AI_SDK/ai.so'):
                     file.is_compile_success = 'Successfully compiled'
                     copy_exe(file.username, file.exact_name)
@@ -186,7 +205,7 @@ def run_allgame():
         all_record = GameRecord.objects.all()
         for record in all_record:
             # ==========================================
-            print('Currently running: username={0}, timestamp={1}'.format(record.username, record.timestamp))
+            #print('Currently running: username={0}, timestamp={1}'.format(record.username, record.timestamp))
 
             if record.state == 'Unstarted':
                 is_done = True
@@ -197,7 +216,7 @@ def run_allgame():
                 # Edit config file
                 file = '/home/songjh/playgame/config_gnu.ini'
 
-                print('Running game, with ai_list = [{0}, {1}, {2}, {3}], username = {4}'.format(ai1, ai2, ai3, ai4, record.username))
+                #print('Running game, with ai_list = [{0}, {1}, {2}, {3}], username = {4}'.format(ai1, ai2, ai3, ai4, record.username))
 
                 with open(file, 'w') as f:
                     f.write('../map/map_2.txt\n')
@@ -207,9 +226,9 @@ def run_allgame():
                     f.write('../lib_ai/{0}.so\n'.format(ai3.strip()))
                     f.write('../lib_ai/{0}.so\n'.format(ai4.strip()))
                     f.write(record.AI1_name.strip() + '\n')
-                    f.write(record.AI1_name.strip() + '\n')
-                    f.write(record.AI1_name.strip() + '\n')
-                    f.write(record.AI1_name.strip() + '\n')
+                    f.write(record.AI2_name.strip() + '\n')
+                    f.write(record.AI3_name.strip() + '\n')
+                    f.write(record.AI4_name.strip() + '\n')
 
                 # Launch main logic, using shell
                 os.system('./run_logic')
@@ -241,8 +260,8 @@ def play_game(ai_list, username):
     queue_item = SingleGameInfo()
     queue_item.ai_list = ai_list
     queue_item.username = username
-    print('Queue add: username={0}, ai_list='.format(username)) #+=======================
-    print(ai_list)
+    #print('Queue add: username={0}, ai_list='.format(username)) #+=======================
+    #print(ai_list)
     GAME_QUEUE.put(queue_item)
     if GAME_RUNNING == 0:
         GAME_RUNNING = 1
@@ -260,9 +279,9 @@ def launch_game(ai_list, username):
     result_runtimeerror = 1
 
     os.system('./run_logic') #=======================================
-    print('current_run: ai_list=')
-    print(ai_list)
-    print('username={0}'.format(username))
+    #print('current_run: ai_list=')
+    #print(ai_list)
+    #print('username={0}'.format(username))
     #cmd = exe_path
 #    if ai_list:
 #        # genereate command to launch logic
