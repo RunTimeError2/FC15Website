@@ -34,8 +34,6 @@ class TeamInfo(models.Model):
     introduction = models.CharField(max_length = 500)
     members = models.IntegerField(default = 0)
     AI_selected = models.IntegerField(default = 0)
-    rank = models.IntegerField(default = 0)
-    score = models.IntegerField(default = 0)
 
 
 # Determines how to display class TeamInfo in tables for admin
@@ -67,6 +65,8 @@ class FileInfo(models.Model):
     exact_name = models.CharField(max_length = 255, default = origin_name)
     timestamp = models.DateTimeField()
     selected = models.BooleanField(default = False)
+    rank = models.IntegerField(default = 0)
+    score = models.IntegerField(default = 0)
 
     is_compiled = models.CharField(max_length = 50, default = '')
     is_compile_success = models.CharField(max_length = 50, default = '')

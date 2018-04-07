@@ -55,6 +55,7 @@ urlpatterns = [
     url(r'^download_0318ppt/$', FC15.views.download_0318ppt, name = 'download_0318ppt'),
     #url(r'^execode/$', FC15.views.exe_code, name = 'exe_code'),
     url(r'^activateall/$', FC15.views.activateall, name = 'activateall'),
+    url(r'^ranking_match/$', FC15.views.ranking_match, name = 'ranking_match'),
 
     # Error pages
     url(r'^404/$', FC15.views.page_not_found, name = 'pagenotfount'),

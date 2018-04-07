@@ -1285,7 +1285,7 @@ def export_userinfo(request):
 
 # Generate a list of AIs of one team
 def get_team_AIs(teamname): 
-    return FileInfo.objects.filter(teamname__exact = teamname, is_compile_success__exact = 'Successfully compiled')
+    return FileInfo.objects.filter(teamname__exact = teamname, is_compile_success__exact = 'Successfully compiled', is_compiled__exact = 'Compiled')
 
 
 # Render the 'rank' page
@@ -1312,9 +1312,27 @@ def rank(request):
     return render(request, 'rank.html', {'username': username, 'is_captain': Is_Captain, 'teamname': me.team, 'AI': AI, 'rank': rank})
 
 
-# Read current rank from file, give a list of teams and update corresponding information
+# Read current rank from file, give a list of AIs
 def read_rank():
-    return []
+    if os.path.exists('playgame/result_ranking.txt'):
+        pass
+    else:
+        return []
+    ans = []
+    i = 0
+    f = open('result_ranking.txt', 'r')
+    line1 = f.readline()
+    line2 = f.readline()
+    while line1:
+        if line1 != 'random':
+            pk = line1.strip()
+            files = FileInfo.objects.filter(pk = pk)
+            if files:
+                file = files[0]
+                ans.append(file)
+        line1 = f.readline()
+        line2 = f.readline()
+    return ans
 
 
 # Select an AI for ranking match
@@ -1374,3 +1392,44 @@ def disselectai(request, pk):
         myteam.save()
     flash(request, 'Success', 'You have successfully disselect this AI for the ranking match.', 'success')
     return HttpResponseRedirect('/rank/')
+
+
+# Run the ranking match (An interface with logic)
+def ranking_match(request):
+    username = request.COOKIES.get('username', '')
+    if username != 'RunTimeError2':
+        return render(request, 'page404.html')
+
+    # Write configuration file
+    AIs = FileInfo.objects.filter(selected = True)
+    with open('playgame/config_ranking.ini', 'w') as f:
+        f.write('../map/map_2.txt')
+        num = len(AIs)
+        if num % 4 > 0:
+            num = num - num % 4 + 4
+        f.write(num + '\n')
+        for item in AIs:
+            f.write('../lib_ai/{0}.{1}\n'.format(item.pk, FILE_SUFFIX))
+        if len(AIs) % 4 > 0:
+            for i in range(4 - len(AIs)):
+                f.write('../lib_ai/random.{1}'.format(FILE_SUFFIX))
+
+    # Run logic with shell
+
+    # Read result file and update information
+    i = 0
+    f = open('result_ranking.txt', 'r')
+    line1 = f.readline()
+    line2 = f.readline()
+    while line1:
+        if line1 != 'random':
+            pk = line1.strip()
+            files = FileInfo.objects.filter(pk = pk)
+            if files:
+                i = i + 1
+                file = files[0]
+                file.rank = i
+                file.score = line2.strip()
+                file.save()
+        line1 = f.readline()
+        line2 = f.readline()
