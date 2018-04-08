@@ -28,7 +28,7 @@ urlpatterns = [
     url(r'^index/$', FC15.views.index, name = 'index'),
     url(r'^login/$', FC15.views.login, name = 'login'),
     url(r'^logout/$', FC15.views.logout, name = 'logout'),
-    url(r'^regist/$', FC15.views.regist, name = 'regist'),
+    #url(r'^regist/$', FC15.views.regist, name = 'regist'),
     url(r'^upload/$', FC15.views.upload, name = 'upload'),
     url(r'^postblog/$', FC15.views.postblog, name = 'postblog'),
     url(r'^viewblogs/$', FC15.views.viewblogs, name = 'viewblogs'),
@@ -56,6 +56,7 @@ urlpatterns = [
     #url(r'^execode/$', FC15.views.exe_code, name = 'exe_code'),
     url(r'^activateall/$', FC15.views.activateall, name = 'activateall'),
     url(r'^ranking_match/$', FC15.views.ranking_match, name = 'ranking_match'),
+    url(r'^saveresult/$', FC15.views.saveresult, name = 'saveresult'),
 
     # Error pages
     url(r'^404/$', FC15.views.page_not_found, name = 'pagenotfount'),

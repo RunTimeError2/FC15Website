@@ -1320,12 +1320,13 @@ def read_rank():
         return []
     ans = []
     i = 0
-    f = open('result_ranking.txt', 'r')
+    f = open('playgame/result_ranking.txt', 'r')
     line1 = f.readline()
     line2 = f.readline()
     while line1:
-        if line1 != 'random':
+        if line1[:6] != 'random':
             pk = line1.strip()
+            pk = pk[:-3]
             files = FileInfo.objects.filter(pk = pk)
             if files:
                 file = files[0]
@@ -1407,29 +1408,63 @@ def ranking_match(request):
         num = len(AIs)
         if num % 4 > 0:
             num = num - num % 4 + 4
-        f.write(num + '\n')
+        #f.write(num + '\n')
+        f.write('30\n')
         for item in AIs:
             f.write('../lib_ai/{0}.{1}\n'.format(item.pk, FILE_SUFFIX))
         if len(AIs) % 4 > 0:
             for i in range(4 - len(AIs)):
-                f.write('../lib_ai/random.{1}'.format(FILE_SUFFIX))
+                f.write('../lib_ai/random.{0}'.format(FILE_SUFFIX))
 
+    print('Tournament start!')
     # Run logic with shell
+    os.system('./run_tournament')
 
     # Read result file and update information
     i = 0
-    f = open('result_ranking.txt', 'r')
+    f = open('playgame/result_ranking.txt', 'r')
     line1 = f.readline()
     line2 = f.readline()
     while line1:
         if line1 != 'random':
             pk = line1.strip()
+            pk = pk[:-3]
             files = FileInfo.objects.filter(pk = pk)
+            print('result! line1={0}, line2={1}'.format(line1, line2))
             if files:
                 i = i + 1
                 file = files[0]
                 file.rank = i
                 file.score = line2.strip()
                 file.save()
+                print('pk = {0}, score = {1}'.format(pk, line2.strip()))
         line1 = f.readline()
         line2 = f.readline()
+    return HttpResponse('Successfully finished.')
+
+
+# Read result file and save the results to database
+def saveresult(request):
+    username = request.COOKIES.get('username', '')
+    if username != 'RunTimeError2':
+        return render(request, 'page404.html')
+    i = 0
+    f = open('playgame/result_ranking.txt', 'r')
+    line1 = f.readline()
+    line2 = f.readline()
+    while line1:
+        if line1 != 'random':
+            pk = line1.strip()
+            pk = pk[:-3]
+            files = FileInfo.objects.filter(pk = pk)
+            print('result! line1={0}, line2={1}'.format(line1, line2))
+            if files:
+                i = i + 1
+                file = files[0]
+                file.rank = i
+                file.score = line2.strip()
+                file.save()
+                print('pk = {0}, score = {1}'.format(pk, line2.strip()))
+        line1 = f.readline()
+        line2 = f.readline()
+    return HttpResponse('Successfully read data.')
