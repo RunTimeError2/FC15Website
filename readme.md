@@ -1,6 +1,6 @@
 # This is the website for FC15
 > created by RunTimeError2, 2017-10-17 11:56
-latest update: 2018-4-9 0:25
+latest update: 2018-4-9 12:35
 
 Now the website has been released.
 We will keep testing it and fixing bugs.

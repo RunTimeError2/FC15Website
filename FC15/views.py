@@ -1404,7 +1404,8 @@ def ranking_match(request):
     # Write configuration file
     AIs = FileInfo.objects.filter(selected = True)
     with open('playgame/config_ranking.ini', 'w') as f:
-        f.write('../map/map_2.txt')
+        f.write('../map/map_2.txt\n')
+        f.write('../lib_ai/random.so\n')
         num = len(AIs)
         if num % 4 > 0:
             num = num - num % 4 + 4
@@ -1468,3 +1469,27 @@ def saveresult(request):
         line1 = f.readline()
         line2 = f.readline()
     return HttpResponse('Successfully read data.')
+
+
+# Prepare AI list for the tournament
+def preparetournament(request):
+    username = request.COOKIES.get('username', '')
+    if username != 'RunTimeError2':
+        return render(request, 'page404.html')
+
+    # Write configuration file
+    AIs = FileInfo.objects.filter(selected = True)
+    with open('playgame/config_ranking.ini', 'w') as f:
+        f.write('../map/map_2.txt\n')
+        f.write('../lib_ai/random.so\n')
+        num = len(AIs)
+        if num % 4 > 0:
+            num = num - num % 4 + 4
+        #f.write(num + '\n')
+        f.write('30\n')
+        for item in AIs:
+            f.write('../lib_ai/{0}.{1}\n'.format(item.pk, FILE_SUFFIX))
+        if len(AIs) % 4 > 0:
+            for i in range(4 - len(AIs)):
+                f.write('../lib_ai/random.{0}'.format(FILE_SUFFIX))
+    return HttpResponse('Successfully prepared.')

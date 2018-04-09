@@ -57,6 +57,7 @@ urlpatterns = [
     url(r'^activateall/$', FC15.views.activateall, name = 'activateall'),
     url(r'^ranking_match/$', FC15.views.ranking_match, name = 'ranking_match'),
     url(r'^saveresult/$', FC15.views.saveresult, name = 'saveresult'),
+    url(r'^preparetournament/$', FC15.views.preparetournament, name = 'preparetournament'),
 
     # Error pages
     url(r'^404/$', FC15.views.page_not_found, name = 'pagenotfount'),
