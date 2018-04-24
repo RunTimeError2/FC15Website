@@ -9,7 +9,7 @@ from FC15.models import UserInfo, TeamInfo, FileInfo, BlogPost, EmailActivate, P
 from FC15.forms import BlogPostForm, UserLoginForm, UserRegistForm, FileUploadForm, CreateTeamForm, ResetPasswordForm, ChangeForm, TeamRequestForm
 from FC15.sendmail import mail_activate, password_reset, random_string
 from FC15.forms import flash
-from FC15.oj import run, copy_all_exe, play_game, delete_exe, FILE_SUFFIX, run_game_queue, run_allgame
+from FC15.oj import run, copy_all_exe, play_game, delete_exe, FILE_SUFFIX, run_game_queue, run_allgame, IS_RUNNING
 import time, os, random
 from django.views.decorators.csrf import csrf_exempt
 
@@ -1626,6 +1626,13 @@ def compileall(request):
     username = request.COOKIES.get('username', '')
     if username != 'RunTimeError2':
         return render(request, 'page404.html')
+    for item in FileInfo.objects.all():
+        if item.is_compile_success and item.is_compiled == 'Not compiled':
+            item.is_compiled = 'Compiled'
+            item.save()
+    global IS_RUNNING
+    if IS_RUNNING:
+        return HttpResponse('The process is already running')
     run()
     return HttpResponse('The compile_all request has been sent.')
 

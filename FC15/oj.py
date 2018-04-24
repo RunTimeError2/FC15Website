@@ -169,8 +169,11 @@ def compile_all():
                     if COMPILE_MODE == 'G++':
                         #compile_result = os.system('g++ AI_SDK/definition.cpp AI_SDK/ai.cpp -o AI_SDK/ai.' + FILE_SUFFIX)
                         #compile_result = os.system('g++ -std=c++11 AI_SDK/definition.cpp AI_SDK/ai.cpp -fPIC -shared -o ai.so')
-                        
-                        compile_result = os.system('./compile_ai') # use shell
+                        if file.is_compile_success == '':
+                            compile_result = os.system('./compile_ai') # use shell
+                        else:
+                            file.is_compiled = 'Compiled'
+                        file.save()
                         #try:
                         #    signal.signal(signal.SIGALRM, handler)
                         #    signal.alarm(5)
@@ -183,14 +186,16 @@ def compile_all():
                 #if failure:
                 #    if os.path.exists('AI_SDK/ai.so'):
                 #        os.remove('AI_SDK/ai.so')
-
-                if os.path.exists('AI_SDK/ai.so'):
-                    file.is_compile_success = 'Successfully compiled'
-                    copy_exe(file.username, file.exact_name)
-                    store_exe(file.username, file.exact_name, file.pk)
-                    os.remove('AI_SDK/ai.so')
+                if file.is_compile_success == '':
+                    if os.path.exists('AI_SDK/ai.so'):
+                        file.is_compile_success = 'Successfully compiled'
+                        copy_exe(file.username, file.exact_name)
+                        store_exe(file.username, file.exact_name, file.pk)
+                        os.remove('AI_SDK/ai.so')
+                    else:
+                        file.is_compile_success = 'Compile Error'
                 else:
-                    file.is_compile_success = 'Compile Error'
+                    file.is_compiled = 'Compiled'
                 file.save()
     IS_RUNNING = 0
 

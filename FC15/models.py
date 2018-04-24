@@ -68,9 +68,9 @@ class FileInfo(models.Model):
     rank = models.IntegerField(default = 0)
     score = models.IntegerField(default = 0)
 
-    is_compiled = models.CharField(max_length = 50, default = '')
-    is_compile_success = models.CharField(max_length = 50, default = '')
-    compile_result = models.CharField(max_length = 4096, default = '')
+    is_compiled = models.CharField(max_length = 50, default = '', null = True, blank = True)
+    is_compile_success = models.CharField(max_length = 50, default = '', null = True, blank = True)
+    compile_result = models.CharField(max_length = 4096, default = '', null = True, blank = True)
 
     def __unicode__(self):
         return self.filename
