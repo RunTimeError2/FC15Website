@@ -177,6 +177,22 @@ class TeamRequestAdmin(admin.ModelAdmin):
     list_display = ('username', 'destin_team', 'status')
 
 
+# Ranking list
+class RankingList(models.Model):
+    rank = models.IntegerField(default = 0)
+    index = models.IntegerField(default = 0)
+    name = models.CharField(max_length = 100, default = '')
+    author = models.CharField(max_length = 100)
+    teamname = models.CharField(max_length = 100, null = True, blank = True, default = '')
+    description = models.CharField(max_length = 1000, null = True, blank = True, default = '')
+    score = models.IntegerField(default = 0)
+
+
+# Determines how to display class RankingList in table for admin
+class RankingListAdmin(admin.ModelAdmin):
+    list_display = ('rank', 'index', 'author', 'teamname', 'score')
+
+
 # Register all the models to admin
 admin.site.register(UserInfo, UserInfoAdmin)
 admin.site.register(TeamInfo, TeamInfoAdmin)
@@ -187,3 +203,4 @@ admin.site.register(BlogPost, BlogPostAdmin)
 admin.site.register(EmailActivate, EmailActivateAdmin)
 admin.site.register(PasswordReset, PasswordResetAdmin)
 admin.site.register(TeamRequest, TeamRequestAdmin)
+admin.site.register(RankingList, RankingListAdmin)

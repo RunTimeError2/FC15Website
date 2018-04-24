@@ -43,6 +43,7 @@ urlpatterns = [
     url(r'^playgame/$', FC15.views.playgame, name = 'playgame'),
     url(r'^unfinished/$', FC15.views.unfinished, name = 'unfinished'),
     url(r'^ui/$', FC15.views.ui, name = 'ui'),
+    url(r'^ui_old/$', FC15.views.ui_old, name = 'ui_old'),
     url(r'^activateagain/$', FC15.views.activateagain, name = 'activateagain'),
     url(r'^rank/$', FC15.views.rank, name = 'rank'),
 
@@ -53,11 +54,19 @@ urlpatterns = [
     url(r'^sdkdownload/$', FC15.views.sdkdownload, name = 'sdkdownload'),
     url(r'^download_manual/$', FC15.views.download_manual, name = 'download_manual'),
     url(r'^download_0318ppt/$', FC15.views.download_0318ppt, name = 'download_0318ppt'),
+    url(r'^download_dll/$', FC15.views.download_dll, name = 'download_dll'),
+
+    # Commands for developers only
     #url(r'^execode/$', FC15.views.exe_code, name = 'exe_code'),
     url(r'^activateall/$', FC15.views.activateall, name = 'activateall'),
     url(r'^ranking_match/$', FC15.views.ranking_match, name = 'ranking_match'),
     url(r'^saveresult/$', FC15.views.saveresult, name = 'saveresult'),
     url(r'^preparetournament/$', FC15.views.preparetournament, name = 'preparetournament'),
+    url(r'^collectcpp/$', FC15.views.collectcpp, name = 'collectcpp'),
+    url(r'^downloadcppzip/$', FC15.views.downloadcppzip, name = 'downloadcppzip'),
+    url(r'^downloadallcpp/$', FC15.views.downloadallcpp, name = 'downloadallcpp'),
+    url(r'^compileall/$', FC15.views.compileall, name = 'compileall'),
+    url(r'^restrictainumber/$', FC15.views.restrictainumber, name = 'restrictainumber'),
 
     # Error pages
     url(r'^404/$', FC15.views.page_not_found, name = 'pagenotfount'),

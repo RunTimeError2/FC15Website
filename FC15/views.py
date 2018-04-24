@@ -5,7 +5,7 @@ from django.template import RequestContext
 from django.contrib import messages
 from django.core.mail import send_mail
 
-from FC15.models import UserInfo, TeamInfo, FileInfo, BlogPost, EmailActivate, PasswordReset, TeamRequest, GameRecord
+from FC15.models import UserInfo, TeamInfo, FileInfo, BlogPost, EmailActivate, PasswordReset, TeamRequest, GameRecord, RankingList
 from FC15.forms import BlogPostForm, UserLoginForm, UserRegistForm, FileUploadForm, CreateTeamForm, ResetPasswordForm, ChangeForm, TeamRequestForm
 from FC15.sendmail import mail_activate, password_reset, random_string
 from FC15.forms import flash
@@ -25,7 +25,7 @@ AUTO_COMPILE = True
 EMAIL_ACTIVATE = True
 TSINGHUA_ONLY = True
 MAX_TEAM_MEMBER_NUMBER = 3
-MAX_SELECTED_AI_NUMBER = 2
+MAX_SELECTED_AI_NUMBER = 1
 
 
 # All of the views
@@ -422,6 +422,15 @@ def fileedit(request, pk):
         return HttpResponseRedirect('/index/')
         #return HttpResponse('Error! You can only edit your own file.')
     if request.method == 'POST':
+        selected = file.selected
+        me = get_object_or_404(UserInfo, username = username)
+        teams = TeamInfo.objects.filter(teamname__exact = me.team)
+        if teams and selected:
+            myteam = teams[0]
+            if myteam.AI_selected > 0:
+                myteam.AI_selected = myteam.AI_selected - 1
+                myteam.save()
+
         userform = FileUploadForm(request.POST, request.FILES)
 
         #limit the size and type of file to be uploaded
@@ -454,6 +463,7 @@ def fileedit(request, pk):
             file.is_compiled = 'Not compiled'
             file.is_compile_success = ''
             file.compile_result = ''
+            file.selected = False
             file.save()
             flash(request, 'Success', 'You have successfully edited the file', 'success')
             global AUTO_COMPILE
@@ -477,6 +487,7 @@ def filedelete(request, pk):
         flash(request, 'Error', 'You can only delete your own file.', 'error')
         return HttpResponseRedirect('/index/')
         #return HttpResponse('Error! You can only delete your own file.')
+    me = get_object_or_404(UserInfo, username = username)
 
     # Delete source file
     if os.path.exists(file.path):
@@ -488,6 +499,12 @@ def filedelete(request, pk):
     # Delete executable file in 'playgame' folder
     if os.path.exists('playgame/{0}.{1}'.format(pk, FILE_SUFFIX)):
         os.remove('playgame/{0}.{1}'.format(pk, FILE_SUFFIX))
+    teamname = me.team
+    if teamname:
+        team = get_object_or_404(TeamInfo, teamname = teamname)
+        if file.selected and team.AI_selected > 0:
+            team.AI_selected = team.AI_selected - 1
+            team.save()
     file.delete()
     flash(request, 'Success', 'You have successfully deleted the file.', 'success')
     return HttpResponseRedirect('/index/')
@@ -1083,6 +1100,12 @@ def ui(request):
     return render(request, 'ui.html', {'path': '', 'username': username})
 
 
+# Launch old ui
+def ui_old(request):
+    username = request.COOKIES.get('username', '')
+    return render(request, 'ui_old.html', {'path': '', 'username': username})
+
+
 # Replay a specific game
 def replay(request, pk):
     record = get_object_or_404(GameRecord, pk = pk)
@@ -1129,7 +1152,7 @@ def downloadfile(path, _name, request):
         return response
     else:
         flash(request, 'Error', 'File does not exist.', 'error')
-        return HttpResponseRedirect('/document/')
+        return HttpResponseRedirect('/home/')
 
 
 def download_manual(request):
@@ -1138,6 +1161,11 @@ def download_manual(request):
 
 def download_0318ppt(request):
     return downloadfile('static/0318说明会.pdf', '0318说明会.pdf', request)
+
+
+def download_dll(request):
+    now = time.strftime('%Y%m%d%H%M%S')
+    return downloadfile('static/AI_dll.rar', 'AI_dll_{0}.rar'.format(now), request)
 
 
 def sendmailtest(request):
@@ -1308,19 +1336,20 @@ def rank(request):
         AI = get_team_AIs(me.team)
     else:
         Joined_team = False
-    rank = read_rank()
+    #rank = read_rank()
+    rank = RankingList.objects.all()
     return render(request, 'rank.html', {'username': username, 'is_captain': Is_Captain, 'teamname': me.team, 'AI': AI, 'rank': rank})
 
 
 # Read current rank from file, give a list of AIs
 def read_rank():
-    if os.path.exists('playgame/result_ranking.txt'):
+    if os.path.exists('playgame/log_txt/result_ranking.txt'):
         pass
     else:
         return []
     ans = []
     i = 0
-    f = open('playgame/result_ranking.txt', 'r')
+    f = open('playgame/log_txt/result_ranking.txt', 'r')
     line1 = f.readline()
     line2 = f.readline()
     while line1:
@@ -1423,13 +1452,19 @@ def ranking_match(request):
 
     # Read result file and update information
     i = 0
-    f = open('playgame/result_ranking.txt', 'r')
+    f = open('playgame/log_txt/result_ranking.txt', 'r')
     line1 = f.readline()
     line2 = f.readline()
+    is_dll = False
+    if line1[:-3] == 'dll':
+        is_dll = True
     while line1:
         if line1 != 'random':
             pk = line1.strip()
-            pk = pk[:-3]
+            if is_dll:
+                pk = pk[:-4]
+            else:
+                pk = pk[:-3]
             files = FileInfo.objects.filter(pk = pk)
             print('result! line1={0}, line2={1}'.format(line1, line2))
             if files:
@@ -1450,22 +1485,41 @@ def saveresult(request):
     if username != 'RunTimeError2':
         return render(request, 'page404.html')
     i = 0
-    f = open('playgame/result_ranking.txt', 'r')
+    f = open('playgame/log_txt/result_ranking.txt', 'r')
     line1 = f.readline()
     line2 = f.readline()
+    # Clear the ranking list
+    RankingList.objects.all().delete()
+    is_dll = False
+    if line1[:-3] == 'dll':
+        is_dll = True
     while line1:
         if line1 != 'random':
+            if line1 == '' or line1 == '\n' or line1 == '\r\n':
+                break
             pk = line1.strip()
-            pk = pk[:-3]
+            if is_dll:
+                pk = pk[:-4]
+            else:
+                pk = pk[:-3]
             files = FileInfo.objects.filter(pk = pk)
-            print('result! line1={0}, line2={1}'.format(line1, line2))
+            #print('result! line1={0}, line2={1}'.format(line1, line2))
             if files:
                 i = i + 1
                 file = files[0]
-                file.rank = i
-                file.score = line2.strip()
-                file.save()
-                print('pk = {0}, score = {1}'.format(pk, line2.strip()))
+                #file.rank = i
+                #file.score = line2.strip()
+                #file.save()
+                #print('pk = {0}, score = {1}'.format(pk, line2.strip()))
+                rank = RankingList()
+                rank.rank = i
+                rank.index = file.pk
+                rank.author = file.username
+                rank.name = file.filename
+                rank.teamname = file.teamname
+                rank.description = file.description
+                rank.score = line2.strip()
+                rank.save()
         line1 = f.readline()
         line2 = f.readline()
     return HttpResponse('Successfully read data.')
@@ -1481,7 +1535,7 @@ def preparetournament(request):
     AIs = FileInfo.objects.filter(selected = True)
     with open('playgame/config_ranking.ini', 'w') as f:
         f.write('../map/map_2.txt\n')
-        f.write('../lib_ai/random.so\n')
+        f.write('../lib_ai/idle.so\n')
         num = len(AIs)
         if num % 4 > 0:
             num = num - num % 4 + 4
@@ -1489,7 +1543,108 @@ def preparetournament(request):
         f.write('30\n')
         for item in AIs:
             f.write('../lib_ai/{0}.{1}\n'.format(item.pk, FILE_SUFFIX))
-        if len(AIs) % 4 > 0:
-            for i in range(4 - len(AIs)):
-                f.write('../lib_ai/random.{0}'.format(FILE_SUFFIX))
-    return HttpResponse('Successfully prepared.')
+            num = num - 1
+        if num > 0:
+            for i in range(num):
+                f.write('../lib_ai/random.{0}\n'.format(FILE_SUFFIX))
+        #if len(AIs) % 4 > 0:
+        #    for i in range(4 - len(AIs)):
+        #        f.write('../lib_ai/random.{0}'.format(FILE_SUFFIX))
+    return HttpResponse('Successfully prepared. Number of AIs: {0}'.format(num))
+
+
+# Collect all .cpp file
+def collectcpp(request):
+    username = request.COOKIES.get('username', '')
+    if username != 'RunTimeError2':
+        return render(request, 'page404.html')
+    files = FileInfo.objects.all()
+    for file in files:
+        if file.is_compile_success == 'Successfully compiled':
+            source_dir = file.path
+            destin_dir = 'playgame/cpps/{0}.cpp'.format(file.pk)
+            if os.path.exists(source_dir):
+                open(destin_dir, 'wb').write(open(source_dir, 'rb').read())
+    return HttpResponse('Successfully collected')
+
+
+# Collect all .cpp file and download zip
+def downloadcppzip(request):
+    username = request.COOKIES.get('username', '')
+    if username != 'RunTimeError2' and username != '千叶':
+        return render(request, 'page404.html')
+    os.system('rm playgame/cpps/*')
+    files = FileInfo.objects.all()
+    for file in files:
+        if file.is_compile_success == 'Successfully compiled':
+            source_dir = file.path
+            destin_dir = 'playgame/cpps/{0}.cpp'.format(file.pk)
+            if os.path.exists(source_dir):
+                open(destin_dir, 'wb').write(open(source_dir, 'rb').read())
+    os.system('zip -r static/all_cpp.zip playgame/cpps/*')
+    now = time.strftime('%Y%m%d%H%M%S')
+    return downloadfile('static/all_cpp.zip', 'all_cpp_{0}.zip'.format(now), request)
+
+
+# Collect all .cpp file selected for the ranking match and download zip
+def downloadcppzip(request):
+    username = request.COOKIES.get('username', '')
+    if username != 'RunTimeError2' and username != '千叶':
+        return render(request, 'page404.html')
+    os.system('rm playgame/cpps/*')
+    files = FileInfo.objects.all()
+    for file in files:
+        if file.is_compile_success == 'Successfully compiled' and file.selected == True:
+            source_dir = file.path
+            destin_dir = 'playgame/cpps/{0}.cpp'.format(file.pk)
+            if os.path.exists(source_dir):
+                open(destin_dir, 'wb').write(open(source_dir, 'rb').read())
+    os.system('zip -r static/all_cpp.zip playgame/cpps/*')
+    now = time.strftime('%Y%m%d%H%M%S')
+    return downloadfile('static/all_cpp.zip', 'all_cpp_tournament_{0}.zip'.format(now), request)
+
+
+# Collect all compiled .cpp file and download zip
+def downloadallcpp(request):
+    username = request.COOKIES.get('username', '')
+    if username != 'RunTimeError2' and username != '千叶':
+        return render(request, 'page404.html')
+    os.system('rm playgame/cpps/*')
+    files = FileInfo.objects.all()
+    for file in files:
+        if file.is_compile_success == 'Successfully compiled':
+            source_dir = file.path
+            destin_dir = 'playgame/cpps/{0}.cpp'.format(file.pk)
+            if os.path.exists(source_dir):
+                open(destin_dir, 'wb').write(open(source_dir, 'rb').read())
+    os.system('zip -r static/all_cpp.zip playgame/cpps/*')
+    now = time.strftime('%Y%m%d%H%M%S')
+    return downloadfile('static/all_cpp.zip', 'all_cpp_{0}.zip'.format(now), request)
+
+
+def compileall(request):
+    username = request.COOKIES.get('username', '')
+    if username != 'RunTimeError2':
+        return render(request, 'page404.html')
+    run()
+    return HttpResponse('The compile_all request has been sent.')
+
+
+# restrict the number of AIs each team
+def restrictainumber(request):
+    username = request.COOKIES.get('username', '')
+    if username != 'RunTimeError2':
+        return render(request, 'page404.html')
+    all_team = TeamInfo.objects.all()
+    all_ai = FileInfo.objects.all()
+    for item in all_team:
+        while item.AI_selected >= 2:
+            for ai in all_ai:
+                if ai.teamname == item.teamname and ai.selected:
+                    if item.AI_selected >= 2:
+                        ai.selected = False
+                        item.AI_selected = item.AI_selected - 1
+                    ai.save()
+                    item.save()
+                    break
+    return HttpResponse('Successfully finished.')

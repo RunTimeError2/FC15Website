@@ -61,6 +61,7 @@
     <thead>
         <tr>
             <th>Rank</th>
+            <th>Index</th>
             <th>Name</th>
             <th>Author</th>
             <th>Team Name</th>
@@ -71,9 +72,16 @@
     <tbody>
         {% for item in rank %}
             <tr>
-                <td>{{ forloop.counter }}</td>
+                <!--<td>{{ forloop.counter }}</td>
                 <td>{{ item.filename }}</td>
                 <td>{{ item.username }}</td>
+                <td>{{ item.teamname }}</td>
+                <td>{{ item.description }}</td>
+                <td>{{ item.score }}</td>-->
+                <td>{{ item.rank }}</td>
+                <td>{{ item.index }}</td>
+                <td>{{ item.name }}</td>
+                <td>{{ item.author }}</td>
                 <td>{{ item.teamname }}</td>
                 <td>{{ item.description }}</td>
                 <td>{{ item.score }}</td>

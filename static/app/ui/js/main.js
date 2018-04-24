@@ -26,7 +26,7 @@ var colors = [0x888888, 0x007fff, 0x66FF00, 0x8B00FF, 0x30D5C8, 0xCCCCFF];
 var chartColors = ['#888888', '#007fff', '#66FF00', '#8B00FF', '#30D5C8', '#CCCCFF'];
 var roundTxt;
 var selectedCell = -1;
-var prefix = '/static/app/ui/';
+var prefix = '/static/app/ui_old/';
 
 function loader() {
     if (isPlaying)
