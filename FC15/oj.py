@@ -1,11 +1,11 @@
 #coding=utf-8
 import os, time, random, signal
 import threading
-from FC15.models import FileInfo, AIInfo, GameRecord
+from FC15.models import FileInfo, AIInfo, GameRecord, UserInfo
 import sys
 
-from queue import Queue # Python3
-#from Queue import Queue # Python2
+#from queue import Queue # Python3
+from Queue import Queue # Python2
 
 #reload(sys)
 #sys.setdefaultencoding('utf-8')
@@ -152,40 +152,30 @@ def compile_all():
         return
     is_done = True
     while is_done:
+        print('Compile round running ...') #================================================
         is_done = False
-        all_file = FileInfo.objects.all()
+        all_file = FileInfo.objects.filter(is_compiled__exact = 'Not compiled')
+        if all_file:
+            pass
+        else:
+            break
         for file in all_file:
-            #print('Compiling AI: {0}'.format(file.filename))
+            username = file.username
             if file.is_compiled == 'Not compiled':
-                #print('Compiling AI: {0}'.format(file.filename))
+                print('Compiling AI: name={0}, author={1}'.format(file.filename, file.username)) #================================================
                 is_done = True
-                #failure = False
                 copy_result = copy_file(file.username, file.exact_name)
                 if copy_result:
-                    # use visual studio to compile the project
                     global COMPILE_MODE
                     if COMPILE_MODE == 'VS':
                         compile_result = os.system('devenv cpp_proj/ai.sln /rebuild > result.txt')
                     if COMPILE_MODE == 'G++':
-                        #compile_result = os.system('g++ AI_SDK/definition.cpp AI_SDK/ai.cpp -o AI_SDK/ai.' + FILE_SUFFIX)
-                        #compile_result = os.system('g++ -std=c++11 AI_SDK/definition.cpp AI_SDK/ai.cpp -fPIC -shared -o ai.so')
                         if file.is_compile_success == '':
                             compile_result = os.system('./compile_ai') # use shell
                         else:
                             file.is_compiled = 'Compiled'
                         file.save()
-                        #try:
-                        #    signal.signal(signal.SIGALRM, handler)
-                        #    signal.alarm(5)
-                        #    compile_result = os.system('./compile_ai') # use shell to compile ai
-                        #    signal.alarm(0)
-                        #except AssertionError:
-                        #    failure = True
                     file.is_compiled = 'Compiled'
-                #if compile_result == 0:
-                #if failure:
-                #    if os.path.exists('AI_SDK/ai.so'):
-                #        os.remove('AI_SDK/ai.so')
                 if file.is_compile_success == '':
                     if os.path.exists('AI_SDK/ai.so'):
                         file.is_compile_success = 'Successfully compiled'
@@ -196,8 +186,12 @@ def compile_all():
                         file.is_compile_success = 'Compile Error'
                 else:
                     file.is_compiled = 'Compiled'
-                file.save()
+            file.is_compiled = 'Compiled'
+            file.save()
+            #else:
+            #    file.delete()
     IS_RUNNING = 0
+    print('Round finished ..........')
 
 
 def run_allgame():

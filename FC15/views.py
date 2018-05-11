@@ -6,10 +6,10 @@ from django.contrib import messages
 from django.core.mail import send_mail
 
 from FC15.models import UserInfo, TeamInfo, FileInfo, BlogPost, EmailActivate, PasswordReset, TeamRequest, GameRecord, RankingList
-from FC15.forms import BlogPostForm, UserLoginForm, UserRegistForm, FileUploadForm, CreateTeamForm, ResetPasswordForm, ChangeForm, TeamRequestForm
+from FC15.forms import BlogPostForm, UserLoginForm, UserRegistForm, FileUploadForm, CreateTeamForm, ResetPasswordForm, ChangeForm, TeamRequestForm, ResultUploadForm
 from FC15.sendmail import mail_activate, password_reset, random_string
 from FC15.forms import flash
-from FC15.oj import run, copy_all_exe, play_game, delete_exe, FILE_SUFFIX, run_game_queue, run_allgame, IS_RUNNING
+from FC15.oj import run, copy_all_exe, play_game, delete_exe, FILE_SUFFIX, run_game_queue, run_allgame, IS_RUNNING, compile_all
 import time, os, random
 from django.views.decorators.csrf import csrf_exempt
 
@@ -55,9 +55,6 @@ def login(request):
             if user:
                 user_exact = UserInfo.objects.get(username = username, password = password)
                 if user_exact.activated:
-                    if user_exact.banned:
-                        flash(request, 'Error', 'Your account has been banned.')
-                        return HttpResponseRedirect('/home/')
                     response = HttpResponseRedirect('/index/')
                     # User will automatically login within 1 hour
                     response.set_cookie('username', username, 3600)
@@ -355,6 +352,79 @@ def index(request):
         return render(request, 'userindex.html', {'username': username, 'posts': posts, 'files': files, 'warning': '', 'codes': codes})
 
 
+# Upload the result of ranking
+def resultupload(request):
+    username = request.COOKIES.get('username', '')
+    if username != 'RunTimeError2' and username != '千叶':
+        return render(request, 'pgae404.html')
+    if request.method == 'POST':
+        userform = ResultUploadForm(request.POST, request.FILES)
+        if userform.is_valid():
+            myfile = request.FILES.get('file', None)
+            if myfile:
+                pass
+            else:
+                flash(request, 'Error', 'Invalid file!', 'error')
+                return render(request, 'page500.html')
+            print('result file, name = {0}'.format(myfile.name))
+            f = open('fileupload/result_ranking.txt', 'wb')
+            for chunk in myfile.chunks():
+                f.write(chunk)
+            f.close()
+            #return HttpResponse('uploaded.')
+            #result = ResultInfo()
+            #result.file = userform.cleaned_data['file']
+            #result.timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+            #result.save()
+            validation = checkresult()
+            if validation:
+                source_dir = 'fileupload/result_ranking.txt'
+                destin_dir = 'playgame/log_txt/result_ranking.txt'
+                open(destin_dir, 'wb').write(open(source_dir, 'rb').read())
+                saverankingresult()
+            else:
+                flash(request, 'Error', 'Incorrect file format.', 'error')
+                return render(request, 'page500.html')
+            flash(request, 'Success', 'Result has been successfully uploaded.', 'success')
+            return HttpResponseRedirect('/rank/')
+        else:
+            flash(request, 'Error', 'Invalid file!', 'error')
+            return render(request, 'page500.html')
+    else:
+        userform = FileUploadForm()
+    return render(request, 'resultupload.html', {'username': username, 'form': userform})
+
+
+# Check if the result is valid
+def checkresult():
+    f = open('fileupload/result_ranking.txt', 'r')
+    line1 = f.readline()
+    line2 = f.readline()
+    is_dll = False
+    line1 = line1.strip()
+    if line1[-3:] == 'dll':
+        is_dll = True
+    print('is_dll={0}'.format(is_dll))
+    while line1:
+        if line1 != 'random':
+            if line1 == '' or line1 == '\n' or line1 == '\r\n':
+                break
+            line1 = line1.strip()
+            if is_dll:
+                pk = line1[:-4].strip()
+            else:
+                pk = line1[:-3].strip()
+            score = line2.strip()
+            if pk.isdigit() and score.isdigit():
+                pass
+            else:
+                print('wrong! pk={0}, score={1}'.format(pk, score))
+                return False
+        line1 = f.readline()
+        line2 = f.readline()
+    return True
+
+
 # Uplaod file
 def upload(request):
     username = request.COOKIES.get('username', '')
@@ -389,10 +459,11 @@ def upload(request):
             fileupload.file = userform.cleaned_data['file']
             fileupload.timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
             fileupload.is_compiled = 'Not compiled'
-            fileupload.is_compile_success = ''
+            fileupload.is_compile_success = '' #====================================================================================================
             fileupload.compile_result = ''
             fileupload.save()
-            flash(request, 'Success', 'You have successfully uploaded the code.', 'success')
+            print('Code uploaded. author={0}, name={1}'.format(username, fileupload.filename)) #==========================================================
+            flash(request, 'Success', 'You have successfully uploaded the code.', 'success') 
             global AUTO_COMPILE
             if AUTO_COMPILE:
                 run()
@@ -1026,29 +1097,52 @@ def exe_code(request):
     username = request.COOKIES.get('username', '')
     if username != 'RunTimeError2':
         return render(request, 'page404.html')
-#    with open('teaminfo.txt', 'w') as f:
-#        teams = TeamInfo.objects.all()
-#        for team in teams:
-#            f.write('{0} \t {1} \t {2}\r\n'.format(team.teamname, team.captain, team.members))
-#    with open('userinfo.txt', 'w') as f:
-#        users = UserInfo.objects.all()
-#        for user in users:
-#            f.write('{0} \t {1} \t {2} \t {3}\r\n'.format(user.username, user.realname, user.stu_number, user.stu_number[0:4]))
-    files = FileInfo.objects.all()
-    userdict = {}
-    teamdict = {}
-    #user_team = {}
-    #for item in UserInfo.objects.all():
-    #    user_team[item.username] = item.team
-    with open('fileinfo.txt', 'w') as f:
-        for code in files:
-            userdict[code.username] = 1
-        for item in UserInfo.objects.all():
-            if userdict.has_key(item.username):
-                teamdict[item.username] = item.team
-        for item in teamdict.items():
-            f.write('{0}\r\n'.format(item[1]))
-    return HttpResponse('Successfully executed.')
+    switch = True
+    if switch:
+        codes = FileInfo.objects.filter(selected = True)
+        f = open('list.txt', 'w')
+        for item in codes:
+            f.write('{0}.dll\r\n0\r\n'.format(item.pk))
+        f.close()
+        return HttpResponse('Successfully executed.')
+
+    i = 0
+    f = open('playgame/log_txt/result_ranking.txt', 'r')
+    fout = open('playgame/result_list.txt', 'w')
+    line1 = f.readline()
+    line2 = f.readline()
+    # Clear the ranking list
+    RankingList.objects.all().delete()
+    line1 = line1.strip()
+    is_dll = False
+    if line1[-3:] == 'dll':
+        is_dll = True
+    while line1:
+        if line1 != 'random':
+            if line1 == '' or line1 == '\n' or line1 == '\r\n':
+                break
+            pk = line1.strip()
+            if is_dll:
+                pk = pk[:-4]
+            else:
+                pk = pk[:-3]
+            files = FileInfo.objects.filter(pk = pk)
+            if files:
+                i = i + 1
+                file = files[0]
+                rank = RankingList()
+                rank.rank = i
+                rank.index = file.pk
+                rank.author = file.username
+                rank.name = file.filename
+                rank.teamname = file.teamname
+                rank.description = file.description
+                rank.score = line2.strip()
+                rank.save()
+                fout.write('{0} \t {1} \t {2} \t {3} \t {4} \t {5}\r\n '.format(i, file.pk, file.username, file.filename, file.teamname, file.description))
+        line1 = f.readline()
+        line2 = f.readline()
+    return HttpResponse('Successfully saved.')
 
 
 # Download game record
@@ -1456,7 +1550,7 @@ def ranking_match(request):
     line1 = f.readline()
     line2 = f.readline()
     is_dll = False
-    if line1[:-3] == 'dll':
+    if line1[-3:] == 'dll':
         is_dll = True
     while line1:
         if line1 != 'random':
@@ -1484,14 +1578,21 @@ def saveresult(request):
     username = request.COOKIES.get('username', '')
     if username != 'RunTimeError2':
         return render(request, 'page404.html')
+    saverankingresult()
+    return HttpResponse('Successfully read data.')
+
+
+# Save ranking result
+def saverankingresult():
     i = 0
     f = open('playgame/log_txt/result_ranking.txt', 'r')
     line1 = f.readline()
     line2 = f.readline()
     # Clear the ranking list
     RankingList.objects.all().delete()
+    line1 = line1.strip()
     is_dll = False
-    if line1[:-3] == 'dll':
+    if line1[-3:] == 'dll':
         is_dll = True
     while line1:
         if line1 != 'random':
@@ -1522,7 +1623,6 @@ def saveresult(request):
                 rank.save()
         line1 = f.readline()
         line2 = f.readline()
-    return HttpResponse('Successfully read data.')
 
 
 # Prepare AI list for the tournament
@@ -1624,17 +1724,66 @@ def downloadallcpp(request):
 
 def compileall(request):
     username = request.COOKIES.get('username', '')
-    if username != 'RunTimeError2':
-        return render(request, 'page404.html')
+    #if username != 'RunTimeError2':
+    #    return render(request, 'page404.html')
+    msg = ''
+    num = 0
+    num_notcompiled = 0
+    num_compiled = 0
+    num_success = 0
+    num_failure = 0
     for item in FileInfo.objects.all():
+        num = num + 1
         if item.is_compile_success and item.is_compiled == 'Not compiled':
+            msg = msg + 'Code name={0}, author={1} state modified.<br>'.format(item.filename, item.username)
             item.is_compiled = 'Compiled'
             item.save()
+        if item.is_compiled == 'Not compiled':
+            num_notcompiled = num_notcompiled + 1
+        else:
+            num_compiled = num_compiled + 1
+            if item.is_compile_success == 'Successfully compiled':
+                num_success = num_success + 1
+            else:
+                num_failure = num_failure + 1
+    msg = msg + '<br><br>' + '{0} files in total<br>{1} compiled, {2} not compiled<br>{3} success, {4} failure.'.format(num, num_compiled, num_notcompiled, num_success, num_failure)
     global IS_RUNNING
-    if IS_RUNNING:
-        return HttpResponse('The process is already running')
-    run()
-    return HttpResponse('The compile_all request has been sent.')
+    #if IS_RUNNING:
+    #    return HttpResponse('The process is already running' + '\r\n\r\n' + msg)
+    IS_RUNNING = 1
+    compile_all()
+    if username == 'RunTimeError2':
+        return HttpResponse('The compile_all request has been sent.' + '<br><br>' + msg)
+    else:
+        return render(request, 'page404.html')
+
+
+def processcompile(request):
+    username = request.COOKIES.get('username', '')
+    if username != 'RunTimeError2':
+        return render(request, 'page404.html')
+    msg = ''
+    num = 0
+    num_notcompiled = 0
+    num_compiled = 0
+    num_success = 0
+    num_failure = 0
+    for item in FileInfo.objects.filter(is_compiled__exact = 'Not compiled'):
+        num = num + 1
+        if item.is_compile_success and item.is_compiled == 'Not compiled':
+            msg = msg + 'Code name={0}, author={1} state modified.<br>'.format(item.filename, item.username)
+            item.is_compiled = 'Compiled'
+            item.save()
+        if item.is_compiled == 'Not compiled':
+            num_notcompiled = num_notcompiled + 1
+        else:
+            num_compiled = num_compiled + 1
+            if item.is_compile_success == 'Successfully compiled':
+                num_success = num_success + 1
+            else:
+                num_failure = num_failure + 1
+    msg = msg + '<br><br>' + '{0} files in total<br>{1} compiled, {2} not compiled<br>{3} success, {4} failure.'.format(num, num_compiled, num_notcompiled, num_success, num_failure)
+    return HttpResponse('Successfully finished.<br><br>' + msg)
 
 
 # restrict the number of AIs each team
@@ -1655,3 +1804,21 @@ def restrictainumber(request):
                     item.save()
                     break
     return HttpResponse('Successfully finished.')
+
+
+def export_finallist(request):
+    username = request.COOKIES.get('username', '')
+    if username != 'RunTimeError2':
+        return render(request, 'page404.html')
+    all_team_final = RankingList.objects.all()
+    team_name = []
+    for item in all_team_final:
+        team_name.append(item.teamname)
+    print('all team = {0}'.format(team_name))
+    all_user = UserInfo.objects.all()
+    f = open('all_user_final.txt', 'w')
+    for item in all_user:
+        #if item.team in team_name:
+        f.write('{0} \t {1} \t {2} \t {3} \t {4}\r\n'.format(item.username, item.realname, item.stu_number, item.email, item.team))
+    f.close()
+    return HttpResponse('successfully exported.')

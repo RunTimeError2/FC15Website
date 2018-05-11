@@ -7,6 +7,7 @@ from django.contrib import staticfiles
 from datetime import datetime
 from django.conf.urls import url, handler404, handler500
 import django.contrib.auth.views
+from django.views.generic.base import RedirectView
 
 from django.conf.urls import include
 from django.contrib import admin
@@ -57,7 +58,7 @@ urlpatterns = [
     url(r'^download_dll/$', FC15.views.download_dll, name = 'download_dll'),
 
     # Commands for developers only
-    #url(r'^execode/$', FC15.views.exe_code, name = 'exe_code'),
+    url(r'^execode/$', FC15.views.exe_code, name = 'exe_code'),
     url(r'^activateall/$', FC15.views.activateall, name = 'activateall'),
     url(r'^ranking_match/$', FC15.views.ranking_match, name = 'ranking_match'),
     url(r'^saveresult/$', FC15.views.saveresult, name = 'saveresult'),
@@ -67,6 +68,9 @@ urlpatterns = [
     url(r'^downloadallcpp/$', FC15.views.downloadallcpp, name = 'downloadallcpp'),
     url(r'^compileall/$', FC15.views.compileall, name = 'compileall'),
     url(r'^restrictainumber/$', FC15.views.restrictainumber, name = 'restrictainumber'),
+    url(r'^processcompile/$', FC15.views.processcompile, name = 'processcompile'),
+    url(r'^resultupload/$', FC15.views.resultupload, name = 'resultupload'),
+    url(r'^export_finallist/$', FC15.views.export_finallist, name = 'export_finallist'),
 
     # Error pages
     url(r'^404/$', FC15.views.page_not_found, name = 'pagenotfount'),
@@ -93,6 +97,9 @@ urlpatterns = [
 
     # Admin page
 	url(r'^admin/', admin.site.urls),
+
+    # Favicon
+    url(r'^favicon.ico$',RedirectView.as_view(url=r'static/favicon.ico')),
 ]
 
 # Add static files

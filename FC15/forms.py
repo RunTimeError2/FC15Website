@@ -28,6 +28,10 @@ class FileUploadForm(forms.Form):
     file = forms.FileField()
 
 
+class ResultUploadForm(forms.Form):
+    file = forms.FileField()
+
+
 # For users to post blogs
 class BlogPostForm(forms.Form):
     title = forms.CharField(max_length = 100)

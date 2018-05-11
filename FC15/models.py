@@ -16,7 +16,6 @@ class UserInfo(models.Model):
     email = models.EmailField()
     team = models.CharField(max_length = 100, default = '', null = True, blank = True)
     activated = models.BooleanField(default = False)
-    banned = models.BooleanField(default = False)
 
     def __unicode__(self):
         return self.username
@@ -24,7 +23,7 @@ class UserInfo(models.Model):
 
 # Determines how to display class UserInfo in tables for admin
 class UserInfoAdmin(admin.ModelAdmin):
-    list_display = ('username', 'stu_number', 'email')
+    list_display = ('username', 'realname', 'stu_number', 'team', 'email')
 
 
 # Model which stores information of teams
@@ -75,10 +74,14 @@ class FileInfo(models.Model):
     def __unicode__(self):
         return self.filename
 
+    class Meta:
+        verbose_name = 'FileInfo'
+        ordering = ['-timestamp']
+
 
 # Determines how to display class FileInfo in tables for admin
 class FileInfoAdmin(admin.ModelAdmin):
-    list_display = ('filename', 'username', 'description')
+    list_display = ('filename', 'username', 'is_compiled', 'is_compile_success', 'description')
 
 
 # Model for AI (successfully compiled file)
