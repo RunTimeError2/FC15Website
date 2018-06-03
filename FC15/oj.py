@@ -4,22 +4,14 @@ import threading
 from FC15.models import FileInfo, AIInfo, GameRecord, UserInfo
 import sys
 
-#from queue import Queue # Python3
-from Queue import Queue # Python2
-
-#reload(sys)
-#sys.setdefaultencoding('utf-8')
-
 
 IS_RUNNING = 0
 GAME_RUNNING = 0
 #COMPILE_MODE = 'VS'
 COMPILE_MODE = 'G++'
 FILE_SUFFIX = 'so'
-RECORD_SUFFIX = 'json' # maybe should be changed to 'json'
+RECORD_SUFFIX = 'json'
 DEFAULT_RECORD_FILENAME = 'log.json'
-# FILE_SUFFIX = 'exe'
-GAME_QUEUE = Queue()
 
 
 class SingleGameInfo(object):
@@ -42,49 +34,6 @@ def run_game_queue():
         GAME_RUNNING = 1
         t = threading.Thread(target = run_allgame)
         t.start()
-
-
-# Run all games in the queue, should be put into a new thread
-def run_game():
-    global GAME_RUNNING
-    global GAME_QUEUE
-    if GAME_RUNNING == 0:
-        return
-    while GAME_QUEUE.empty() == False:
-        gameinfo = GAME_QUEUE.get()
-        # Launch game
-        result = launch_game(gameinfo.ai_list, gameinfo.username)
-        # Generate game record
-        record = GameRecord()
-        record.username = gameinfo.username
-        record.timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
-        if result == 0:
-            record.state = 'Success'
-        elif result == -1:
-            record.state = 'Failed to Launch game'
-        elif result == 1:
-            record.state = 'Runtime Error'
-        else:
-            record.state = 'Unknown state'
-        now = time.strftime('%Y%m%d%H%M%S')
-        file_name = 'record{0}_{1}.{2}'.format(now, random.randint(0, 1000), RECORD_SUFFIX)
-        while os.path.exists('gamerecord/{0}'.format(file_name)):
-            file_name = 'record{0}_{1}.{2}'.format(now, random.randint(0, 1000), RECORD_SUFFIX)
-        destin_dir = 'gamerecord/' + file_name
-        source_dir = 'playgame/log_json/' + DEFAULT_RECORD_FILENAME
-        # Copy record file
-        if os.path.exists(source_dir):
-            open(destin_dir, 'wb').write(open(source_dir, 'rb').read())
-            open('static/' + destin_dir, 'wb').write(open(source_dir, 'rb').read())
-            try:
-                os.remove(source_dir) # delete source file, avoid problems when playing game next time (sometimes the sample 'logic' fails to create record file)
-            except:
-                pass
-        else:
-            record.state = 'Failed to Launch game'
-        record.filename = file_name
-        record.save()
-    GAME_RUNNING = 0
 
 
 # Copy file
@@ -122,7 +71,6 @@ def copy_exe(username, file_name):
 def store_exe(username, file_name, pk):
     global FILE_SUFFIX
     global COMPILE_MODE
-    #print('Storing exe: {0}'.format(file_name))
     source_dir = 'fileupload/{0}/{1}.{2}'.format(username, file_name[:-3], FILE_SUFFIX)
     destin_dir = 'playgame/lib_ai/{0}.{1}'.format(pk, FILE_SUFFIX)
     if os.path.isfile(source_dir):
@@ -152,7 +100,7 @@ def compile_all():
         return
     is_done = True
     while is_done:
-        print('Compile round running ...') #================================================
+        print('Compile round running ...')
         is_done = False
         all_file = FileInfo.objects.filter(is_compiled__exact = 'Not compiled')
         if all_file:
@@ -162,7 +110,7 @@ def compile_all():
         for file in all_file:
             username = file.username
             if file.is_compiled == 'Not compiled':
-                print('Compiling AI: name={0}, author={1}'.format(file.filename, file.username)) #================================================
+                print('Compiling AI: name={0}, author={1}'.format(file.filename, file.username))
                 is_done = True
                 copy_result = copy_file(file.username, file.exact_name)
                 if copy_result:
@@ -188,8 +136,6 @@ def compile_all():
                     file.is_compiled = 'Compiled'
             file.is_compiled = 'Compiled'
             file.save()
-            #else:
-            #    file.delete()
     IS_RUNNING = 0
     print('Round finished ..........')
 
@@ -203,9 +149,6 @@ def run_allgame():
         is_done = False
         all_record = GameRecord.objects.all()
         for record in all_record:
-            # ==========================================
-            #print('Currently running: username={0}, timestamp={1}'.format(record.username, record.timestamp))
-
             if record.state == 'Unstarted':
                 is_done = True
                 ai1 = record.AI1
@@ -214,8 +157,6 @@ def run_allgame():
                 ai4 = record.AI4
                 # Edit config file
                 file = '/home/songjh/playgame/config_gnu.ini'
-
-                #print('Running game, with ai_list = [{0}, {1}, {2}, {3}], username = {4}'.format(ai1, ai2, ai3, ai4, record.username))
 
                 with open(file, 'w') as f:
                     f.write('../map/map_2.txt\n')
@@ -259,8 +200,6 @@ def play_game(ai_list, username):
     queue_item = SingleGameInfo()
     queue_item.ai_list = ai_list
     queue_item.username = username
-    #print('Queue add: username={0}, ai_list='.format(username)) #+=======================
-    #print(ai_list)
     GAME_QUEUE.put(queue_item)
     if GAME_RUNNING == 0:
         GAME_RUNNING = 1
@@ -270,39 +209,11 @@ def play_game(ai_list, username):
 
 # Launch logic once
 def launch_game(ai_list, username):
-    #exe_path = 'playgame/bin/main_logic' # should be 'playgame/logic.exe' on Ubuntu
-
-    # parameters and there should be more
     startgame_failure = -1
     result_success = 0
     result_runtimeerror = 1
 
-    os.system('./run_logic') #=======================================
-    #print('current_run: ai_list=')
-    #print(ai_list)
-    #print('username={0}'.format(username))
-    #cmd = exe_path
-#    if ai_list:
-#        # genereate command to launch logic
-#        #for item in ai_list:
-#        #    cmd = cmd + '{0} '.format(item)
-#        # launch logic
-#
-#        CREATE_INI_FILE = True
-#        # Output AI_list to config file
-#        if CREATE_INI_FILE:
-#            f = open('/home/songjh/playgame/config_gnu.ini', 'w')
-#            f.write('../map/map_2.txt\n') # If the map is to change, this line should be changed
-#            f.write('4\n')
-#            for item in ai_list:
-#                f.write('../lib_ai/{0}.so\n'.format(item.strip()))
-#
-#        # Use shell to start main logic or it may fail to read .ini file
-#        result = os.system('./run_logic')
-#        print('Launch: result = {0}'.format(result))
-#        return result
-#    else:
-#        return startgame_failure
+    os.system('./run_logic')
 
 
 def write_log(log_str):

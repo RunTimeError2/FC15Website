@@ -41,9 +41,6 @@ def mail_activate(email_address, username):
     email_title = 'Please activate your account for FC15'
     email_body = 'Please click the link to activate your account for FC15:\nhttp://' + SERVER_URL + '/'
     email_body += 'mailactivate/' + email_activate.activate_string
-    # Use a new thread to send email so that the page won't lag
-    #t = threading.Thread(target = send_mail, args = (email_title, email_body, DEFAULT_EMAIL_FROM, [email_address],))
-    #t.start()
     send_mail(email_title, email_body, 'songjh16@mails.tsinghua.edu.cn', [email_address, ], fail_silently = False)
 
 

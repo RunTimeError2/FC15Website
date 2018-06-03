@@ -51,26 +51,11 @@ urlpatterns = [
     # Register information from another website
     url(r'^postregist/$', FC15.views.postregist, name = 'postregist'),
  
-    # Download files
+    # Download file
     url(r'^sdkdownload/$', FC15.views.sdkdownload, name = 'sdkdownload'),
     url(r'^download_manual/$', FC15.views.download_manual, name = 'download_manual'),
     url(r'^download_0318ppt/$', FC15.views.download_0318ppt, name = 'download_0318ppt'),
     url(r'^download_dll/$', FC15.views.download_dll, name = 'download_dll'),
-
-    # Commands for developers only
-    url(r'^execode/$', FC15.views.exe_code, name = 'exe_code'),
-    url(r'^activateall/$', FC15.views.activateall, name = 'activateall'),
-    url(r'^ranking_match/$', FC15.views.ranking_match, name = 'ranking_match'),
-    url(r'^saveresult/$', FC15.views.saveresult, name = 'saveresult'),
-    url(r'^preparetournament/$', FC15.views.preparetournament, name = 'preparetournament'),
-    url(r'^collectcpp/$', FC15.views.collectcpp, name = 'collectcpp'),
-    url(r'^downloadcppzip/$', FC15.views.downloadcppzip, name = 'downloadcppzip'),
-    url(r'^downloadallcpp/$', FC15.views.downloadallcpp, name = 'downloadallcpp'),
-    url(r'^compileall/$', FC15.views.compileall, name = 'compileall'),
-    url(r'^restrictainumber/$', FC15.views.restrictainumber, name = 'restrictainumber'),
-    url(r'^processcompile/$', FC15.views.processcompile, name = 'processcompile'),
-    url(r'^resultupload/$', FC15.views.resultupload, name = 'resultupload'),
-    url(r'^export_finallist/$', FC15.views.export_finallist, name = 'export_finallist'),
 
     # Error pages
     url(r'^404/$', FC15.views.page_not_found, name = 'pagenotfount'),

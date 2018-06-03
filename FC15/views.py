@@ -65,11 +65,8 @@ def login(request):
                     response.set_cookie('tmp_username', username, 600)
                     flash(request, 'Error', 'This user account has not been activated!', 'error')
                     return response
-                #    return HttpResponse('This user account has not been activated!')
             else:
                 flash(request, 'Error', 'Incorrect username or password, please retry.', 'error')
-                #return HttpResponseRedirect('/login/')
-                #return HttpResponse('Incorrect username or password, please retry.')
     else:
         userform = UserLoginForm()
     return render(request, 'login.html', {'form': userform})
@@ -107,7 +104,6 @@ def regist(request):
                 if username_invalid:
                     flash(request, 'Error', 'The username already exists!', 'error')
                     return render(request, 'regist.html', {'form': userform})
-                    #return HttpResponse('Error! The username already exists')
 
                 existing_realname = UserInfo.objects.filter(realname__exact = realname, activated = True)
                 realname_invalid = False
@@ -128,7 +124,6 @@ def regist(request):
                 if email_invalid:
                     flash(request, 'Error', 'The email address has already been used!', 'error')
                     return render(request, 'regist.html', {'form': userform})
-                    #return HttpResponse('Error! The email address has already been used!')
 
                 # Judge if the student number is valids
                 if stu_number.isdigit() and len(stu_number) == 10:
@@ -180,7 +175,6 @@ def regist(request):
                     new_user.realname = realname
                     new_user.activated = False
                     new_user.save()
-                    #UserInfo.objects.create(username = username, realname = realname, password = password, email = email, stu_number = stu_number, activated = False)
                     mail_activate(str_email, username)
                     flash(request, 'Success', 'The confirmation email has been successfully sent. Please check you email!')
                 else:
@@ -192,11 +186,9 @@ def regist(request):
                     new_user.realname = realname
                     new_user.activated = True
                     new_user.save()
-                    #UserInfo.objects.create(username = username, realname = realname, password = password, email = email, stu_number = stu_number, activated = True)
                     flash(request, 'Success', 'Your account has been successfully created.')
 
                 return HttpResponseRedirect('/login/')
-                #return HttpResponse('Regist success! Please check your email.')
             else:
                 flash(request, 'Error', 'You should enter the same password!')
                 return HttpResponseRedirect('/regist/')
@@ -206,11 +198,6 @@ def regist(request):
     else:
         userform = UserRegistForm()
     return render(request, 'regist.html', {'form': userform})
-
-
-# About page
-#def about(request):
-#    return render(request, 'about.html')
 
 
 # Introduction of game rule
@@ -235,11 +222,9 @@ def document(request):
 
 # Activate account with email
 def activate(request, activate_code):
-    #activate_record = EmailActivate.objects.get(activate_string = activate_code)
     activate_record = get_object_or_404(EmailActivate, activate_string = activate_code)
     if activate_record:
         username = activate_record.username
-        #user = UserInfo.objects.get(username = username)
         user = get_object_or_404(UserInfo, username = username)
         if user:
             user.activated = True
@@ -247,11 +232,9 @@ def activate(request, activate_code):
             activate_record.delete()
             flash(request, 'Success', 'You have successfully activated the account!')
             return HttpResponseRedirect('/login/')
-            #return HttpResponse('You have successfully activated the account!')
         else:
             flash(request, 'Error', 'Invalid activating code!')
             return HttpResponseRedirect('/home/')
-            #return HttpResponse('Invalid activating code!')
     else:
         return HttpResponse('Invalid activating url!')
 
@@ -269,11 +252,9 @@ def resetrequest(request):
                 password_reset(email, username)
                 flash(request, 'Success', 'The email has been send, please check you email!')
                 return HttpResponseRedirect('/home/')
-                #return HttpResponse('Success! Please check your email.')
             else:
                 flash(request, 'Error', 'Incorrect user information!')
                 return HttpResponseRedirect('/resetrequest/')
-                #return HttpResponse('Error! Incorrect user information!')
     else:
         userform = ResetPasswordForm()
     return render(request, 'resetrequest.html', {'username': username, 'form': userform})
@@ -289,11 +270,9 @@ def resetpassword(request, reset_code):
         reset_record.delete()
         flash(request, 'Success', 'Your password has been successfully reset!\nPlease change your password after you login.', 'success')
         return HttpResponseRedirect('/login/')
-        #return HttpResponse('Your password has been successfully reset!\nPlease change your password after you login.')
     else:
         flash(request, 'Error', 'Invalid reset code!', 'error')
         return HttpResponseRedirect('/home/')
-        #return HttpResponse('Error! Invalid reset code!')
 
 
 # Change the password or email
@@ -312,11 +291,9 @@ def change(request):
             if old_password != user.password:
                 flash(request, 'Error', 'Incorrect old password!', 'error')
                 return render(request, 'change.html', {'username': username, 'form': userform})
-                #return HttpResponse('Error! Incorrect old password')
             if new_password != confirm_password:
                 flash(request, 'Error', 'Please enter the same password!', 'error')
                 return render(request, 'change.html', {'username': username, 'form': userform})
-                #return HttpResponse('Error! Please enter the same password')
             user.password = new_password
             user.email = userform.cleaned_data['email']
             user.save()
@@ -334,8 +311,6 @@ def change(request):
 
 # To index page
 def index(request):
-    #return render(request, 'index2.html') #================================================
-    #return render(request, 'index.html')
     username = request.COOKIES.get('username', '')
     if username == '':
         flash(request, 'Error', 'Please login first', 'error')
@@ -371,11 +346,6 @@ def resultupload(request):
             for chunk in myfile.chunks():
                 f.write(chunk)
             f.close()
-            #return HttpResponse('uploaded.')
-            #result = ResultInfo()
-            #result.file = userform.cleaned_data['file']
-            #result.timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
-            #result.save()
             validation = checkresult()
             if validation:
                 source_dir = 'fileupload/result_ranking.txt'
@@ -440,15 +410,12 @@ def upload(request):
                 if myfile.size >= 1048576:
                     flash(request, 'Error', 'File should not be larger than 1 MiB.', 'error')
                     return render(request, 'upload.html', {'username': username, 'form': userform})
-                    #return HttpResponse('Error! File should not be larger than 1 MiB')
                 if myfile.name.endswith('.cpp') == False:
                     flash(request, 'Error', 'Only .cpp file will be accepted.', 'error')
                     return render(request, 'upload.html', {'username': username, 'form': userform})
-                    #return HttpResponse('Error! Only .cpp file will be accepted.')
             else:
                 flash(request, 'Error', 'File does not exist.', 'error')
                 return render(request, 'upload.html', {'username': username, 'form': userform})
-                #return HttpResponse('Error! File does not exist.')
 
             user = get_object_or_404(UserInfo, username = username)
             fileupload = FileInfo()
@@ -459,16 +426,15 @@ def upload(request):
             fileupload.file = userform.cleaned_data['file']
             fileupload.timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
             fileupload.is_compiled = 'Not compiled'
-            fileupload.is_compile_success = '' #====================================================================================================
+            fileupload.is_compile_success = ''
             fileupload.compile_result = ''
             fileupload.save()
-            print('Code uploaded. author={0}, name={1}'.format(username, fileupload.filename)) #==========================================================
+            print('Code uploaded. author={0}, name={1}'.format(username, fileupload.filename))
             flash(request, 'Success', 'You have successfully uploaded the code.', 'success') 
             global AUTO_COMPILE
             if AUTO_COMPILE:
                 run()
             return HttpResponseRedirect('/index/')
-            #return HttpResponse('Upload success!')
         else:
             pass
     else:
@@ -491,7 +457,6 @@ def fileedit(request, pk):
     if username != file.username:
         flash(request, 'Error', 'You can only edit your own file.', 'error')
         return HttpResponseRedirect('/index/')
-        #return HttpResponse('Error! You can only edit your own file.')
     if request.method == 'POST':
         selected = file.selected
         me = get_object_or_404(UserInfo, username = username)
@@ -510,15 +475,12 @@ def fileedit(request, pk):
             if myfile.size >= 1048576:
                 flash(request, 'Error', 'File should not be larger than 1 MiB', 'error')
                 return render(request, 'upload.html', {'username': username, 'form': userform, 'filename': filename, 'description': description})
-                #return HttpResponse('Error! File should not be larger than 1 MiB')
             if myfile.name.endswith('.cpp') == False:
                 flash(request, 'Error', 'Only .cpp file is accepted.', 'error')
                 return render(request, 'upload.html', {'username': username, 'form': userform, 'filename': filename, 'description': description})
-                #return HttpResponse('Error! Only .cpp file is accepted.')
         else:
             flash(request, 'Error', 'File does not exist.', 'error')
             return render(request, 'upload.html', {'username': username, 'form': userform, 'filename': filename, 'description': description})
-            #return HttpResponse('Error! File does not exist.')
 
         if userform.is_valid():
             # delete old file
@@ -541,7 +503,6 @@ def fileedit(request, pk):
             if AUTO_COMPILE:
                 run()
             return HttpResponseRedirect('/index/')
-            #return HttpResponse('File edited successfully')
     else:
         userform = FileUploadForm(data = {'filename': file.filename, 'description': file.description, 'file': file.file})
     return render(request, 'upload.html', {'username': username, 'form': userform, 'filename': filename, 'description': description})
@@ -557,7 +518,6 @@ def filedelete(request, pk):
     if username != file.username:
         flash(request, 'Error', 'You can only delete your own file.', 'error')
         return HttpResponseRedirect('/index/')
-        #return HttpResponse('Error! You can only delete your own file.')
     me = get_object_or_404(UserInfo, username = username)
 
     # Delete source file
@@ -605,12 +565,10 @@ def filedownload(request ,pk):
         author = None
         flash(request, 'Error', 'Invalid code! The author of the code does not exist.')
         return HttpResponseRedirect('/index/')
-    #author = get_object_or_404(UserInfo, username = file.username)
     if username != file.username:
         if author.team == '' or me.team == '' or author.team != me.team:
             flash(request, 'Error', 'You can only download your own file or code of your teammates!')
             return HttpResponseRedirect('/index/')
-            #return HttpResponse('Error! You can only download your own file.')
     response = StreamingHttpResponse(file_iterator(file.path))  
     response['Content-Type'] = 'application/octet-stream'  
     response['Content-Disposition'] = 'attachment;filename="{0}"'.format(file.origin_name)
@@ -624,7 +582,6 @@ def viewblogs(request):
         flash(request, 'Error', 'Please login first', 'error')
         return HttpResponseRedirect('/login/')
     blogs = BlogPost.objects.all()
-    #return render(request, 'viewblogs.html', {'username': username, 'blogs': blogs})
     return render(request, 'viewblogs.html', {'username': username, 'blogs': blogs})
 
 
@@ -645,7 +602,6 @@ def postblog(request):
             blogpost.save()
             flash(request, 'Success', 'The blog has been successfully posted.')
             return HttpResponseRedirect('/index/')
-            #return HttpResponse('Blog posted successfully')\
         else:
             print('Invalid userform')
     else:
@@ -678,7 +634,6 @@ def blogedit(request, pk):
     if username != post.username:
         flash(request, 'Error', 'You can only edit you own blog!')
         return HttpResponseRedirect('/index/')
-        #return HttpResponse('Error! You can only edit your own blog.')
     if request.method == 'POST':
         userform = BlogPostForm(request.POST)
         if userform.is_valid():
@@ -731,7 +686,6 @@ def createteam(request):
     if myteam:
         flash(request, 'Error', 'You have already created a team', 'error')
         return HttpResponseRedirect('/team/')
-        #return HttpResponse('You have already created a team!')
     me = get_object_or_404(UserInfo, username = username)
     if me.team != '':
         my_current_team = TeamInfo.objects.filter(teamname__exact = me.team)
@@ -742,7 +696,6 @@ def createteam(request):
             flash(request, 'Error', 'Your current team does not exist, now you do not belong to any team lol.')
             me.team = ''
             me.save()
-        #return HttpResponse('You have already joined a team!')
 
     if request.method == 'POST':
         userform = CreateTeamForm(request.POST)
@@ -756,10 +709,9 @@ def createteam(request):
             me = UserInfo.objects.get(username = username)
             me.team = newteam.teamname
             me.save()
-            updatecodeteaminfo() #================================================
+            updatecodeteaminfo()
             flash(request, 'Success', 'Team created successfully', 'success')
             return HttpResponseRedirect('/team/')
-            #return HttpResponse('Team created successfully')
     else:
         userform = CreateTeamForm()
     return render(request, 'createteam.html', {'form': userform})
@@ -783,9 +735,7 @@ def jointeam(request, pk):
             flash(request, 'Error', 'Your current team does not exist, now you do not belong to any team lol.')
             me.team = ''
             me.save()
-        #return HttpResponse('You have already joined a team!')
     team = get_object_or_404(TeamInfo, pk = pk)
-    # userform = TeamRequestForm(data = {'destin_team': team.teamname})
     userform = TeamRequestForm()
     print('teamname = {0}'.format(team.teamname))
     return render(request, 'teamrequest.html', {'username': username, 'form': userform, 'destin_team': team.teamname})
@@ -808,7 +758,6 @@ def jointeamrequest(request, pk):
             flash(request, 'Error', 'Your current team does not exist, now you do not belong to any team lol.')
             me.team = ''
             me.save()
-        #return HttpResponse('You have already joined a team!')
     team = get_object_or_404(TeamInfo, pk = pk)
     destin_team = team.teamname
     if request.method == 'POST':
@@ -853,7 +802,6 @@ def acceptrequest(request, pk):
         if team.members >= MAX_TEAM_MEMBER_NUMBER:
             flash(request, 'Error', 'A team at most has {0} members'.format(MAX_TEAM_MEMBER_NUMBER))
             return HttpResponseRedirect('/team/')
-            #return HttpResponse('A team at most has 4 members')
         apply_user.team = destin_team
         apply_user.save()
         user_codes = FileInfo.objects.filter(username__exact = apply_user.username)
@@ -864,14 +812,12 @@ def acceptrequest(request, pk):
         team.members = team.members + 1
         team.save()
         team_request.delete()
-        updatecodeteaminfo() #================================================
+        updatecodeteaminfo()
         flash(request, 'Success', 'You have successfully accepted the request')
         return HttpResponseRedirect('/team/')
-        #return HttpResponse('You have successfully accepted the requet.')
     else:
         flash(request, 'Error', 'You can only accept requests to join your own team.')
         return HttpResponseRedirect('/team/')
-        #return HttpResponse('You can only accept requests to join your own team.')
 
 
 # Reject a request to join a team
@@ -880,20 +826,18 @@ def rejectrequest(request, pk):
     if username == '':
         flash(request, 'Error', 'Please login first', 'error')
         return HttpResponseRedirect('/login/')
-    me = get_object_or_404(UserInfo, username = username) # Me, namely the captain
+    me = get_object_or_404(UserInfo, username = username)
     team_request = get_object_or_404(TeamRequest, pk = pk)
     destin_team = team_request.destin_team
     team = get_object_or_404(TeamInfo, teamname = destin_team)
     if team.captain == me.username:
         team_request.delete()
-        updatecodeteaminfo() #================================================
+        updatecodeteaminfo()
         flash(request, 'Success', 'You have successfully rejected the request', 'succes')
         return HttpResponseRedirect('/team/')
-        #return HttpResponse('You have successfully rejected the request')
     else:
         flash(request, 'Error', 'You can only reject requests to join your own team.')
         return HttpResponseRedirect('/team')
-        #return HttpResponse('You can only reject requests to join your own team.')
 
 
 # Show the detail of a team to the captain
@@ -902,9 +846,7 @@ def teamdetail(request):
     if username == '':
         flash(request, 'Error', 'Please login first', 'error')
         return HttpResponseRedirect('/login/')
-    #my_team = get_object_or_404(TeamInfo, captain = username)
     me = get_object_or_404(UserInfo, username = username)
-    #my_team_exists = TeamInfo.objects.filter(username__exact = username)
     my_team = me.team
     if my_team:
         my_team = get_object_or_404(TeamInfo, teamname = me.team)
@@ -943,7 +885,7 @@ def quitteam(request):
                 me.save()
                 team.members = team.members - 1
                 team.save()
-                updatecodeteaminfo() #================================================
+                updatecodeteaminfo()
                 flash(request, 'Success', 'You have successfully quitted the team.')
                 return HttpResponseRedirect('/team/')
         else:
@@ -979,7 +921,7 @@ def dismissteam(request):
                         member.team = ''
                         member.save()
                 team.delete()
-                updatecodeteaminfo() #================================================
+                updatecodeteaminfo()
                 flash(request, 'Success', 'You have successfully dismissed the team', 'success')
                 return HttpResponseRedirect('/team/')
         else:
@@ -1004,28 +946,15 @@ def playgame(request):
         if check_box_list:
             if len(check_box_list) != 4:
                 flash(request, 'Error', 'Please select 4 AIs.', 'error')
-                #return HttpResponseRedirect('/playgame/')
                 return render(request, 'playgame.html', {'ailist': file_available, 'records': my_record, 'username': username})
             
-            print('Playgame! username = {0}'.format(username)) #=======================
+            print('Playgame! username = {0}'.format(username))
             print('MyTeam = {0}'.format(me.team))
             involve_mine = False
             for item in check_box_list:
                 pk = item.strip()
-                #AIs = FileInfo.objects.filter(pk__exact = pk)
                 AI = get_object_or_404(FileInfo, pk = pk)
-                print('Author of AI = {0}'.format(AI.username)) #========================
-                #if AI.username == username or (AI.teamname == me.team and AI.teamname != ''):
-                #if AIs:
-                #    for ai in AIs:
-                #        if ai.username == username or (ai.teamname == me.teamname and ai.teamname != ''):
-                #            involve_mine = True
-                #    involve_mine = True
-                #else:
-                #    pass
-                # flash(request, 'Error', 'Invalid AI selected!', 'error')
-                #return HttpResponseRedirect('/playgame/')
-                #return render(request, 'playgame.html', {'ailist': file_available, 'records': my_record, 'username': username})
+                print('Author of AI = {0}'.format(AI.username))
                 if me.team:
                     if AI.username == username or AI.teamname == me.team:
                         involve_mine = True
@@ -1035,7 +964,6 @@ def playgame(request):
 
             if involve_mine == False:
                 flash(request, 'Error', 'AI(s) of your team must be included.', 'error')
-                #return HttpResponseRedirect('/playgame/')
                 return render(request, 'playgame.html', {'ailist': file_available, 'records': my_record, 'username': username})
 
             # Code to process game_result is required
@@ -1044,10 +972,6 @@ def playgame(request):
             record.timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
             record.state = 'Unstarted'
             now = time.strftime('%Y%m%d%H%M%S') 
-            #record.filename = 'record{0}_{1}.json'.format(now, random.randint(0, 1000))
-            #while os.path.exists(record.filename):
-            #    now = time.strftime('%Y%m%d%H%M%S')
-            #    record.filename = 'record{0}_{1}.json'.format(now, random.randint(0, 1000))
             record.filename = 'record_{0}.json'.format(random_string(25))
             while os.path.exists(record.filename):
                 record.filename = 'record_{0}.json'.format(random_string(25))
@@ -1065,17 +989,12 @@ def playgame(request):
             run_game_queue()
 
             flash(request, 'Success', 'The request for a game has been submitted. Please wait. The result will be put on this page later.')
-            #return HttpResponseRedirect('/playgame/')
             return render(request, 'playgame.html', {'ailist': file_available, 'records': my_record, 'username': username})
         else:
             print('fail')
             flash(request, 'Error', 'Please select 4 AIs.', 'error')
-            #return HttpResponseRedirect('/playgame/')
             return render(request, 'playgame.html', {'ailist': file_available, 'records': my_record, 'username': username})
     else:
-        #all_file = FileInfo.objects.all()
-        #file_available = FileInfo.objects.filter(is_compile_success__exact = 'Successfully compiled')
-        #my_record = GameRecord.objects.filter(username__exact = username)
         return render(request, 'playgame.html', {'ailist': file_available, 'records': my_record, 'username': username})
 
 
@@ -1165,7 +1084,6 @@ def recorddownload(request, pk):
     record_info = get_object_or_404(GameRecord, pk = pk)
     response = StreamingHttpResponse(file_iterator('gamerecord/' + record_info.filename))
     response['Content-Type'] = 'application/octet-stream'  
-    #response['Content-Disposition'] = 'attachment;filename="{0}"'.format(record_info.filename)
     response['Content-Disposition'] = 'attachment;filename="{0}"'.format(download_name)
     return response
 
@@ -1204,10 +1122,8 @@ def ui_old(request):
 def replay(request, pk):
     record = get_object_or_404(GameRecord, pk = pk)
     filename = record.filename
-    #path = '/static/gamerecord/{0}'.format(filename)
     username = request.COOKIES.get('username', '')
     return HttpResponseRedirect('/ui/?json=/static/gamerecord/{0}'.format(filename))
-    #return render(request, 'ui.html', {'path': path, 'username': username})
 
 
 # Download SDK
@@ -1222,7 +1138,6 @@ def sdkdownload(request):
                     break  
 
     response = StreamingHttpResponse(file_iterator('static/SDK_release.zip'))  
-    #response = StreamingHttpResponse(file_iterator('static/a.ppt'))  
     response['Content-Type'] = 'application/octet-stream'  
     response['Content-Disposition'] = 'attachment;filename="{0}"'.format('User_Package_v1.6.zip')
     return response
@@ -1260,11 +1175,6 @@ def download_0318ppt(request):
 def download_dll(request):
     now = time.strftime('%Y%m%d%H%M%S')
     return downloadfile('static/AI_dll.rar', 'AI_dll_{0}.rar'.format(now), request)
-
-
-def sendmailtest(request):
-    send_mail_to_mine
-    return HttpResponseRedirect('/home/')
 
 
 # Update info on team of all code
@@ -1314,8 +1224,6 @@ def postregist(request):
         password = request.POST.get('pwd', '')
         realname = request.POST.get('realname', '')
         email = request.POST.get('email', '')
-        #if re.match(r'\d{10}', student_ID) and re.search(r'tsinghua.edu.cn'):
-            # Valid information
         for user in UserInfo.objects.filter(username__exact = username):
             if user.activated:
                 return JsonResponse({'success': False, 'message': 'The username already exists.'})
@@ -1376,35 +1284,6 @@ def postregist(request):
         return JsonResponse({'success': False, 'message': 'The method of http request is not POST'})
 
 
-# Send email again to accounts that are not activated yet
-def activateall(request):
-    username = request.COOKIES.get('username', '')
-    if username != 'RunTimeError2':
-        return render(request, 'page404.html')
-    print('get all usre info!')
-    users = UserInfo.objects.all()
-    if users:
-        for user in users:
-            if user.activated == False:
-                mail_activate(user.email, user.username)
-    return HttpResponse('Successfully sent!')
-
-
-# Export all user infomation to .txt file
-def export_userinfo(request):
-    username = request.COOKIES.get('username', '')
-    if username != 'RunTimeError2':
-        return render(request, 'page404.html')
-    print('Exporting all user info to .txt file')
-    file_path = '/home/songjh/FC15/userinfo.txt'
-    users = UserInfo.objects.all()
-    with open(file_path, 'w') as f:
-        if users:
-            for user in users:
-                f.write('{0}\n{1}\n{2}\n{3}\n{4}\n{5}\n'.format(user.username, user.realname, user.password, user.stu_number, user.email, user.team))
-    return HttpResponse('Successfully exported.')
-
-
 # Generate a list of AIs of one team
 def get_team_AIs(teamname): 
     return FileInfo.objects.filter(teamname__exact = teamname, is_compile_success__exact = 'Successfully compiled', is_compiled__exact = 'Compiled')
@@ -1430,7 +1309,6 @@ def rank(request):
         AI = get_team_AIs(me.team)
     else:
         Joined_team = False
-    #rank = read_rank()
     rank = RankingList.objects.all()
     return render(request, 'rank.html', {'username': username, 'is_captain': Is_Captain, 'teamname': me.team, 'AI': AI, 'rank': rank})
 
@@ -1516,309 +1394,3 @@ def disselectai(request, pk):
         myteam.save()
     flash(request, 'Success', 'You have successfully disselect this AI for the ranking match.', 'success')
     return HttpResponseRedirect('/rank/')
-
-
-# Run the ranking match (An interface with logic)
-def ranking_match(request):
-    username = request.COOKIES.get('username', '')
-    if username != 'RunTimeError2':
-        return render(request, 'page404.html')
-
-    # Write configuration file
-    AIs = FileInfo.objects.filter(selected = True)
-    with open('playgame/config_ranking.ini', 'w') as f:
-        f.write('../map/map_2.txt\n')
-        f.write('../lib_ai/random.so\n')
-        num = len(AIs)
-        if num % 4 > 0:
-            num = num - num % 4 + 4
-        #f.write(num + '\n')
-        f.write('30\n')
-        for item in AIs:
-            f.write('../lib_ai/{0}.{1}\n'.format(item.pk, FILE_SUFFIX))
-        if len(AIs) % 4 > 0:
-            for i in range(4 - len(AIs)):
-                f.write('../lib_ai/random.{0}'.format(FILE_SUFFIX))
-
-    print('Tournament start!')
-    # Run logic with shell
-    os.system('./run_tournament')
-
-    # Read result file and update information
-    i = 0
-    f = open('playgame/log_txt/result_ranking.txt', 'r')
-    line1 = f.readline()
-    line2 = f.readline()
-    is_dll = False
-    if line1[-3:] == 'dll':
-        is_dll = True
-    while line1:
-        if line1 != 'random':
-            pk = line1.strip()
-            if is_dll:
-                pk = pk[:-4]
-            else:
-                pk = pk[:-3]
-            files = FileInfo.objects.filter(pk = pk)
-            print('result! line1={0}, line2={1}'.format(line1, line2))
-            if files:
-                i = i + 1
-                file = files[0]
-                file.rank = i
-                file.score = line2.strip()
-                file.save()
-                print('pk = {0}, score = {1}'.format(pk, line2.strip()))
-        line1 = f.readline()
-        line2 = f.readline()
-    return HttpResponse('Successfully finished.')
-
-
-# Read result file and save the results to database
-def saveresult(request):
-    username = request.COOKIES.get('username', '')
-    if username != 'RunTimeError2':
-        return render(request, 'page404.html')
-    saverankingresult()
-    return HttpResponse('Successfully read data.')
-
-
-# Save ranking result
-def saverankingresult():
-    i = 0
-    f = open('playgame/log_txt/result_ranking.txt', 'r')
-    line1 = f.readline()
-    line2 = f.readline()
-    # Clear the ranking list
-    RankingList.objects.all().delete()
-    line1 = line1.strip()
-    is_dll = False
-    if line1[-3:] == 'dll':
-        is_dll = True
-    while line1:
-        if line1 != 'random':
-            if line1 == '' or line1 == '\n' or line1 == '\r\n':
-                break
-            pk = line1.strip()
-            if is_dll:
-                pk = pk[:-4]
-            else:
-                pk = pk[:-3]
-            files = FileInfo.objects.filter(pk = pk)
-            #print('result! line1={0}, line2={1}'.format(line1, line2))
-            if files:
-                i = i + 1
-                file = files[0]
-                #file.rank = i
-                #file.score = line2.strip()
-                #file.save()
-                #print('pk = {0}, score = {1}'.format(pk, line2.strip()))
-                rank = RankingList()
-                rank.rank = i
-                rank.index = file.pk
-                rank.author = file.username
-                rank.name = file.filename
-                rank.teamname = file.teamname
-                rank.description = file.description
-                rank.score = line2.strip()
-                rank.save()
-        line1 = f.readline()
-        line2 = f.readline()
-
-
-# Prepare AI list for the tournament
-def preparetournament(request):
-    username = request.COOKIES.get('username', '')
-    if username != 'RunTimeError2':
-        return render(request, 'page404.html')
-
-    # Write configuration file
-    AIs = FileInfo.objects.filter(selected = True)
-    with open('playgame/config_ranking.ini', 'w') as f:
-        f.write('../map/map_2.txt\n')
-        f.write('../lib_ai/idle.so\n')
-        num = len(AIs)
-        if num % 4 > 0:
-            num = num - num % 4 + 4
-        #f.write(num + '\n')
-        f.write('30\n')
-        for item in AIs:
-            f.write('../lib_ai/{0}.{1}\n'.format(item.pk, FILE_SUFFIX))
-            num = num - 1
-        if num > 0:
-            for i in range(num):
-                f.write('../lib_ai/random.{0}\n'.format(FILE_SUFFIX))
-        #if len(AIs) % 4 > 0:
-        #    for i in range(4 - len(AIs)):
-        #        f.write('../lib_ai/random.{0}'.format(FILE_SUFFIX))
-    return HttpResponse('Successfully prepared. Number of AIs: {0}'.format(num))
-
-
-# Collect all .cpp file
-def collectcpp(request):
-    username = request.COOKIES.get('username', '')
-    if username != 'RunTimeError2':
-        return render(request, 'page404.html')
-    files = FileInfo.objects.all()
-    for file in files:
-        if file.is_compile_success == 'Successfully compiled':
-            source_dir = file.path
-            destin_dir = 'playgame/cpps/{0}.cpp'.format(file.pk)
-            if os.path.exists(source_dir):
-                open(destin_dir, 'wb').write(open(source_dir, 'rb').read())
-    return HttpResponse('Successfully collected')
-
-
-# Collect all .cpp file and download zip
-def downloadcppzip(request):
-    username = request.COOKIES.get('username', '')
-    if username != 'RunTimeError2' and username != '千叶':
-        return render(request, 'page404.html')
-    os.system('rm playgame/cpps/*')
-    files = FileInfo.objects.all()
-    for file in files:
-        if file.is_compile_success == 'Successfully compiled':
-            source_dir = file.path
-            destin_dir = 'playgame/cpps/{0}.cpp'.format(file.pk)
-            if os.path.exists(source_dir):
-                open(destin_dir, 'wb').write(open(source_dir, 'rb').read())
-    os.system('zip -r static/all_cpp.zip playgame/cpps/*')
-    now = time.strftime('%Y%m%d%H%M%S')
-    return downloadfile('static/all_cpp.zip', 'all_cpp_{0}.zip'.format(now), request)
-
-
-# Collect all .cpp file selected for the ranking match and download zip
-def downloadcppzip(request):
-    username = request.COOKIES.get('username', '')
-    if username != 'RunTimeError2' and username != '千叶':
-        return render(request, 'page404.html')
-    os.system('rm playgame/cpps/*')
-    files = FileInfo.objects.all()
-    for file in files:
-        if file.is_compile_success == 'Successfully compiled' and file.selected == True:
-            source_dir = file.path
-            destin_dir = 'playgame/cpps/{0}.cpp'.format(file.pk)
-            if os.path.exists(source_dir):
-                open(destin_dir, 'wb').write(open(source_dir, 'rb').read())
-    os.system('zip -r static/all_cpp.zip playgame/cpps/*')
-    now = time.strftime('%Y%m%d%H%M%S')
-    return downloadfile('static/all_cpp.zip', 'all_cpp_tournament_{0}.zip'.format(now), request)
-
-
-# Collect all compiled .cpp file and download zip
-def downloadallcpp(request):
-    username = request.COOKIES.get('username', '')
-    if username != 'RunTimeError2' and username != '千叶':
-        return render(request, 'page404.html')
-    os.system('rm playgame/cpps/*')
-    files = FileInfo.objects.all()
-    for file in files:
-        if file.is_compile_success == 'Successfully compiled':
-            source_dir = file.path
-            destin_dir = 'playgame/cpps/{0}.cpp'.format(file.pk)
-            if os.path.exists(source_dir):
-                open(destin_dir, 'wb').write(open(source_dir, 'rb').read())
-    os.system('zip -r static/all_cpp.zip playgame/cpps/*')
-    now = time.strftime('%Y%m%d%H%M%S')
-    return downloadfile('static/all_cpp.zip', 'all_cpp_{0}.zip'.format(now), request)
-
-
-def compileall(request):
-    username = request.COOKIES.get('username', '')
-    #if username != 'RunTimeError2':
-    #    return render(request, 'page404.html')
-    msg = ''
-    num = 0
-    num_notcompiled = 0
-    num_compiled = 0
-    num_success = 0
-    num_failure = 0
-    for item in FileInfo.objects.all():
-        num = num + 1
-        if item.is_compile_success and item.is_compiled == 'Not compiled':
-            msg = msg + 'Code name={0}, author={1} state modified.<br>'.format(item.filename, item.username)
-            item.is_compiled = 'Compiled'
-            item.save()
-        if item.is_compiled == 'Not compiled':
-            num_notcompiled = num_notcompiled + 1
-        else:
-            num_compiled = num_compiled + 1
-            if item.is_compile_success == 'Successfully compiled':
-                num_success = num_success + 1
-            else:
-                num_failure = num_failure + 1
-    msg = msg + '<br><br>' + '{0} files in total<br>{1} compiled, {2} not compiled<br>{3} success, {4} failure.'.format(num, num_compiled, num_notcompiled, num_success, num_failure)
-    global IS_RUNNING
-    #if IS_RUNNING:
-    #    return HttpResponse('The process is already running' + '\r\n\r\n' + msg)
-    IS_RUNNING = 1
-    compile_all()
-    if username == 'RunTimeError2':
-        return HttpResponse('The compile_all request has been sent.' + '<br><br>' + msg)
-    else:
-        return render(request, 'page404.html')
-
-
-def processcompile(request):
-    username = request.COOKIES.get('username', '')
-    if username != 'RunTimeError2':
-        return render(request, 'page404.html')
-    msg = ''
-    num = 0
-    num_notcompiled = 0
-    num_compiled = 0
-    num_success = 0
-    num_failure = 0
-    for item in FileInfo.objects.filter(is_compiled__exact = 'Not compiled'):
-        num = num + 1
-        if item.is_compile_success and item.is_compiled == 'Not compiled':
-            msg = msg + 'Code name={0}, author={1} state modified.<br>'.format(item.filename, item.username)
-            item.is_compiled = 'Compiled'
-            item.save()
-        if item.is_compiled == 'Not compiled':
-            num_notcompiled = num_notcompiled + 1
-        else:
-            num_compiled = num_compiled + 1
-            if item.is_compile_success == 'Successfully compiled':
-                num_success = num_success + 1
-            else:
-                num_failure = num_failure + 1
-    msg = msg + '<br><br>' + '{0} files in total<br>{1} compiled, {2} not compiled<br>{3} success, {4} failure.'.format(num, num_compiled, num_notcompiled, num_success, num_failure)
-    return HttpResponse('Successfully finished.<br><br>' + msg)
-
-
-# restrict the number of AIs each team
-def restrictainumber(request):
-    username = request.COOKIES.get('username', '')
-    if username != 'RunTimeError2':
-        return render(request, 'page404.html')
-    all_team = TeamInfo.objects.all()
-    all_ai = FileInfo.objects.all()
-    for item in all_team:
-        while item.AI_selected >= 2:
-            for ai in all_ai:
-                if ai.teamname == item.teamname and ai.selected:
-                    if item.AI_selected >= 2:
-                        ai.selected = False
-                        item.AI_selected = item.AI_selected - 1
-                    ai.save()
-                    item.save()
-                    break
-    return HttpResponse('Successfully finished.')
-
-
-def export_finallist(request):
-    username = request.COOKIES.get('username', '')
-    if username != 'RunTimeError2':
-        return render(request, 'page404.html')
-    all_team_final = RankingList.objects.all()
-    team_name = []
-    for item in all_team_final:
-        team_name.append(item.teamname)
-    print('all team = {0}'.format(team_name))
-    all_user = UserInfo.objects.all()
-    f = open('all_user_final.txt', 'w')
-    for item in all_user:
-        #if item.team in team_name:
-        f.write('{0} \t {1} \t {2} \t {3} \t {4}\r\n'.format(item.username, item.realname, item.stu_number, item.email, item.team))
-    f.close()
-    return HttpResponse('successfully exported.')

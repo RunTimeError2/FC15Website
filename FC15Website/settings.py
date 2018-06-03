@@ -25,19 +25,17 @@ SECRET_KEY = 'd1800b35-faa6-45f3-8d8b-d057afb82a6a'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG == False means that the project has been put into production
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
-# Configuration for postregist
-# needs pip install django-cors-headers
 CORS_ORIGIN_ALLOW_ALL = True
 
 # Application definition
 
 INSTALLED_APPS = [
     'FC15',
-    #'corsheaders',
+    'corsheaders',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -49,7 +47,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE_CLASSES = [
     'corsheaders.middleware.CorsMiddleware',
-    
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -84,11 +82,24 @@ WSGI_APPLICATION = 'FC15Website.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
+
+# SQLite3 Database is the old one for debugging, and the default database MySQL is for release version.
 DATABASES = {
-    'default': {
+    'slave': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+        'OPTIONS': {
+            'timeout': 20,
+        }
+    },
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'mysqldb',
+        'USER': 'root',
+        'PASSWORD': 'MySqlRootPassword123',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+    },
 }
 
 
@@ -132,26 +143,14 @@ USE_L10N = True
 STATIC_URL = '/static/'
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
-# maybe BASE_DIR is also available
-#STATICFILES_DIRS = (
-#    os.path.join(BASE_DIR, 'static'),
-#)
-#STATICFILES_FINDERS = (
-#    'django.contrib.staticfiles.finders.FileSystemFinder',
-#    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#)
-#STATIC_ROOT = posixpath.join(*(BASE_DIR.split(os.path.sep) + ['static']))
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # Use Tsinghua Mailbox if internet access is not available
-#EMAIL_HOST = 'mails.tsinghua.edu.cn'
-#EMAIL_PORT = 25
-EMAIL_HOST = 'smtp.tsinghua.edu.cn'
-EMAIL_PORT = 465
+EMAIL_HOST = 'mails.tsinghua.edu.cn'
+EMAIL_PORT = 25
 EMAIL_HOST_USER = 'songjh16@mails.tsinghua.edu.cn'
 EMAIL_HOST_PASSWORD = '******'
 EMAIL_SUBJECT_PREFIX = '[FC15]'
-#EMAIL_USE_TLS = True
-EMAIL_USE_SSL = True
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'songjh16@mails.tsinghua.edu.cn'
 DEFAULT_EMAIL_FROM = 'songjh16@mails.tsinghua.edu.cn'
